@@ -13,6 +13,8 @@ game.addEventListener("click", function (event) {
 	if (!cell?.parentElement?.parentElement) return;
 	socket.emit(
 		"hello",
-		`${Array.from(cell.parentElement.parentElement.children).indexOf(cell.parentElement)}:${Array.from(cell.parentElement.children).indexOf(cell)}`,
+		`${Array.from(cell.parentElement.parentElement.children).indexOf(
+			cell.parentElement,
+		)}:${Array.from(cell.parentElement.children).indexOf(cell)}`,
 	);
 });

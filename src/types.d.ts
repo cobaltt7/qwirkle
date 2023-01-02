@@ -1,12 +1,9 @@
-export interface ServerToClientEvents {
-}
+export interface ServerToClientEvents {}
 
 export interface ClientToServerEvents {
-	hello: (indexes:string) => void;
+	hello: (indexes: string) => void;
 }
 
-export interface InterServerEvents {
-}
+export interface InterServerEvents {}
 
-export interface SocketData {
-}
+export interface SocketData {}
