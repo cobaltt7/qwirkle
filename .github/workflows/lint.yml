@@ -1,0 +1,82 @@
+name: Lint
+on:
+    push:
+    workflow_dispatch:
+    schedule:
+        - cron: "30 12 * * *" # 30 minutes before Dependabot
+
+permissions: write-all
+
+jobs:
+    bump:
+        name: Bump dependencies
+        runs-on: ubuntu-20.04
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3.2.0
+              with:
+                  ref: ${{ github.head_ref }}
+
+            - name: Bump dependencies
+              uses: RedGuy12/sync-types@v1.1.1
+
+            - name: Commit
+              uses: stefanzweifel/git-auto-commit-action@v4.16.0
+              with:
+                  commit_message: Bump dependencies
+                  branch: ${{ github.head_ref }}
+
+    format:
+        name: Format
+        needs: [bump]
+        if: ${{ always() }}
+        runs-on: ubuntu-20.04
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3.2.0
+              with:
+                  ref: ${{ github.head_ref }}
+
+            - name: Setup Node.JS
+              uses: actions/setup-node@v3.5.1
+              with:
+                  node-version: "18.12.1"
+                  cache: "npm"
+
+            - name: Install
+              run: npm ci
+
+            - name: Format
+              run: npm run format
+
+            - name: Commit
+              uses: stefanzweifel/git-auto-commit-action@v4.16.0
+              with:
+                  commit_message: Format
+                  branch: ${{ github.head_ref }}
+
+    build:
+        name: Build
+        needs: [bump]
+        if: ${{ always() }}
+        runs-on: ubuntu-20.04
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3.2.0
+              with:
+                  ref: ${{ github.head_ref }}
+
+            - name: Setup Node.JS
+              uses: actions/setup-node@v3.5.1
+              with:
+                  node-version: "18.12.1"
+                  cache: "npm"
+
+            - name: Install
+              run: npm ci
+
+            - name: Build
+              run: npm run build
