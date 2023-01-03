@@ -8,11 +8,12 @@
 		"build": "tsc --project tsconfig.json",
 		"dev": "tsc --project tsconfig.json --watch",
 		"format": "prettier --write \"**\" \"!src/js/**\" --ignore-unknown",
-		"serve": "nodemon . --watch src",
+		"serve": "nodemon . --watch",
 		"start": "node ."
 	},
 	"prettier": "@redguy12/prettier-config",
 	"dependencies": {
+		"modern-normalize": "1.1.0",
 		"serve-handler": "6.1.5",
 		"socket.io": "4.5.4"
 	},
@@ -27,5 +28,11 @@
 	"engines": {
 		"node": "18.12.1",
 		"npm": "8.13.2"
+	},
+	"nodemonConfig": {
+		"watch": [
+			"src"
+		],
+		"ext": "js,png,html,css"
 	}
 }

@@ -1,5 +1,66 @@
-td {
-	width: 50px;
-	height: 50px;
+/** Resets */
+
+::selection {
+	/* It can be really hard to read highlighted text with a text-shadow, it should be removed when selected */
+	text-shadow: none;
+
+	/* NOTE: Using this means the color and background-color are set to transparent for selected text... */
+	/* So you can customise your styles below */
+	color: #fff;
+	background-color: #00f;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		scroll-behavior: smooth;
+		/* Smoothly animate to different sections within a page, only if the user doesn't mind animations */
+	}
+}
+
+img {
+	/* For responsive images that adjust & adapt */
+	height: auto;
+	max-width: 100%;
+
+	/* This isn't needed, but as a user, I get frustrated when I highlight text and the image gets highlighted too */
+	user-select: none;
+}
+
+button {
+	color: inherit;
+	/* By default, buttons don't inherit the font colour, this is a useful default to override */
+}
+
+a,
+button {
+	touch-action: manipulation;
+	/* Element doesn't want double-tap on mobile to zoom */
+}
+
+svg {
+	/* Make the SVGs fit the parent container by default */
+	height: 100%;
+	width: 100%;
+
+	/* Optional - make the SVG's fill be the same as the inherited color */
+	fill: currentColor;
+
+	/* Prevent the SVG from altering cursor interaction */
+	pointer-events: none;
+}
+
+iframe,
+video {
+	/* Make iframes & videos fit the parent container by default */
+	height: 100%;
+	width: 100%
+}
+
+/** Project Styles */
+
+.tile {
+	width: 100px;
+	height: 100px;
 	border: 1px solid black;
+	display: inline-block;
 }

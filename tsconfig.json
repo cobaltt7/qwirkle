@@ -27,9 +27,12 @@
 		"stripInternal": true,
 		"target": "ES2021",
 		"useDefineForClassFields": true,
-		"useUnknownInCatchVariables": true
+		"useUnknownInCatchVariables": true,
+		"sourceMap": true,
+		"checkJs": true,
+		"allowJs": true
 	},
-	"exclude": ["node_modules", ".git"],
+	"exclude": ["node_modules", ".git", "src/js"],
 	"include": ["./src/**/*"],
 	"typeAcquisition": { "enable": true }
 }
