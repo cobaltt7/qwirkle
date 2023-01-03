@@ -5,16 +5,21 @@
 	text-shadow: none;
 
 	/* NOTE: Using this means the color and background-color are set to transparent for selected text... */
-	/* So you can customise your styles below */
 	color: #fff;
 	background-color: #00f;
 }
 
+/* Smoothly animate to different sections within a page, only if the user doesn't mind animations */
 @media (prefers-reduced-motion: no-preference) {
 	html {
 		scroll-behavior: smooth;
-		/* Smoothly animate to different sections within a page, only if the user doesn't mind animations */
 	}
+}
+
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
 }
 
 img {
@@ -23,7 +28,9 @@ img {
 	max-width: 100%;
 
 	/* This isn't needed, but as a user, I get frustrated when I highlight text and the image gets highlighted too */
-	user-select: none;
+	user-select: text;
+	-webkit-user-drag: none;
+	-moz-window-dragging: no-drag;
 }
 
 button {
@@ -56,11 +63,19 @@ video {
 	width: 100%
 }
 
+
 /** Project Styles */
 
 .tile {
 	width: 100px;
 	height: 100px;
-	border: 1px solid black;
 	display: inline-block;
+}
+
+.row {
+	display: flex;
+}
+
+footer {
+	height: 125px;
 }

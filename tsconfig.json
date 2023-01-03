@@ -27,7 +27,7 @@
 		"stripInternal": true,
 		"target": "ES2021",
 		"useDefineForClassFields": true,
-		"useUnknownInCatchVariables": true,
+		"useUnknownInCatchVariables": false,
 		"sourceMap": true,
 		"checkJs": true,
 		"allowJs": true
