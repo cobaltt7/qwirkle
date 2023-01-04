@@ -26,11 +26,13 @@ img {
 	/* For responsive images that adjust & adapt */
 	height: auto;
 	max-width: 100%;
+	max-height: 100%;
 
 	/* This isn't needed, but as a user, I get frustrated when I highlight text and the image gets highlighted too */
 	user-select: text;
-	-webkit-user-drag: none;
-	-moz-window-dragging: no-drag;
+	-ms-user-select: text;
+	-moz-user-select: text;
+	-webkit-user-select: text;
 }
 
 button {
@@ -41,6 +43,7 @@ button {
 a,
 button {
 	touch-action: manipulation;
+	-ms-touch-action: manipulation;
 	/* Element doesn't want double-tap on mobile to zoom */
 }
 
@@ -78,4 +81,17 @@ video {
 
 footer {
 	height: 125px;
+}
+
+#selected {
+	margin: 10px;
+	box-shadow: 0 0 5px 0 #000000;
+	height: 105px;
+}
+
+main {
+	border: 1px solid black;
+	width: -moz-fit-content;
+	width: fit-content;
+	margin: 20px auto;
 }

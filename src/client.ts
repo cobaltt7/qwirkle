@@ -17,6 +17,9 @@ hand.addEventListener("click", (event) => {
 	if (!(event.target instanceof HTMLImageElement)) return; // Ignore, user didn't click on tile
 
 	selected = Array.prototype.indexOf.call(event.target.parentElement?.children, event.target);
+	const oldSelected = document.getElementById("selected");
+	if (oldSelected) oldSelected.id = "";
+	event.target.id = "selected";
 });
 
 game.addEventListener("click", function (event) {
@@ -61,6 +64,8 @@ socket.on("hand", (tiles) => {
 			}),
 		),
 	);
+	const oldSelected = document.getElementById("selected");
+	if (oldSelected) oldSelected.id = "";
 });
 socket.on("error", (error) => {
 	alert(error);

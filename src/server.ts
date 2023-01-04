@@ -68,22 +68,25 @@ const board: Record<Location["y"], Record<Location["x"], PlacedTile>> = {};
 const hands: Record<SocketId, Tile[]> = {};
 io.on("connection", (socket) => {
 	socket.emit("hand", (hands[socket.id] ??= generateHand()));
+	Object.values(board)
+		.flatMap((column) => Object.values(column))
+		.forEach((tile) => socket.emit("place", tile, tile));
 
 	socket.on("disconnect", () => {
 		// console.log("user disconnected");
 	});
 	socket.on("turn", (location, index) => {
-		// Gather base information.
+		// STEP 1: Gather base information.
 		const hand = hands[socket.id] ?? generateHand();
 		const tile = hand[index];
 		if (!tile) return socket.emit("error", "MISSING_TILE", location);
 		const placed = { ...tile, ...location };
 
-		// Check for collisions.
+		// STEP 2: Check for collisions.
 		const row = board[location.y] ?? {};
 		if (row[location.x]) return socket.emit("error", "ALREADY_PLACED", location);
 
-		// Check for neighbors.
+		// STEP 3: Check for neighbors.
 		let top = board[location.y - 1]?.[location.x],
 			bottom = board[location.y + 1]?.[location.x],
 			right = row[location.x + 1],
@@ -91,8 +94,9 @@ io.on("connection", (socket) => {
 		if (!top && !bottom && !right && !left)
 			return socket.emit("error", "NO_NEIGHBORS", location);
 
-		// Check neighborhood to verify consistency.
+		// STEP 4: Check neighborhood to verify consistency.
 		const neighborhood: { row: PlacedTile[]; column: PlacedTile[] } = { row: [], column: [] };
+		//Step 4.0-4.3: Get neighborhood
 		if (right || left) {
 			if (left) {
 				do neighborhood.row.unshift(left);
@@ -116,26 +120,23 @@ io.on("connection", (socket) => {
 			}
 		}
 		console.log(neighborhood);
-		// Check that the color OR the shape of each row item is the same
-		// Check that the other has no duplicates
-		// Repeat for columns
+		// Step 4.4: Check that the color OR the shape of each row item is the same
+		// Step 4.5: Check that the other has no duplicates
+		// Steps 4.6-4.7: Repeat for columns
 		const rowResult = verifyStreet(neighborhood.row);
 		if (rowResult) return socket.emit("error", `${rowResult}_ROW_ITEMS`, location);
 		const columnResult = verifyStreet(neighborhood.column);
 		if (columnResult) return socket.emit("error", `${columnResult}_COLUMN_ITEMS`, location);
 
-		// Place the tile.
+		// STEP 5: Place the tile.
 		row[location.x] = placed;
 		board[location.y] = row;
 		io.emit("place", tile, location);
 
-		// Update the user's hand.
+		// STEP 6: Update the user's hand.
 		const newTile = getRandomTile();
-		if (newTile) {
-			hand[index] = newTile;
-		} else {
-			hand.slice(index, 1);
-		}
+		if (newTile) hand[index] = newTile;
+		else hand.slice(index, 1);
 		socket.emit("hand", (hands[socket.id] = sortHand(hand)));
 	});
 });
@@ -156,7 +157,7 @@ function getRandomTile(required = false): Tile | undefined {
 	return tile;
 }
 
-(board[3] ??= {})[3] = { ...getRandomTile(true), x: 3, y: 3 };
+(board[1] ??= {})[1] = { ...getRandomTile(true), x: 1, y: 1 };
 
 function generateHand() {
 	return sortHand(
@@ -187,7 +188,9 @@ function verifyStreet(street: PlacedTile[]) {
 	return (
 		street.some((tile, index) => {
 			const key = isSameColor ? tile.shape : tile.color;
-			return street.findIndex((item) => item[isSameColor ? "shape" : "color"] === key) !== index;
+			return (
+				street.findIndex((item) => item[isSameColor ? "shape" : "color"] === key) !== index
+			);
 		}) && "DUPLICATE"
 	);
 }
