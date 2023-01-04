@@ -11,6 +11,12 @@
 		"serve": "nodemon . --watch",
 		"start": "node ."
 	},
+	"nodemonConfig": {
+		"ext": "js,png,html,css",
+		"watch": [
+			"src"
+		]
+	},
 	"prettier": "@redguy12/prettier-config",
 	"dependencies": {
 		"modern-normalize": "1.1.0",
@@ -28,11 +34,5 @@
 	"engines": {
 		"node": "18.12.1",
 		"npm": "8.13.2"
-	},
-	"nodemonConfig": {
-		"watch": [
-			"src"
-		],
-		"ext": "js,png,html,css"
 	}
 }

@@ -17,7 +17,8 @@
 }
 
 body {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+		"Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
 }
@@ -63,9 +64,8 @@ iframe,
 video {
 	/* Make iframes & videos fit the parent container by default */
 	height: 100%;
-	width: 100%
+	width: 100%;
 }
-
 
 /** Project Styles */
 
