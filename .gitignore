@@ -1,5 +1,4 @@
-.*
-!.github/
-src/js/
+!***
+.git
 node_modules/
-!.gitignore
+src/js/

@@ -1,4 +1,4 @@
-import { generateTileUrl, TILE_COLORS, TILE_SHAPES } from "./constants.js";
+import { generateTileUrl, TILE_COLORS, TILE_SHAPES } from "./common/constants.js";
 
 for (const color of TILE_COLORS) {
 	for (const shape of TILE_SHAPES) {

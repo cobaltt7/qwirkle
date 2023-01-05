@@ -30,10 +30,8 @@ img {
 	max-height: 100%;
 
 	/* This isn't needed, but as a user, I get frustrated when I highlight text and the image gets highlighted too */
-	user-select: text;
-	-ms-user-select: text;
-	-moz-user-select: text;
 	-webkit-user-select: text;
+	user-select: text;
 }
 
 button {
@@ -43,9 +41,8 @@ button {
 
 a,
 button {
-	touch-action: manipulation;
-	-ms-touch-action: manipulation;
 	/* Element doesn't want double-tap on mobile to zoom */
+	touch-action: manipulation;
 }
 
 svg {
@@ -83,7 +80,7 @@ footer {
 	height: 125px;
 }
 
-#selected {
+.selected {
 	margin: 10px;
 	box-shadow: 0 0 5px 0 #000000;
 	height: 105px;

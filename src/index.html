@@ -5,28 +5,27 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Quirkle</title>
 		<script type="module" src="./js/preload.js" async></script>
+		<link rel="stylesheet" href="./css/normalize.css" />
+		<link rel="stylesheet" href="./css/style.css" />
 		<script type="module" src="./js/client.js"></script>
-		<link rel="stylesheet" href="./style.css" />
-		<link rel="stylesheet" href="./normalize.css" />
 	</head>
 	<body>
-		<main>
-			<div class="row">
-				<div class="tile"></div>
-				<div class="tile"></div>
-				<div class="tile"></div>
-			</div>
-			<div class="row">
-				<div class="tile"></div>
-				<div class="tile"></div>
-				<div class="tile"></div>
-			</div>
-			<div class="row">
-				<div class="tile"></div>
-				<div class="tile"></div>
-				<div class="tile"></div>
+		<main ref="board">
+			<div class="row" v-for="rowIndex in (board.rows[1] - board.rows[0] + 1)">
+				<div
+					class="tile"
+					v-for="columnIndex in (board.columns[1] - board.columns[0] + 1)"
+				></div>
 			</div>
 		</main>
-		<footer></footer>
+		<footer ref="hand">
+			<img
+				:src="generateTileUrl(tile)"
+				:title="`${tile.color} ${tile.shape}`"
+				v-for="[index, tile] in hand.entries()"
+				@click="selectTile"
+				:class="{ selected: index === selected }"
+			/>
+		</footer>
 	</body>
 </html>

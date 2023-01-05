@@ -1,6 +1,6 @@
 {
-	"name": "scradd",
-	"version": "2.4.0",
+	"name": "quirkle",
+	"version": "0.0.1",
 	"private": true,
 	"type": "module",
 	"main": "src/js/server.js",
@@ -19,11 +19,14 @@
 	},
 	"prettier": "@redguy12/prettier-config",
 	"dependencies": {
+		"mime-types": "2.1.35",
 		"modern-normalize": "1.1.0",
 		"serve-handler": "6.1.5",
-		"socket.io": "4.5.4"
+		"socket.io": "4.5.4",
+		"vue": "3.2.45"
 	},
 	"devDependencies": {
+		"@babel/types": "7.20.7",
 		"@redguy12/prettier-config": "2.0.2",
 		"@types/serve-handler": "<=6.1.5",
 		"nodemon": "2.0.20",

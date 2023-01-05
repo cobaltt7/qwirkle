@@ -5,7 +5,8 @@ import fileSystem from "node:fs/promises";
 import { Server } from "socket.io";
 import serve from "serve-handler";
 import generateError from "serve-handler/src/error.js";
-import { TILE_COLORS, TILE_SHAPES } from "./constants.js";
+import { TILE_COLORS, TILE_SHAPES } from "./common/constants.js";
+import mime from "mime-types";
 
 import type { SocketId } from "socket.io-adapter";
 import type {
@@ -16,24 +17,31 @@ import type {
 	ServerToClientEvents,
 	SocketData,
 	Tile,
-} from "./types.js";
+} from "./common/types.js";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+
+mime.types.ts = "text/plain";
+const PACKAGE_RESOLVES: Record<string, string> = {
+	"/css/normalize.css": "modern-normalize",
+	"/js/vue.js": "vue/dist/vue.esm-browser.js",
+};
 
 const server = http
 	.createServer((request, response) => {
 		try {
 			const requestUrl = new URL(request.url ?? "", `https://${request.headers.host}`);
 
-			if (requestUrl.pathname === "/normalize.css") {
-				fileSystem
-					.readFile(
-						new URL(
-							"../../node_modules/modern-normalize/modern-normalize.css",
-							import.meta.url,
-						),
-					)
-					.then((css) => {
-						response.writeHead(200, { "Content-Type": "text/css" }).end(css);
-					});
+			const packageName = PACKAGE_RESOLVES[requestUrl.pathname];
+			if (packageName) {
+				const resolved = require.resolve(packageName);
+				
+				fileSystem.readFile(resolved).then((file) => {
+					response
+						.writeHead(200, { "Content-Type": mime.lookup(resolved) || "text/plain" })
+						.end(file);
+				});
 			}
 
 			serve(request, response, {
