@@ -29,7 +29,7 @@
 	"devDependencies": {
 		"@babel/types": "7.20.7",
 		"@redguy12/prettier-config": "2.0.2",
-		"@types/mime-types": "^2.1.1",
+		"@types/mime-types": "<=2.1.35",
 		"@types/serve-handler": "<=6.1.5",
 		"nodemon": "2.0.20",
 		"prettier": "2.8.0",
