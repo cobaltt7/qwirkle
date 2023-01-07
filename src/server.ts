@@ -1,5 +1,6 @@
 import http from "node:http";
 import url from "node:url";
+import path from "node:path";
 import fileSystem from "node:fs/promises";
 
 import { Server } from "socket.io";
@@ -26,6 +27,7 @@ mime.types.ts = "text/plain";
 const PACKAGE_RESOLVES: Record<string, string> = {
 	"/css/normalize.css": "modern-normalize",
 	"/js/vue.js": "vue/dist/vue.esm-browser.js",
+	"/js/vue-class-component.js": "vue-class-component/dist/vue-class-component.esm-browser.js",
 };
 
 const server = http
@@ -36,8 +38,15 @@ const server = http
 			const packageName = PACKAGE_RESOLVES[requestUrl.pathname];
 			if (packageName) {
 				const resolved = require.resolve(packageName);
-				
-				fileSystem.readFile(resolved).then((file) => {
+
+				return fileSystem.readFile(resolved, "utf8").then((file) => {
+					if (path.extname(resolved) === ".js") {
+						file = file.replaceAll(
+							/import\s+(?<importedNames>.+?)\s+from\s+['"`](?<moduleName>[^.].*?)['"`]/gms,
+							'import $<importedNames> from "./$<moduleName>.js"',
+						);
+					}
+
 					response
 						.writeHead(200, { "Content-Type": mime.lookup(resolved) || "text/plain" })
 						.end(file);
@@ -70,7 +79,7 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEve
 	server,
 );
 
-/** Rows by columns. */
+/** Y by X. */
 const board: Record<Location["y"], Record<Location["x"], PlacedTile>> = {};
 
 const hands: Record<SocketId, Tile[]> = {};
@@ -78,7 +87,7 @@ io.on("connection", (socket) => {
 	socket.emit("hand", (hands[socket.id] ??= generateHand()));
 	Object.values(board)
 		.flatMap((column) => Object.values(column))
-		.forEach((tile) => socket.emit("place", tile, tile));
+		.forEach((tile) => socket.emit("place", tile));
 
 	socket.on("disconnect", () => {
 		// console.log("user disconnected");
@@ -86,17 +95,17 @@ io.on("connection", (socket) => {
 	socket.on("turn", (location, index) => {
 		// STEP 1: Gather base information.
 		const hand = hands[socket.id] ?? generateHand();
-		const tile = hand[index];
+		const tile = hand[Number(index)];
 		if (!tile) return socket.emit("error", "MISSING_TILE", location);
 		const placed = { ...tile, ...location };
 
 		// STEP 2: Check for collisions.
-		const row = board[location.y] ?? {};
+		const row = board[Number(location.y)] ?? {};
 		if (row[location.x]) return socket.emit("error", "ALREADY_PLACED", location);
 
 		// STEP 3: Check for neighbors.
-		let top = board[location.y - 1]?.[location.x],
-			bottom = board[location.y + 1]?.[location.x],
+		let top = board[location.y - 1]?.[Number(location.x)],
+			bottom = board[location.y + 1]?.[Number(location.x)],
 			right = row[location.x + 1],
 			left = row[location.x - 1];
 		if (!top && !bottom && !right && !left)
@@ -119,32 +128,32 @@ io.on("connection", (socket) => {
 		if (top || bottom) {
 			if (top) {
 				do neighborhood.column.unshift(top);
-				while ((top = board[top.y - 1]?.[location.x]));
+				while ((top = board[top.y - 1]?.[Number(location.x)]));
 			}
 			neighborhood.column.push(placed);
 			if (bottom) {
 				do neighborhood.column.push(bottom);
-				while ((bottom = board[bottom.y + 1]?.[location.x]));
+				while ((bottom = board[bottom.y + 1]?.[Number(location.x)]));
 			}
 		}
 		console.log(neighborhood);
 		// Step 4.4: Check that the color OR the shape of each row item is the same
 		// Step 4.5: Check that the other has no duplicates
 		// Steps 4.6-4.7: Repeat for columns
-		const rowResult = verifyStreet(neighborhood.row);
+		const rowResult = verifyLine(neighborhood.row);
 		if (rowResult) return socket.emit("error", `${rowResult}_ROW_ITEMS`, location);
-		const columnResult = verifyStreet(neighborhood.column);
+		const columnResult = verifyLine(neighborhood.column);
 		if (columnResult) return socket.emit("error", `${columnResult}_COLUMN_ITEMS`, location);
 
 		// STEP 5: Place the tile.
-		row[location.x] = placed;
-		board[location.y] = row;
-		io.emit("place", tile, location);
+		row[Number(location.x)] = placed;
+		board[Number(location.y)] = row;
+		io.emit("place", placed);
 
 		// STEP 6: Update the user's hand.
 		const newTile = getRandomTile();
-		if (newTile) hand[index] = newTile;
-		else hand.slice(index, 1);
+		if (newTile) hand[Number(index)] = newTile;
+		else hand.splice(index, 1);
 		socket.emit("hand", (hands[socket.id] = sortHand(hand)));
 	});
 });
@@ -165,22 +174,17 @@ function getRandomTile(required = false): Tile | undefined {
 	return tile;
 }
 
-(board[1] ??= {})[1] = { ...getRandomTile(true), x: 1, y: 1 };
+(board[0] ??= {})[0] = { ...getRandomTile(true), x: 0, y: 0 };
 
 function generateHand() {
-	return sortHand(
-		Array.from({ length: 6 }, () => getRandomTile(true)) as [
-			Tile,
-			Tile,
-			Tile,
-			Tile,
-			Tile,
-			Tile,
-		],
-	);
+	const hand = [];
+	while (deck.length > 0 && hand.length < 6) {
+		hand.push(getRandomTile(true));
+	}
+	return sortHand(hand);
 }
 
-function sortHand<Tiles extends Tile[]>(hand: Tiles) {
+function sortHand(hand: Tile[]) {
 	return hand.sort(
 		(one, two) =>
 			TILE_COLORS.indexOf(one.color) - TILE_COLORS.indexOf(two.color) ||
@@ -188,16 +192,16 @@ function sortHand<Tiles extends Tile[]>(hand: Tiles) {
 	);
 }
 
-function verifyStreet(street: PlacedTile[]) {
-	const isSameColor = street.every((tile) => tile.color === street[0]?.color);
-	const isSameShape = street.every((tile) => tile.shape === street[0]?.shape);
+function verifyLine(line: PlacedTile[]) {
+	const isSameColor = line.every((tile) => tile.color === line[0]?.color);
+	const isSameShape = line.every((tile) => tile.shape === line[0]?.shape);
 	if (!(isSameColor || isSameShape)) return "INCONSISTENT";
 
 	return (
-		street.some((tile, index) => {
+		line.some((tile, index) => {
 			const key = isSameColor ? tile.shape : tile.color;
 			return (
-				street.findIndex((item) => item[isSameColor ? "shape" : "color"] === key) !== index
+				line.findIndex((item) => item[isSameColor ? "shape" : "color"] === key) !== index
 			);
 		}) && "DUPLICATE"
 	);

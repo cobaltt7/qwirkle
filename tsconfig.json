@@ -6,7 +6,7 @@
 		"exactOptionalPropertyTypes": false,
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
-		"importHelpers": true,
+		"importHelpers": false,
 		"importsNotUsedAsValues": "error",
 		"lib": ["ESNext", "DOM"],
 		"maxNodeModuleJsDepth": 0,

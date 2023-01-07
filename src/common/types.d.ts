@@ -1,7 +1,7 @@
 import type { ERRORS, TILE_COLORS, TILE_SHAPES } from "./constants";
 
 export interface ServerToClientEvents {
-	place: (tile: Tile, location: Location) => void;
+	place: (tile: PlacedTile) => void;
 	error: (error: ErrorName, location: Location) => void;
 	hand: (tiles: Tile[]) => void;
 }

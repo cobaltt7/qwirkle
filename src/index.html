@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Quirkle</title>
+		<title>Qwirkle</title>
 		<script type="module" src="./js/preload.js" async></script>
 		<link rel="stylesheet" href="./css/normalize.css" />
 		<link rel="stylesheet" href="./css/style.css" />
@@ -11,20 +11,27 @@
 	</head>
 	<body>
 		<main ref="board">
-			<div class="row" v-for="rowIndex in (board.rows[1] - board.rows[0] + 1)">
+			<div class="row" v-for="rowIndex in (boardSize.rows[1] - boardSize.rows[0] + 3)">
 				<div
 					class="tile"
-					v-for="columnIndex in (board.columns[1] - board.columns[0] + 1)"
-				></div>
+					v-for="columnIndex in (boardSize.columns[1] - boardSize.columns[0] + 3)"
+					@click="placeTile"
+				>
+					<img
+						v-if="getFromBoard(columnIndex,rowIndex)"
+						:src="generateTileUrl(getFromBoard(columnIndex,rowIndex))"
+						:alt="`${getFromBoard(columnIndex,rowIndex).color} ${getFromBoard(columnIndex,rowIndex).shape}`"
+					/>
+				</div>
 			</div>
 		</main>
 		<footer ref="hand">
 			<img
 				:src="generateTileUrl(tile)"
 				:title="`${tile.color} ${tile.shape}`"
-				v-for="[index, tile] in hand.entries()"
+				v-for="[index, tile] in heldTiles.entries()"
 				@click="selectTile"
-				:class="{ selected: index === selected }"
+				:class="{ selected: index === selectedTile }"
 			/>
 		</footer>
 	</body>

@@ -1,5 +1,5 @@
 {
-	"name": "quirkle",
+	"name": "qwirkle",
 	"version": "0.0.1",
 	"private": true,
 	"type": "module",
@@ -23,11 +23,13 @@
 		"modern-normalize": "1.1.0",
 		"serve-handler": "6.1.5",
 		"socket.io": "4.5.4",
-		"vue": "3.2.45"
+		"vue": "3.2.45",
+		"vue-class-component": "8.0.0-rc.1"
 	},
 	"devDependencies": {
 		"@babel/types": "7.20.7",
 		"@redguy12/prettier-config": "2.0.2",
+		"@types/mime-types": "^2.1.1",
 		"@types/serve-handler": "<=6.1.5",
 		"nodemon": "2.0.20",
 		"prettier": "2.8.0",

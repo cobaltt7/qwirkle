@@ -1,80 +1,98 @@
 import "/socket.io/socket.io.min.js";
-import { generateTileUrl } from "./common/constants.js";
-import type { Socket, io as transport } from "socket.io-client";
-import type { ClientToServerEvents, ServerToClientEvents } from "./common/types.js";
 import { createApp } from "./vue.js";
+import { Options, Vue } from "./vue-class-component.js";
+
+import { generateTileUrl } from "./common/constants.js";
+
+import type { Socket, io as transport } from "socket.io-client";
+import type {
+	ClientToServerEvents,
+	Location,
+	PlacedTile,
+	ServerToClientEvents,
+	Tile,
+} from "./common/types.js";
 declare const io: typeof transport;
+
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 
-const App = createApp({
-	data() {
-		return {
-			hand: [],
-			selected: -1,
-			board: { rows: [-1, 1], columns: [-1, 1] },
-		};
-	},
-	mounted() {
-		const { board, hand } = this.$refs;
+@Options({ template: document.body.innerHTML })
+class App extends Vue {
+	// Data
+	heldTiles: Tile[] = [];
+	selectedTile = -1;
+	boardSize: { rows: [number, number]; columns: [number, number] } = {
+		rows: [0, 0],
+		columns: [0, 0],
+	};
+	placedTiles: Record<Location["y"], Record<Location["x"], PlacedTile>> = {};
 
-		if (!(board instanceof Element)) throw new ReferenceError("Could not find board");
-		if (!(hand instanceof Element)) throw new ReferenceError("Could not find hand");
+	// Refs
+	declare readonly $refs: { board: HTMLElement; hand: HTMLElement };
 
-		socket.on("place", (tile, location) => {
-			const tileElement = board.children[location.y]?.children[location.x];
-			if (!(tileElement instanceof HTMLDivElement)) return; // Error, invalid location
+	// Hooks
+	override mounted() {
+		socket.on("place", (tile) => {
+			if (tile.x < this.boardSize.columns[0]) this.boardSize.columns[0] = tile.x;
+			else if (tile.x > this.boardSize.columns[1]) this.boardSize.columns[1] = tile.x;
 
-			const image = Object.assign(document.createElement("img"), {
-				src: generateTileUrl(tile),
-				alt: `${tile.color} ${tile.shape}`,
-			});
+			if (tile.y < this.boardSize.rows[0]) this.boardSize.rows[0] = tile.y;
+			else if (tile.y > this.boardSize.rows[1]) this.boardSize.rows[1] = tile.y;
 
-			tileElement.append(image);
+			(this.placedTiles[tile.y] ??= {})[tile.x] = tile;
 		});
 		socket.on("hand", (tiles) => {
-			this.hand = tiles;
+			this.heldTiles = tiles;
 		});
-		socket.on("error", (error) => {
-			alert(error);
-		});
+	}
 
-		if (true) {
-			// TODO: drop in prod
-			socket.on("connect", () =>
-				socket.io.on("open", () => {
-					setTimeout(() => (location.href = location.href), 2000);
-				}),
-			);
-		}
-	},
-	methods: {
-		generateTileUrl,
-		selectTile(event: Event) {
-			if (!(event.target instanceof HTMLImageElement)) return; // Ignore, user didn't click on tile
+	// Methods
+	generateTileUrl = generateTileUrl;
+	selectTile(event: Event) {
+		if (!(event.target instanceof HTMLImageElement)) return; // Ignore, user didn't click on tile
 
-			this.selected = Array.prototype.indexOf.call(this.$refs.hand.children, event.target);
-		},
-		placeTile(event: Event) {
-			const cell =
-				event.target instanceof HTMLDivElement && event.target.classList.contains("tile")
-					? event.target
-					: undefined;
-			if (!cell?.parentElement?.parentElement) return; // Ignore, user didn't click on tile
-			if (this.selected === -1) return; // Warn, user didn't select tile
+		this.selectedTile = Array.prototype.indexOf.call(this.$refs.hand.children, event.target);
+	}
+	placeTile(event: Event) {
+		if (!(event.target instanceof HTMLDivElement && event.target.parentElement?.parentElement))
+			return; // Ignore, user didn't click on tile
 
-			socket.emit(
-				"turn",
-				{
-					y: Array.prototype.indexOf.call(
-						cell.parentElement.parentElement.children,
-						cell.parentElement,
-					),
-					x: Array.prototype.indexOf.call(cell.parentElement.children, cell),
-				},
-				this.selected,
-			);
-			this.selected = -1;
-		},
-	},
+		if (this.selectedTile === -1) return; // Warn, user didn't select tile
+
+		const { row, column } = this.parseRawIndexes(
+			Array.prototype.indexOf.call(event.target.parentElement.children, event.target) + 1,
+			Array.prototype.indexOf.call(
+				event.target.parentElement.parentElement.children,
+				event.target.parentElement,
+			) + 1,
+		);
+
+		socket.emit("turn", { y: row, x: column }, this.selectedTile);
+		this.selectedTile = -1;
+	}
+	parseRawIndexes(rawColumn: number, rawRow: number) {
+		return {
+			row: this.boardSize.rows[0] + rawRow - 2,
+			column: this.boardSize.columns[0] + rawColumn - 2,
+		};
+	}
+	getFromBoard(rawColumn: number, rawRow: number) {
+		const locations = this.parseRawIndexes(rawColumn, rawRow);
+		return this.placedTiles[locations.row]?.[locations.column];
+	}
+}
+
+createApp(App).mount(document.body);
+
+socket.on("error", (error) => {
+	alert(error);
 });
-App.mount("body");
+
+if (true) {
+	// TODO: drop in prod
+	socket.on("connect", () =>
+		socket.io.on("open", () => {
+			setTimeout(() => (location.href = location.href), 2000);
+		}),
+	);
+}
