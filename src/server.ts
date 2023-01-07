@@ -87,9 +87,9 @@ io.on("connection", (socket) => {
 		socket.request.url ?? "",
 		`http://${socket.request.headers.host}`,
 	).searchParams.get("room");
-	console.log(socket.request.url)
+	console.log(socket.request.url);
 	if (!roomId) return;
-	socket.join(roomId)
+	socket.join(roomId);
 	const deck = rooms[roomId]?.deck ?? Array.from(fullDeck);
 	const room = (rooms[roomId] ??= {
 		deck,
