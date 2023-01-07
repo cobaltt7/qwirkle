@@ -70,6 +70,7 @@ video {
 	width: 100px;
 	height: 100px;
 	display: inline-block;
+	cursor: pointer;
 }
 
 .row {
@@ -80,10 +81,15 @@ footer {
 	height: 125px;
 }
 
+footer img {
+	cursor: pointer;
+}
+
 .selected {
 	margin: 10px;
 	box-shadow: 0 0 5px 0 #000000;
 	height: 105px;
+	cursor: auto;
 }
 
 main {
@@ -91,4 +97,8 @@ main {
 	width: -moz-fit-content;
 	width: fit-content;
 	margin: 20px auto;
+}
+
+.tile img {
+	cursor: not-allowed;
 }
