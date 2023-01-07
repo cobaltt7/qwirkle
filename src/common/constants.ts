@@ -14,3 +14,4 @@ export const ERRORS = [
 export function generateTileUrl({ color, shape }: Tile) {
 	return `./pieces/${color}-${shape}.png`;
 }
+export const ROOM_PARAMETER = "room";

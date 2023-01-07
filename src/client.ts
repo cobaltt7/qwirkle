@@ -14,7 +14,9 @@ import type {
 } from "./common/types.js";
 declare const io: typeof transport;
 
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
+	query: { room: new URL(location.href).searchParams.get("room") },
+});
 
 @Options({ template: document.body.innerHTML })
 class App extends Vue {

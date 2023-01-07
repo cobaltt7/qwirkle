@@ -11,9 +11,9 @@ import mime from "mime-types";
 
 import type { SocketId } from "socket.io-adapter";
 import type {
+	Board,
 	ClientToServerEvents,
 	InterServerEvents,
-	Location,
 	PlacedTile,
 	ServerToClientEvents,
 	SocketData,
@@ -79,13 +79,25 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEve
 	server,
 );
 
-/** Y by X. */
-const board: Record<Location["y"], Record<Location["x"], PlacedTile>> = {};
+const rooms: Record<string, { board: Board; deck: Tile[] }> = {};
 
 const hands: Record<SocketId, Tile[]> = {};
 io.on("connection", (socket) => {
-	socket.emit("hand", (hands[socket.id] ??= generateHand()));
-	Object.values(board)
+	const roomId = new URL(
+		socket.request.url ?? "",
+		`http://${socket.request.headers.host}`,
+	).searchParams.get("room");
+	console.log(socket.request.url)
+	if (!roomId) return;
+	socket.join(roomId)
+	const deck = rooms[roomId]?.deck ?? Array.from(fullDeck);
+	const room = (rooms[roomId] ??= {
+		deck,
+		board: { [0]: { [0]: { ...getRandomTile(deck, true), x: 0, y: 0 } } },
+	});
+
+	socket.emit("hand", (hands[socket.id] ??= generateHand(deck)));
+	Object.values(room.board)
 		.flatMap((column) => Object.values(column))
 		.forEach((tile) => socket.emit("place", tile));
 
@@ -94,18 +106,18 @@ io.on("connection", (socket) => {
 	});
 	socket.on("turn", (location, index) => {
 		// STEP 1: Gather base information.
-		const hand = hands[socket.id] ?? generateHand();
+		const hand = hands[socket.id] ?? generateHand(deck);
 		const tile = hand[Number(index)];
 		if (!tile) return socket.emit("error", "MISSING_TILE", location);
 		const placed = { ...tile, ...location };
 
 		// STEP 2: Check for collisions.
-		const row = board[Number(location.y)] ?? {};
+		const row = room.board[Number(location.y)] ?? {};
 		if (row[location.x]) return socket.emit("error", "ALREADY_PLACED", location);
 
 		// STEP 3: Check for neighbors.
-		let top = board[location.y - 1]?.[Number(location.x)],
-			bottom = board[location.y + 1]?.[Number(location.x)],
+		let top = room.board[location.y - 1]?.[Number(location.x)],
+			bottom = room.board[location.y + 1]?.[Number(location.x)],
 			right = row[location.x + 1],
 			left = row[location.x - 1];
 		if (!top && !bottom && !right && !left)
@@ -128,12 +140,12 @@ io.on("connection", (socket) => {
 		if (top || bottom) {
 			if (top) {
 				do neighborhood.column.unshift(top);
-				while ((top = board[top.y - 1]?.[Number(location.x)]));
+				while ((top = room.board[top.y - 1]?.[Number(location.x)]));
 			}
 			neighborhood.column.push(placed);
 			if (bottom) {
 				do neighborhood.column.push(bottom);
-				while ((bottom = board[bottom.y + 1]?.[Number(location.x)]));
+				while ((bottom = room.board[bottom.y + 1]?.[Number(location.x)]));
 			}
 		}
 		console.log(neighborhood);
@@ -147,26 +159,26 @@ io.on("connection", (socket) => {
 
 		// STEP 5: Place the tile.
 		row[Number(location.x)] = placed;
-		board[Number(location.y)] = row;
-		io.emit("place", placed);
+		room.board[Number(location.y)] = row;
+		io.to(roomId).emit("place", placed);
 
 		// STEP 6: Update the user's hand.
-		const newTile = getRandomTile();
+		const newTile = getRandomTile(deck);
 		if (newTile) hand[Number(index)] = newTile;
 		else hand.splice(index, 1);
 		socket.emit("hand", (hands[socket.id] = sortHand(hand)));
 	});
 });
 
-const deck = TILE_COLORS.map((color) => {
+const fullDeck = TILE_COLORS.map((color) => {
 	return TILE_SHAPES.map((shape) => {
 		return Array<Tile>(3).fill({ color, shape });
 	});
 }).flat(2);
 
-function getRandomTile(required: true): Tile;
-function getRandomTile(required?: false): Tile | undefined;
-function getRandomTile(required = false): Tile | undefined {
+function getRandomTile(deck: Tile[], required: true): Tile;
+function getRandomTile(deck: Tile[], required?: false): Tile | undefined;
+function getRandomTile(deck: Tile[], required = false): Tile | undefined {
 	const index = Math.floor(Math.random() * deck.length);
 	const tile = deck[index];
 	if (!tile && required) throw new RangeError("Deck is empty");
@@ -174,12 +186,10 @@ function getRandomTile(required = false): Tile | undefined {
 	return tile;
 }
 
-(board[0] ??= {})[0] = { ...getRandomTile(true), x: 0, y: 0 };
-
-function generateHand() {
+function generateHand(deck: Tile[]) {
 	const hand = [];
 	while (deck.length > 0 && hand.length < 6) {
-		hand.push(getRandomTile(true));
+		hand.push(getRandomTile(deck, true));
 	}
 	return sortHand(hand);
 }
