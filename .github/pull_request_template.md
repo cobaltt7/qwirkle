@@ -22,8 +22,8 @@ Resolves #
 
 <!-- By submitting this issue, you agree to follow our policies. -->
 
--   [ ] I agree to follow the [Code of Conduct](https://github.com/RedGuy12/quirkle/blob/main/.github/CODE_OF_CONDUCT.md).
--   [ ] I agree to follow the [Contributing Guidelines](https://github.com/RedGuy12/quirkle/blob/main/.github/CONTRIBUTING.md).
+-   [ ] I agree to follow the [Code of Conduct](https://github.com/RedGuy12/qwirkle/blob/main/.github/CODE_OF_CONDUCT.md).
+-   [ ] I agree to follow the [Contributing Guidelines](https://github.com/RedGuy12/qwirkle/blob/main/.github/CONTRIBUTING.md).
 
 ### TODO
 
