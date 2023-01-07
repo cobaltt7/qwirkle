@@ -2,7 +2,7 @@ import "/socket.io/socket.io.min.js";
 import { createApp } from "./vue.js";
 import { Options, Vue } from "./vue-class-component.js";
 
-import { generateTileUrl } from "./common/constants.js";
+import { generateTileUrl, ROOM_PARAMETER } from "./common/constants.js";
 
 import type { Socket, io as transport } from "socket.io-client";
 import type {
@@ -15,7 +15,7 @@ import type {
 declare const io: typeof transport;
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
-	query: { room: new URL(location.href).searchParams.get("room") },
+	query: { room: new URL(location.href).searchParams.get(ROOM_PARAMETER) },
 });
 
 @Options({ template: document.body.innerHTML })
@@ -34,18 +34,19 @@ class App extends Vue {
 
 	// Hooks
 	override mounted() {
-		socket.on("place", (tile) => {
-			if (tile.x < this.boardSize.columns[0]) this.boardSize.columns[0] = tile.x;
-			else if (tile.x > this.boardSize.columns[1]) this.boardSize.columns[1] = tile.x;
+		socket
+			.on("place", (tile) => {
+				if (tile.x < this.boardSize.columns[0]) this.boardSize.columns[0] = tile.x;
+				else if (tile.x > this.boardSize.columns[1]) this.boardSize.columns[1] = tile.x;
 
-			if (tile.y < this.boardSize.rows[0]) this.boardSize.rows[0] = tile.y;
-			else if (tile.y > this.boardSize.rows[1]) this.boardSize.rows[1] = tile.y;
+				if (tile.y < this.boardSize.rows[0]) this.boardSize.rows[0] = tile.y;
+				else if (tile.y > this.boardSize.rows[1]) this.boardSize.rows[1] = tile.y;
 
-			(this.placedTiles[tile.y] ??= {})[tile.x] = tile;
-		});
-		socket.on("hand", (tiles) => {
-			this.heldTiles = tiles;
-		});
+				(this.placedTiles[tile.y] ??= {})[tile.x] = tile;
+			})
+			.on("hand", (tiles) => {
+				this.heldTiles = tiles;
+			});
 	}
 
 	// Methods

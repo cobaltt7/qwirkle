@@ -6,7 +6,7 @@ import fileSystem from "node:fs/promises";
 import { Server } from "socket.io";
 import serve from "serve-handler";
 import generateError from "serve-handler/src/error.js";
-import { TILE_COLORS, TILE_SHAPES } from "./common/constants.js";
+import { ROOM_PARAMETER, TILE_COLORS, TILE_SHAPES } from "./common/constants.js";
 import mime from "mime-types";
 
 import type { SocketId } from "socket.io-adapter";
@@ -72,7 +72,7 @@ const server = http
 		}
 	})
 	.listen(3000, () => {
-		console.log("listening on *:3000");
+		console.log("Server up!");
 	});
 
 const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(
@@ -86,8 +86,7 @@ io.on("connection", (socket) => {
 	const roomId = new URL(
 		socket.request.url ?? "",
 		`http://${socket.request.headers.host}`,
-	).searchParams.get("room");
-	console.log(socket.request.url);
+	).searchParams.get(ROOM_PARAMETER);
 	if (!roomId) return;
 	socket.join(roomId);
 	const deck = rooms[roomId]?.deck ?? Array.from(fullDeck);
@@ -101,73 +100,76 @@ io.on("connection", (socket) => {
 		.flatMap((column) => Object.values(column))
 		.forEach((tile) => socket.emit("place", tile));
 
-	socket.on("disconnect", () => {
-		// console.log("user disconnected");
-	});
-	socket.on("turn", (location, index) => {
-		// STEP 1: Gather base information.
-		const hand = hands[socket.id] ?? generateHand(deck);
-		const tile = hand[Number(index)];
-		if (!tile) return socket.emit("error", "MISSING_TILE", location);
-		const placed = { ...tile, ...location };
+	socket
+		.on("disconnect", () => {
+			// TODO
+		})
+		.on("turn", (location, index) => {
+			// STEP 1: Gather base information.
+			const hand = hands[socket.id] ?? generateHand(deck);
+			const tile = hand[Number(index)];
+			if (!tile) return socket.emit("error", "MISSING_TILE", location);
+			const placed = { ...tile, ...location };
 
-		// STEP 2: Check for collisions.
-		const row = room.board[Number(location.y)] ?? {};
-		if (row[location.x]) return socket.emit("error", "ALREADY_PLACED", location);
+			// STEP 2: Check for collisions.
+			const row = room.board[Number(location.y)] ?? {};
+			if (row[location.x]) return socket.emit("error", "ALREADY_PLACED", location);
 
-		// STEP 3: Check for neighbors.
-		let top = room.board[location.y - 1]?.[Number(location.x)],
-			bottom = room.board[location.y + 1]?.[Number(location.x)],
-			right = row[location.x + 1],
-			left = row[location.x - 1];
-		if (!top && !bottom && !right && !left)
-			return socket.emit("error", "NO_NEIGHBORS", location);
+			// STEP 3: Check for neighbors.
+			let top = room.board[location.y - 1]?.[Number(location.x)],
+				bottom = room.board[location.y + 1]?.[Number(location.x)],
+				right = row[location.x + 1],
+				left = row[location.x - 1];
+			if (!top && !bottom && !right && !left)
+				return socket.emit("error", "NO_NEIGHBORS", location);
 
-		// STEP 4: Check neighborhood to verify consistency.
-		const neighborhood: { row: PlacedTile[]; column: PlacedTile[] } = { row: [], column: [] };
-		//Step 4.0-4.3: Get neighborhood
-		if (right || left) {
-			if (left) {
-				do neighborhood.row.unshift(left);
-				while ((left = row[left.x - 1]));
+			// STEP 4: Check neighborhood to verify consistency.
+			const neighborhood: { row: PlacedTile[]; column: PlacedTile[] } = {
+				row: [],
+				column: [],
+			};
+			//Step 4.0-4.3: Get neighborhood
+			if (right || left) {
+				if (left) {
+					do neighborhood.row.unshift(left);
+					while ((left = row[left.x - 1]));
+				}
+				neighborhood.row.push(placed);
+				if (right) {
+					do neighborhood.row.push(right);
+					while ((right = row[right.x + 1]));
+				}
 			}
-			neighborhood.row.push(placed);
-			if (right) {
-				do neighborhood.row.push(right);
-				while ((right = row[right.x + 1]));
+			if (top || bottom) {
+				if (top) {
+					do neighborhood.column.unshift(top);
+					while ((top = room.board[top.y - 1]?.[Number(location.x)]));
+				}
+				neighborhood.column.push(placed);
+				if (bottom) {
+					do neighborhood.column.push(bottom);
+					while ((bottom = room.board[bottom.y + 1]?.[Number(location.x)]));
+				}
 			}
-		}
-		if (top || bottom) {
-			if (top) {
-				do neighborhood.column.unshift(top);
-				while ((top = room.board[top.y - 1]?.[Number(location.x)]));
-			}
-			neighborhood.column.push(placed);
-			if (bottom) {
-				do neighborhood.column.push(bottom);
-				while ((bottom = room.board[bottom.y + 1]?.[Number(location.x)]));
-			}
-		}
-		console.log(neighborhood);
-		// Step 4.4: Check that the color OR the shape of each row item is the same
-		// Step 4.5: Check that the other has no duplicates
-		// Steps 4.6-4.7: Repeat for columns
-		const rowResult = verifyLine(neighborhood.row);
-		if (rowResult) return socket.emit("error", `${rowResult}_ROW_ITEMS`, location);
-		const columnResult = verifyLine(neighborhood.column);
-		if (columnResult) return socket.emit("error", `${columnResult}_COLUMN_ITEMS`, location);
+			// Step 4.4: Check that the color OR the shape of each row item is the same
+			// Step 4.5: Check that the other has no duplicates
+			// Steps 4.6-4.7: Repeat for columns
+			const rowResult = verifyLine(neighborhood.row);
+			if (rowResult) return socket.emit("error", `${rowResult}_ROW_ITEMS`, location);
+			const columnResult = verifyLine(neighborhood.column);
+			if (columnResult) return socket.emit("error", `${columnResult}_COLUMN_ITEMS`, location);
 
-		// STEP 5: Place the tile.
-		row[Number(location.x)] = placed;
-		room.board[Number(location.y)] = row;
-		io.to(roomId).emit("place", placed);
+			// STEP 5: Place the tile.
+			row[Number(location.x)] = placed;
+			room.board[Number(location.y)] = row;
+			io.to(roomId).emit("place", placed);
 
-		// STEP 6: Update the user's hand.
-		const newTile = getRandomTile(deck);
-		if (newTile) hand[Number(index)] = newTile;
-		else hand.splice(index, 1);
-		socket.emit("hand", (hands[socket.id] = sortHand(hand)));
-	});
+			// STEP 6: Update the user's hand.
+			const newTile = getRandomTile(deck);
+			if (newTile) hand[Number(index)] = newTile;
+			else hand.splice(index, 1);
+			socket.emit("hand", (hands[socket.id] = sortHand(hand)));
+		});
 });
 
 const fullDeck = TILE_COLORS.map((color) => {
