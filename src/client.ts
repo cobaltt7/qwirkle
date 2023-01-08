@@ -14,8 +14,9 @@ import type {
 } from "./common/types.js";
 declare const io: typeof transport;
 
+const room = new URL(location.href).searchParams.get(ROOM_PARAMETER);
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
-	query: { room: new URL(location.href).searchParams.get(ROOM_PARAMETER) },
+	query: room ? { room } : {},
 });
 
 @Options({ template: document.body.innerHTML })
@@ -30,7 +31,7 @@ class App extends Vue {
 	placedTiles: Record<Location["y"], Record<Location["x"], PlacedTile>> = {};
 
 	// Refs
-	declare readonly $refs: { board: HTMLElement; hand: HTMLElement };
+	declare readonly $refs: {};
 
 	// Hooks
 	override mounted() {
@@ -44,8 +45,9 @@ class App extends Vue {
 
 				(this.placedTiles[tile.y] ??= {})[tile.x] = tile;
 			})
-			.on("hand", (tiles) => {
-				this.heldTiles = tiles;
+			.on("init", (response) => {
+				if (typeof response === "string") alert(response);
+				else this.heldTiles = response;
 			});
 	}
 
@@ -54,7 +56,10 @@ class App extends Vue {
 	selectTile(event: Event) {
 		if (!(event.target instanceof HTMLImageElement)) return; // Ignore, user didn't click on tile
 
-		this.selectedTile = Array.prototype.indexOf.call(this.$refs.hand.children, event.target);
+		this.selectedTile = Array.prototype.indexOf.call(
+			event.target.parentNode?.children || [],
+			event.target,
+		);
 	}
 	placeTile(event: Event) {
 		if (!(event.target instanceof HTMLDivElement && event.target.parentElement?.parentElement))
@@ -70,7 +75,10 @@ class App extends Vue {
 			) + 1,
 		);
 
-		socket.emit("turn", { y: row, x: column }, this.selectedTile);
+		socket.emit("turn", { y: row, x: column }, this.selectedTile, (response) => {
+			if (typeof response === "string") alert(response);
+			else this.heldTiles = response;
+		});
 		this.selectedTile = -1;
 	}
 	parseRawIndexes(rawColumn: number, rawRow: number) {
@@ -86,10 +94,6 @@ class App extends Vue {
 }
 
 createApp(App).mount(document.body);
-
-socket.on("error", (error) => {
-	alert(error);
-});
 
 if (true) {
 	// TODO: drop in prod

@@ -77,11 +77,11 @@ video {
 	display: flex;
 }
 
-footer {
+#hand {
 	height: 125px;
 }
 
-footer img {
+#hand img {
 	cursor: pointer;
 }
 
@@ -92,7 +92,7 @@ footer img {
 	cursor: auto;
 }
 
-main {
+#board {
 	border: 1px solid black;
 	width: -moz-fit-content;
 	width: fit-content;

@@ -10,29 +10,38 @@
 		<script type="module" src="./js/client.js"></script>
 	</head>
 	<body>
-		<main ref="board">
-			<div class="row" v-for="rowIndex in (boardSize.rows[1] - boardSize.rows[0] + 3)">
-				<div
-					class="tile"
-					v-for="columnIndex in (boardSize.columns[1] - boardSize.columns[0] + 3)"
-					@click="placeTile"
-				>
-					<img
-						v-if="getFromBoard(columnIndex,rowIndex)"
-						:src="generateTileUrl(getFromBoard(columnIndex,rowIndex))"
-						:alt="`${getFromBoard(columnIndex,rowIndex).color} ${getFromBoard(columnIndex,rowIndex).shape}`"
-					/>
+		<header></header>
+		<section id="lobby">
+			<section id="rooms"></section>
+			<section id="manage"></section>
+		</section>
+		<section id="game">
+			<section id="board">
+				<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
+					<div
+						class="tile"
+						v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
+						@click="placeTile"
+					>
+						<img
+							v-if="getFromBoard(columnIndex, rowIndex)"
+							:src="generateTileUrl(getFromBoard(columnIndex, rowIndex))"
+							:alt="`${getFromBoard(columnIndex, rowIndex).color} ${
+								getFromBoard(columnIndex, rowIndex).shape
+							}`"
+						/>
+					</div>
 				</div>
-			</div>
-		</main>
-		<footer ref="hand">
-			<img
-				:src="generateTileUrl(tile)"
-				:title="`${tile.color} ${tile.shape}`"
-				v-for="[index, tile] in heldTiles.entries()"
-				@click="selectTile"
-				:class="{ selected: index === selectedTile }"
-			/>
-		</footer>
+			</section>
+			<section id="hand">
+				<img
+					:src="generateTileUrl(tile)"
+					:title="`${tile.color} ${tile.shape}`"
+					v-for="[index, tile] in heldTiles.entries()"
+					@click="selectTile"
+					:class="{ selected: index === selectedTile }"
+				/>
+			</section>
+		</section>
 	</body>
 </html>

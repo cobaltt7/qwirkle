@@ -48,7 +48,9 @@ const server = http
 					}
 
 					response
-						.writeHead(200, { "Content-Type": mime.lookup(resolved) || "text/plain" })
+						.writeHead(200, {
+							"Content-Type": mime.lookup(resolved) || "text/plain",
+						})
 						.end(file);
 				});
 			}
@@ -64,11 +66,12 @@ const server = http
 				],
 			});
 		} catch (error) {
-			response
-				.writeHead(500)
-				.end(
-					generateError({ statusCode: 500, message: error.name + ": " + error.message }),
-				);
+			response.writeHead(500).end(
+				generateError({
+					statusCode: 500,
+					message: error.name + ": " + error.message,
+				}),
+			);
 		}
 	})
 	.listen(3000, () => {
@@ -87,7 +90,10 @@ io.on("connection", (socket) => {
 		socket.request.url ?? "",
 		`http://${socket.request.headers.host}`,
 	).searchParams.get(ROOM_PARAMETER);
-	if (!roomId) return;
+	if (!roomId) {
+		socket;
+		return;
+	}
 	socket.join(roomId);
 	const deck = rooms[roomId]?.deck ?? Array.from(fullDeck);
 	const room = (rooms[roomId] ??= {
@@ -95,7 +101,7 @@ io.on("connection", (socket) => {
 		board: { [0]: { [0]: { ...getRandomTile(deck, true), x: 0, y: 0 } } },
 	});
 
-	socket.emit("hand", (hands[socket.id] ??= generateHand(deck)));
+	socket.emit("init", (hands[socket.id] ??= generateHand(deck)));
 	Object.values(room.board)
 		.flatMap((column) => Object.values(column))
 		.forEach((tile) => socket.emit("place", tile));
@@ -104,24 +110,23 @@ io.on("connection", (socket) => {
 		.on("disconnect", () => {
 			// TODO
 		})
-		.on("turn", (location, index) => {
+		.on("turn", (location, index, callback) => {
 			// STEP 1: Gather base information.
 			const hand = hands[socket.id] ?? generateHand(deck);
 			const tile = hand[Number(index)];
-			if (!tile) return socket.emit("error", "MISSING_TILE", location);
+			if (!tile) return callback("MISSING_TILE");
 			const placed = { ...tile, ...location };
 
 			// STEP 2: Check for collisions.
 			const row = room.board[Number(location.y)] ?? {};
-			if (row[location.x]) return socket.emit("error", "ALREADY_PLACED", location);
+			if (row[location.x]) return callback("ALREADY_PLACED");
 
 			// STEP 3: Check for neighbors.
 			let top = room.board[location.y - 1]?.[Number(location.x)],
 				bottom = room.board[location.y + 1]?.[Number(location.x)],
 				right = row[location.x + 1],
 				left = row[location.x - 1];
-			if (!top && !bottom && !right && !left)
-				return socket.emit("error", "NO_NEIGHBORS", location);
+			if (!top && !bottom && !right && !left) return callback("NO_NEIGHBORS");
 
 			// STEP 4: Check neighborhood to verify consistency.
 			const neighborhood: { row: PlacedTile[]; column: PlacedTile[] } = {
@@ -155,9 +160,9 @@ io.on("connection", (socket) => {
 			// Step 4.5: Check that the other has no duplicates
 			// Steps 4.6-4.7: Repeat for columns
 			const rowResult = verifyLine(neighborhood.row);
-			if (rowResult) return socket.emit("error", `${rowResult}_ROW_ITEMS`, location);
+			if (rowResult) return callback(`${rowResult}_ROW_ITEMS`);
 			const columnResult = verifyLine(neighborhood.column);
-			if (columnResult) return socket.emit("error", `${columnResult}_COLUMN_ITEMS`, location);
+			if (columnResult) return callback(`${columnResult}_COLUMN_ITEMS`);
 
 			// STEP 5: Place the tile.
 			row[Number(location.x)] = placed;
@@ -168,7 +173,7 @@ io.on("connection", (socket) => {
 			const newTile = getRandomTile(deck);
 			if (newTile) hand[Number(index)] = newTile;
 			else hand.splice(index, 1);
-			socket.emit("hand", (hands[socket.id] = sortHand(hand)));
+			callback((hands[socket.id] = sortHand(hand)));
 		});
 });
 
