@@ -50,7 +50,6 @@ a,
 button {
 	/* Element doesn't want double-tap on mobile to zoom */
 	touch-action: manipulation;
-	text-decoration: none;
 }
 
 svg {
@@ -139,7 +138,7 @@ header,
 }
 
 /** Lobby styles */
-button {
+#lobby button {
 	background: transparent;
 	margin: 10px;
 	padding: 10px;
@@ -149,10 +148,9 @@ button {
 	flex-direction: column;
 	border-radius: 15px;
 	flex-wrap: wrap;
-	color: initial;
 }
 
-button:hover {
+#lobby button:hover {
 	background: #f0f0f0;
 }
 
@@ -184,4 +182,26 @@ button:hover {
 #manage h2 {
 	margin: auto;
 	width: 100%;
+}
+
+dialog {
+	justify-content: center;
+	align-items: center;
+	width: 30%;
+	height: 250px;
+}
+
+dialog[open] {
+	display: flex;
+}
+
+dialog > form {
+	width: 75%;
+}
+
+dialog > form > input,
+button {
+	width: 100%;
+	display: block;
+	margin: 15px 0;
 }

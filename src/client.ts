@@ -22,6 +22,14 @@ const roomId = new URL(location.href).searchParams.get(ROOM_PARAMETER);
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
 	query: roomId ? { [ROOM_PARAMETER]: roomId } : {},
 });
+if (true) {
+	// TODO: drop in prod
+	socket.on("connect", () =>
+		socket.io.on("open", () => {
+			setTimeout(() => (location.href = location.href), 2000);
+		}),
+	);
+}
 
 @Options({ template: document.body.innerHTML })
 class App extends Vue {
@@ -37,7 +45,10 @@ class App extends Vue {
 	publicRooms: Rooms = {};
 
 	// Refs
-	declare readonly $refs: {};
+	declare readonly $refs: {
+		privateRoomDialog: HTMLDialogElement;
+		roomInput: HTMLInputElement;
+	};
 
 	// Hooks
 	override mounted() {
@@ -99,15 +110,13 @@ class App extends Vue {
 		const locations = this.parseRawIndexes(rawColumn, rawRow);
 		return this.placedTiles[locations.row]?.[locations.column];
 	}
+	joinRoom(roomId: string) {
+		this.roomId = roomId;
+		const url = new URL(location.toString());
+		url.searchParams.set("roomId", roomId);
+		window.history.replaceState(undefined, "", url.toString());
+		socket.emit("joinRoom", roomId);
+	}
 }
 const app = createApp(App).mount(document.body);
-
-if (true) {
-	(window as any).vue = app;
-	// TODO: drop in prod
-	socket.on("connect", () =>
-		socket.io.on("open", () => {
-			setTimeout(() => (location.href = location.href), 2000);
-		}),
-	);
-}
+if (true) (window as any).vue = app;

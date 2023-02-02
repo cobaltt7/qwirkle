@@ -12,6 +12,7 @@ export interface ClientToServerEvents {
 		tile: number,
 		callback: (response: PlacingError | Tile[]) => void,
 	) => void;
+	joinRoom: (roomId: string) => void;
 }
 export interface InterServerEvents {}
 export interface SocketData {}

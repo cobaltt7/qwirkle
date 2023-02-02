@@ -13,16 +13,19 @@
 		<header><h1>Qwirkle</h1></header>
 		<section id="lobby" v-if="!roomId">
 			<section id="rooms">
-				<a :href="`/?roomId=${id}`" v-for="(room, id) of publicRooms">
-					<button type="button" class="room">
-						<h2>Room {{ id }}</h2>
-						<p>Host: {{ room.host }}</p>
-						<div>👥 {{ room.players.length }}</div>
-					</button>
-				</a>
+				<button
+					@click="joinRoom(id)"
+					type="button"
+					class="room"
+					v-for="(room, id) of publicRooms"
+				>
+					<h2>Room {{ id }}</h2>
+					<p>Host: {{ room.host }}</p>
+					<div>👥 {{ room.players.length }}</div>
+				</button>
 			</section>
 			<section id="manage">
-				<button type="button">
+				<button type="button" @click="$refs.privateRoomDialog.showModal()">
 					<h2>Join Private Room</h2>
 				</button>
 				<button type="button">
@@ -63,5 +66,12 @@
 				</button>
 			</section>
 		</section>
+		<dialog ref="privateRoomDialog">
+			<form method="dialog">
+				<h3>Join private room</h3>
+				<input placeholder="Room ID" ref="roomInput" />
+				<button type="submit" @click="joinRoom($refs.roomInput.value)">Join</button>
+			</form>
+		</dialog>
 	</body>
 </html>
