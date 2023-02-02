@@ -1,4 +1,5 @@
 import "/socket.io/socket.io.min.js";
+import twemoji from "./twemoji.js";
 import { createApp } from "./vue.js";
 import { Options, Vue } from "./vue-class-component.js";
 
@@ -14,7 +15,9 @@ import type {
 } from "./common/types.js";
 declare const io: typeof transport;
 
-const room = new URL(location.href).searchParams.get(ROOM_PARAMETER);
+twemoji.parse(document.body);
+
+const room = new URL(location.href).searchParams.get(ROOM_PARAMETER)
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
 	query: room ? { room } : {},
 });
@@ -29,6 +32,7 @@ class App extends Vue {
 		columns: [0, 0],
 	};
 	placedTiles: Record<Location["y"], Record<Location["x"], PlacedTile>> = {};
+	room: string | null = room;
 
 	// Refs
 	declare readonly $refs: {};
@@ -54,12 +58,11 @@ class App extends Vue {
 	// Methods
 	generateTileUrl = generateTileUrl;
 	selectTile(event: Event) {
-		if (!(event.target instanceof HTMLImageElement)) return; // Ignore, user didn't click on tile
+		if (!(event.target instanceof Element)) return; // Idk how this could happen but TS says it can
+		const button = event.target.closest("button");
+		if (!button) return; // Ignore, user didn't click on tile
 
-		this.selectedTile = Array.prototype.indexOf.call(
-			event.target.parentNode?.children || [],
-			event.target,
-		);
+		this.selectedTile = Array.prototype.indexOf.call(button.parentNode?.children ?? [], button);
 	}
 	placeTile(event: Event) {
 		if (!(event.target instanceof HTMLDivElement && event.target.parentElement?.parentElement))
@@ -92,10 +95,10 @@ class App extends Vue {
 		return this.placedTiles[locations.row]?.[locations.column];
 	}
 }
-
-createApp(App).mount(document.body);
+const app = createApp(App).mount(document.body);
 
 if (true) {
+	(window as any).vue = app;
 	// TODO: drop in prod
 	socket.on("connect", () =>
 		socket.io.on("open", () => {

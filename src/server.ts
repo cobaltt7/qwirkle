@@ -26,6 +26,7 @@ const require = createRequire(import.meta.url);
 mime.types.ts = "text/plain";
 const PACKAGE_RESOLVES: Record<string, string> = {
 	"/css/normalize.css": "modern-normalize",
+	"/js/twemoji.js": "twemoji/dist/twemoji.esm.js",
 	"/js/vue.js": "vue/dist/vue.esm-browser.js",
 	"/js/vue-class-component.js": "vue-class-component/dist/vue-class-component.esm-browser.js",
 };

@@ -1,5 +1,4 @@
 /** Resets */
-
 ::selection {
 	/* It can be really hard to read highlighted text with a text-shadow, it should be removed when selected */
 	text-shadow: none;
@@ -34,9 +33,18 @@ img {
 	user-select: text;
 }
 
+img.emoji {
+	height: 1em;
+	width: 1em;
+	margin: 0 0.05em 0 0.1em;
+	vertical-align: -0.1em;
+}
+
 button {
-	color: inherit;
 	/* By default, buttons don't inherit the font colour, this is a useful default to override */
+	color: inherit;
+
+	cursor: pointer;
 }
 
 a,
@@ -64,7 +72,37 @@ video {
 	width: 100%;
 }
 
-/** Project Styles */
+/** Project styles*/
+
+header {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 1.5em;
+	height: 100px;
+}
+
+h1 {
+	margin: auto;
+}
+
+header,
+#lobby {
+	width: 70%;
+	margin: auto;
+}
+
+/** Game Styles */
+#board {
+	border: 1px solid black;
+	width: -moz-fit-content;
+	width: fit-content;
+	margin: 20px auto;
+}
+
+.row {
+	display: flex;
+}
 
 .tile {
 	width: 100px;
@@ -73,32 +111,76 @@ video {
 	cursor: pointer;
 }
 
-.row {
-	display: flex;
+.tile img {
+	cursor: not-allowed;
 }
 
 #hand {
+	display: flex;
 	height: 125px;
+	align-items: center;
 }
 
-#hand img {
-	cursor: pointer;
+#hand button {
+	height: 100%;
+	border: none;
+	margin: 5px;
+	padding: 0;
+	width: 125px;
 }
 
 .selected {
-	margin: 10px;
-	box-shadow: 0 0 5px 0 #000000;
-	height: 105px;
-	cursor: auto;
-}
-
-#board {
-	border: 1px solid black;
-	width: -moz-fit-content;
-	width: fit-content;
-	margin: 20px auto;
-}
-
-.tile img {
 	cursor: not-allowed;
+}
+
+.selected img {
+	box-shadow: 0 0 5px 0 #000000;
+	height: 100px;
+}
+
+/** Lobby styles */
+button {
+	background: transparent;
+	margin: 10px;
+	padding: 10px;
+	display: flex;
+	justify-content: space-between;
+	align-content: space-between;
+	flex-direction: column;
+	border-radius: 15px;
+	flex-wrap: wrap;
+}
+
+button:hover {
+	background: #f0f0f0;
+}
+
+.room * {
+	margin: 0;
+}
+
+.room > :last-child {
+	line-height: 100%;
+	font-size: 46px;
+}
+
+.room {
+	width: 100%;
+	height: 70px;
+}
+
+#manage {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+}
+
+#manage button {
+	height: 60px;
+	width: 275px;
+}
+
+#manage h2 {
+	margin: auto;
+	width: 100%;
 }

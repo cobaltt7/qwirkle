@@ -10,12 +10,38 @@
 		<script type="module" src="./js/client.js"></script>
 	</head>
 	<body>
-		<header></header>
-		<section id="lobby">
-			<section id="rooms"></section>
-			<section id="manage"></section>
+		<header><h1>Qwirkle</h1></header>
+		<section id="lobby" v-if="room === null">
+			<section id="rooms">
+				<button type="button" class="room">
+					<h2>Room Lorem</h2>
+					<p>Host: Lorem</p>
+					<div>👥 1</div>
+				</button>
+				<button type="button" class="room">
+					<h2>Room Ut</h2>
+					<p>Host: Unde</p>
+					<div>👥 2</div>
+				</button>
+				<button type="button" class="room">
+					<h2>Room Facilis</h2>
+					<p>Host: Labore</p>
+					<div>👥 3</div>
+				</button>
+			</section>
+			<section id="manage">
+				<button type="button">
+					<h2>Join Private Room</h2>
+				</button>
+				<button type="button">
+					<h2>Create Private Room</h2>
+				</button>
+				<button type="button">
+					<h2>Create Public Room</h2>
+				</button>
+			</section>
 		</section>
-		<section id="game">
+		<section id="game" v-else>
 			<section id="board">
 				<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
 					<div
@@ -34,13 +60,15 @@
 				</div>
 			</section>
 			<section id="hand">
-				<img
-					:src="generateTileUrl(tile)"
-					:title="`${tile.color} ${tile.shape}`"
+				<button
 					v-for="[index, tile] in heldTiles.entries()"
 					@click="selectTile"
 					:class="{ selected: index === selectedTile }"
-				/>
+					:title="`${tile.color} ${tile.shape}`"
+					type="button"
+				>
+					<img :src="generateTileUrl(tile)" :title="`${tile.color} ${tile.shape}`" />
+				</button>
 			</section>
 		</section>
 	</body>
