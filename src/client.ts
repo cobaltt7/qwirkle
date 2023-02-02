@@ -17,7 +17,7 @@ declare const io: typeof transport;
 
 twemoji.parse(document.body);
 
-const room = new URL(location.href).searchParams.get(ROOM_PARAMETER)
+const room = new URL(location.href).searchParams.get(ROOM_PARAMETER);
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
 	query: room ? { room } : {},
 });
