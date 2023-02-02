@@ -2,11 +2,12 @@ import type { JOIN_ERRORS, PLACING_ERRORS, TILE_COLORS, TILE_SHAPES } from "./co
 
 // Socket.io
 export interface ServerToClientEvents {
-	init: (handOrError: JoinError | Tile[]) => void;
-	place: (tile: PlacedTile) => void;
+	roomJoined: (handOrError: JoinError | Tile[]) => void;
+	tilePlaced: (tile: PlacedTile) => void;
+	roomsListUpdate: (rooms: Rooms) => void;
 }
 export interface ClientToServerEvents {
-	turn: (
+	placeTile: (
 		location: Location,
 		tile: number,
 		callback: (response: PlacingError | Tile[]) => void,
@@ -31,3 +32,6 @@ export type PlacingError = typeof PLACING_ERRORS[number];
 export type JoinError = typeof JOIN_ERRORS[number];
 /** Y by X. */
 export type Board = Record<Location["y"], Record<Location["x"], PlacedTile>>;
+export type Room = { board: Board; deck: Tile[]; host: string; players: Player[] };
+export type Rooms = Record<string, Room>;
+export type Player = string;

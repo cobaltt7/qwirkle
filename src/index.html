@@ -11,23 +11,15 @@
 	</head>
 	<body>
 		<header><h1>Qwirkle</h1></header>
-		<section id="lobby" v-if="room === null">
+		<section id="lobby" v-if="!roomId">
 			<section id="rooms">
-				<button type="button" class="room">
-					<h2>Room Lorem</h2>
-					<p>Host: Lorem</p>
-					<div>👥 1</div>
-				</button>
-				<button type="button" class="room">
-					<h2>Room Ut</h2>
-					<p>Host: Unde</p>
-					<div>👥 2</div>
-				</button>
-				<button type="button" class="room">
-					<h2>Room Facilis</h2>
-					<p>Host: Labore</p>
-					<div>👥 3</div>
-				</button>
+				<a :href="`/?roomId=${id}`" v-for="(room, id) of publicRooms">
+					<button type="button" class="room">
+						<h2>Room {{ id }}</h2>
+						<p>Host: {{ room.host }}</p>
+						<div>👥 {{ room.players.length }}</div>
+					</button>
+				</a>
 			</section>
 			<section id="manage">
 				<button type="button">
@@ -47,7 +39,7 @@
 					<div
 						class="tile"
 						v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
-						@click="placeTile"
+						@click="tilePlaced"
 					>
 						<img
 							v-if="getFromBoard(columnIndex, rowIndex)"

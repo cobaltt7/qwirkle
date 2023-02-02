@@ -10,6 +10,7 @@ import type {
 	ClientToServerEvents,
 	Location,
 	PlacedTile,
+	Rooms,
 	ServerToClientEvents,
 	Tile,
 } from "./common/types.js";
@@ -17,9 +18,9 @@ declare const io: typeof transport;
 
 twemoji.parse(document.body);
 
-const room = new URL(location.href).searchParams.get(ROOM_PARAMETER);
+const roomId = new URL(location.href).searchParams.get(ROOM_PARAMETER);
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
-	query: room ? { room } : {},
+	query: roomId ? { [ROOM_PARAMETER]: roomId } : {},
 });
 
 @Options({ template: document.body.innerHTML })
@@ -32,7 +33,8 @@ class App extends Vue {
 		columns: [0, 0],
 	};
 	placedTiles: Record<Location["y"], Record<Location["x"], PlacedTile>> = {};
-	room: string | null = room;
+	roomId: string | null = roomId;
+	publicRooms: Rooms = {};
 
 	// Refs
 	declare readonly $refs: {};
@@ -40,7 +42,7 @@ class App extends Vue {
 	// Hooks
 	override mounted() {
 		socket
-			.on("place", (tile) => {
+			.on("tilePlaced", (tile) => {
 				if (tile.x < this.boardSize.columns[0]) this.boardSize.columns[0] = tile.x;
 				else if (tile.x > this.boardSize.columns[1]) this.boardSize.columns[1] = tile.x;
 
@@ -49,9 +51,12 @@ class App extends Vue {
 
 				(this.placedTiles[tile.y] ??= {})[tile.x] = tile;
 			})
-			.on("init", (response) => {
+			.on("roomJoined", (response) => {
 				if (typeof response === "string") alert(response);
 				else this.heldTiles = response;
+			})
+			.on("roomsListUpdate", (rooms) => {
+				this.publicRooms = rooms;
 			});
 	}
 
@@ -64,7 +69,7 @@ class App extends Vue {
 
 		this.selectedTile = Array.prototype.indexOf.call(button.parentNode?.children ?? [], button);
 	}
-	placeTile(event: Event) {
+	tilePlaced(event: Event) {
 		if (!(event.target instanceof HTMLDivElement && event.target.parentElement?.parentElement))
 			return; // Ignore, user didn't click on tile
 
@@ -78,7 +83,7 @@ class App extends Vue {
 			) + 1,
 		);
 
-		socket.emit("turn", { y: row, x: column }, this.selectedTile, (response) => {
+		socket.emit("placeTile", { y: row, x: column }, this.selectedTile, (response) => {
 			if (typeof response === "string") alert(response);
 			else this.heldTiles = response;
 		});

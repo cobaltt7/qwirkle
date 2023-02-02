@@ -43,7 +43,6 @@ img.emoji {
 button {
 	/* By default, buttons don't inherit the font colour, this is a useful default to override */
 	color: inherit;
-
 	cursor: pointer;
 }
 
@@ -51,6 +50,7 @@ a,
 button {
 	/* Element doesn't want double-tap on mobile to zoom */
 	touch-action: manipulation;
+	text-decoration: none;
 }
 
 svg {
@@ -149,6 +149,7 @@ button {
 	flex-direction: column;
 	border-radius: 15px;
 	flex-wrap: wrap;
+	color: initial;
 }
 
 button:hover {

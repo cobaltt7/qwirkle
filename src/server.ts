@@ -11,10 +11,10 @@ import mime from "mime-types";
 
 import type { SocketId } from "socket.io-adapter";
 import type {
-	Board,
 	ClientToServerEvents,
 	InterServerEvents,
 	PlacedTile,
+	Rooms,
 	ServerToClientEvents,
 	SocketData,
 	Tile,
@@ -83,7 +83,7 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEve
 	server,
 );
 
-const rooms: Record<string, { board: Board; deck: Tile[] }> = {};
+const rooms: Rooms = {};
 
 const hands: Record<SocketId, Tile[]> = {};
 io.on("connection", (socket) => {
@@ -92,7 +92,7 @@ io.on("connection", (socket) => {
 		`http://${socket.request.headers.host}`,
 	).searchParams.get(ROOM_PARAMETER);
 	if (!roomId) {
-		socket;
+		socket.emit("roomsListUpdate", rooms);
 		return;
 	}
 	socket.join(roomId);
@@ -100,18 +100,23 @@ io.on("connection", (socket) => {
 	const room = (rooms[roomId] ??= {
 		deck,
 		board: { [0]: { [0]: { ...getRandomTile(deck, true), x: 0, y: 0 } } },
+		host: socket.id,
+		players: [],
 	});
 
-	socket.emit("init", (hands[socket.id] ??= generateHand(deck)));
+	rooms[roomId]?.players.push(socket.id);
+
+	socket.emit("roomJoined", (hands[socket.id] ??= generateHand(deck)));
+	io.emit("roomsListUpdate", rooms);
 	Object.values(room.board)
 		.flatMap((column) => Object.values(column))
-		.forEach((tile) => socket.emit("place", tile));
+		.forEach((tile) => socket.emit("tilePlaced", tile));
 
 	socket
 		.on("disconnect", () => {
 			// TODO
 		})
-		.on("turn", (location, index, callback) => {
+		.on("placeTile", (location, index, callback) => {
 			// STEP 1: Gather base information.
 			const hand = hands[socket.id] ?? generateHand(deck);
 			const tile = hand[Number(index)];
@@ -168,7 +173,7 @@ io.on("connection", (socket) => {
 			// STEP 5: Place the tile.
 			row[Number(location.x)] = placed;
 			room.board[Number(location.y)] = row;
-			io.to(roomId).emit("place", placed);
+			io.to(roomId).emit("tilePlaced", placed);
 
 			// STEP 6: Update the user's hand.
 			const newTile = getRandomTile(deck);

@@ -15,4 +15,4 @@ export const JOIN_ERRORS = ["JOIN_ROOM"] as const;
 export function generateTileUrl({ color, shape }: Tile) {
 	return `./pieces/${color}-${shape}.png`;
 }
-export const ROOM_PARAMETER = "room";
+export const ROOM_PARAMETER = "roomId";
