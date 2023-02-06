@@ -1,7 +1,7 @@
 import "/socket.io/socket.io.min.js";
-import twemoji from "./twemoji.js";
-import { createApp } from "./vue.js";
-import { Options, Vue } from "./vue-class-component.js";
+import twemoji from "./lib/twemoji.js";
+import { createApp } from "./lib/vue.js";
+import { Options, Vue } from "./lib/vue-class-component.js";
 
 import { generateTileUrl, ROOM_PARAMETER } from "./common/constants.js";
 
