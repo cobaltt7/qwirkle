@@ -2,7 +2,6 @@ import type { JOIN_ERRORS, PLACING_ERRORS, TILE_COLORS, TILE_SHAPES } from "./co
 
 // Socket.io
 export interface ServerToClientEvents {
-	roomJoined: (handOrError: JoinError | Tile[]) => void;
 	tilePlaced: (tile: PlacedTile) => void;
 	roomsListUpdate: (rooms: Rooms) => void;
 }
@@ -12,7 +11,8 @@ export interface ClientToServerEvents {
 		tile: number,
 		callback: (response: PlacingError | Tile[]) => void,
 	) => void;
-	joinRoom: (roomId: string) => void;
+	joinRoom: (roomId: string, callback: (response: JoinError | Tile[]) => void) => void;
+	createRoom: (roomId: string, callback: (response: false | Room) => void) => void;
 }
 export interface InterServerEvents {}
 export interface SocketData {}

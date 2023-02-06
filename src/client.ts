@@ -18,10 +18,7 @@ declare const io: typeof transport;
 
 twemoji.parse(document.body);
 
-const roomId = new URL(location.href).searchParams.get(ROOM_PARAMETER);
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
-	query: roomId ? { [ROOM_PARAMETER]: roomId } : {},
-});
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 if (true) {
 	// TODO: drop in prod
 	socket.on("connect", () =>
@@ -41,13 +38,15 @@ class App extends Vue {
 		columns: [0, 0],
 	};
 	placedTiles: Record<Location["y"], Record<Location["x"], PlacedTile>> = {};
-	roomId: string | null = roomId;
+	roomId: string | null = null;
 	publicRooms: Rooms = {};
 
 	// Refs
 	declare readonly $refs: {
-		privateRoomDialog: HTMLDialogElement;
-		roomInput: HTMLInputElement;
+		createRoomDialog: HTMLDialogElement;
+		createRoomInput: HTMLInputElement;
+		joinRoomDialog: HTMLDialogElement;
+		joinRoomInput: HTMLInputElement;
 	};
 
 	// Hooks
@@ -62,13 +61,12 @@ class App extends Vue {
 
 				(this.placedTiles[tile.y] ??= {})[tile.x] = tile;
 			})
-			.on("roomJoined", (response) => {
-				if (typeof response === "string") alert(response);
-				else this.heldTiles = response;
-			})
 			.on("roomsListUpdate", (rooms) => {
 				this.publicRooms = rooms;
 			});
+
+		const roomId = new URL(location.href).searchParams.get(ROOM_PARAMETER);
+		if (roomId) this.joinRoom(roomId);
 	}
 
 	// Methods
@@ -115,7 +113,16 @@ class App extends Vue {
 		const url = new URL(location.toString());
 		url.searchParams.set("roomId", roomId);
 		window.history.replaceState(undefined, "", url.toString());
-		socket.emit("joinRoom", roomId);
+		socket.emit("joinRoom", roomId, (response) => {
+			if (typeof response === "string") this.createRoom(roomId); //alert(response);
+			else this.heldTiles = response;
+		});
+	}
+	createRoom(roomId: string) {
+		socket.emit("createRoom", roomId, (response) => {
+			if (response) this.joinRoom(roomId);
+			else alert(response);
+		});
 	}
 }
 const app = createApp(App).mount(document.body);

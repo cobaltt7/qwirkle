@@ -10,8 +10,10 @@ export const PLACING_ERRORS = [
 	"DUPLICATE_ROW_ITEMS",
 	"INCONSISTENT_COLUMN_ITEMS",
 	"DUPLICATE_COLUMN_ITEMS",
+	"NOT_IN_ROOM",
+	"UNDEFINED_ROOM",
 ] as const;
-export const JOIN_ERRORS = ["JOIN_ROOM"] as const;
+export const JOIN_ERRORS = ["UNDEFINED_ROOM"] as const;
 export function generateTileUrl({ color, shape }: Tile) {
 	return `./pieces/${color}-${shape}.png`;
 }

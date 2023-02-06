@@ -25,14 +25,11 @@
 				</button>
 			</section>
 			<section id="manage">
-				<button type="button" @click="$refs.privateRoomDialog.showModal()">
+				<button type="button" @click="$refs.createRoomDialog.showModal()">
+					<h2>Create New Room</h2>
+				</button>
+				<button type="button" @click="$refs.joinRoomDialog.showModal()">
 					<h2>Join Private Room</h2>
-				</button>
-				<button type="button">
-					<h2>Create Private Room</h2>
-				</button>
-				<button type="button">
-					<h2>Create Public Room</h2>
 				</button>
 			</section>
 		</section>
@@ -66,11 +63,18 @@
 				</button>
 			</section>
 		</section>
-		<dialog ref="privateRoomDialog">
+		<dialog ref="createRoomDialog">
+			<form method="dialog">
+				<h3>Create a room</h3>
+				<input placeholder="Room ID" ref="createRoomInput" required />
+				<button type="submit" @click="joinRoom($refs.createRoomInput.value)">Join</button>
+			</form>
+		</dialog>
+		<dialog ref="joinRoomDialog">
 			<form method="dialog">
 				<h3>Join private room</h3>
-				<input placeholder="Room ID" ref="roomInput" />
-				<button type="submit" @click="joinRoom($refs.roomInput.value)">Join</button>
+				<input placeholder="Room ID" ref="joinRoomInput" required />
+				<button type="submit" @click="joinRoom($refs.joinRoomInput.value)">Join</button>
 			</form>
 		</dialog>
 	</body>

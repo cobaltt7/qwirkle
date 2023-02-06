@@ -140,7 +140,7 @@ header,
 /** Lobby styles */
 #lobby button {
 	background: transparent;
-	margin: 10px;
+	margin: 10px 0;
 	padding: 10px;
 	display: flex;
 	justify-content: space-between;
@@ -171,12 +171,12 @@ header,
 #manage {
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: space-around;
+	justify-content: space-evenly;
 }
 
 #manage button {
 	height: 60px;
-	width: 275px;
+	width: 40%;
 }
 
 #manage h2 {
@@ -187,7 +187,7 @@ header,
 dialog {
 	justify-content: center;
 	align-items: center;
-	width: 30%;
+	width: 50%;
 	height: 250px;
 }
 
@@ -199,9 +199,9 @@ dialog > form {
 	width: 75%;
 }
 
-dialog > form > input,
-button {
+dialog > form > * {
 	width: 100%;
 	display: block;
 	margin: 15px 0;
+	height: 30px;
 }
