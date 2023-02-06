@@ -23,36 +23,49 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 
 mime.types.ts = "text/plain";
-const PACKAGE_RESOLVES: Record<string, string> = {
-	"/css/normalize.css": "modern-normalize",
-	"/js/lib/twemoji.js": "twemoji/dist/twemoji.esm.js",
-	"/js/lib/vue.js": "vue/dist/vue.esm-browser.js",
-	"/js/lib/vue-class-component.js": "vue-class-component/dist/vue-class-component.esm-browser.js",
-};
+const libraries = Object.fromEntries(
+	await Promise.all(
+		Object.entries({
+			"/css/normalize.css": "modern-normalize",
+			"/js/lib/twemoji.js": "twemoji/dist/twemoji.esm.js",
+			"/js/lib/vue.js": "vue/dist/vue.esm-browser.js",
+			"/js/lib/vue-class-component.js":
+				"vue-class-component/dist/vue-class-component.esm-browser.js",
+		}).map(async ([requestUrl, packageName]) => {
+			const resolved = require.resolve(packageName);
+
+			return [
+				requestUrl,
+				[
+					resolved,
+					await fileSystem.readFile(resolved, "utf8").then((file) => {
+						if (path.extname(resolved) === ".js") {
+							file = file.replaceAll(
+								/import\s+(?<importedNames>.+?)\s+from\s+['"`](?<moduleName>[^.].*?)['"`]/gms,
+								'import $<importedNames> from "./$<moduleName>.js"',
+							);
+						}
+
+						return file;
+					}),
+				],
+			] as const;
+		}),
+	),
+);
 
 const server = http
 	.createServer((request, response) => {
 		try {
 			const requestUrl = new URL(request.url ?? "", `https://${request.headers.host}`);
 
-			const packageName = PACKAGE_RESOLVES[requestUrl.pathname];
-			if (packageName) {
-				const resolved = require.resolve(packageName);
-
-				return fileSystem.readFile(resolved, "utf8").then((file) => {
-					if (path.extname(resolved) === ".js") {
-						file = file.replaceAll(
-							/import\s+(?<importedNames>.+?)\s+from\s+['"`](?<moduleName>[^.].*?)['"`]/gms,
-							'import $<importedNames> from "./$<moduleName>.js"',
-						);
-					}
-
-					response
-						.writeHead(200, {
-							"Content-Type": mime.lookup(resolved) || "text/plain",
-						})
-						.end(file);
-				});
+			const library = libraries[requestUrl.pathname];
+			if (library) {
+				return response
+					.writeHead(200, {
+						"Content-Type": mime.lookup(library[0]) || "text/plain",
+					})
+					.end(library[1]);
 			}
 
 			serve(request, response, {
