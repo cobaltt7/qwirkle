@@ -41,9 +41,9 @@ export default function <V extends Vue>(
 				} while (el?.__vueParentComponent == refComponent);
 				oldMounted?.call(this);
 			};
-			const html = await fetch(
-				new URL(`../../components/${app.name}`, import.meta.url),
-			).then((response) => response.text());
+			const html = await fetch(new URL(`../../components/${app.name}`, import.meta.url)).then(
+				(response) => response.text(),
+			);
 			const dom = new DOMParser().parseFromString(html, "text/html");
 			return Options({ ...options, template: dom.querySelector("template")?.innerHTML })(app);
 		});

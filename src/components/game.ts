@@ -75,4 +75,4 @@ export default class Game extends Vue {
 		const locations = this.parseRawIndexes(rawColumn, rawRow);
 		return this.placedTiles[locations.row]?.[locations.column];
 	}
- }
+}
