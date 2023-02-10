@@ -1,7 +1,8 @@
 const base = require("@redguy12/prettier-config");
 
+/** @type {typeof base} */
 module.exports = {
 	...base,
 	overrides: [...base.overrides, { files: "**.html", options: { parser: "vue" } }],
-	plugins: [...base.plugins, require.resolve("prettier-plugin-vue")],
 };
+//todo htmlWhitespaceSensitivity

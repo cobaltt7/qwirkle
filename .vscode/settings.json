@@ -1,0 +1,20 @@
+{
+	"explorer.fileNesting.patterns": {
+		"package.json": "package-lock.json, .*, tsconfig.json",
+		"*.ts": "${capture}.*",
+		"README.md": "*.d.ts",
+		"client.ts": "index.html, preload.ts, style.css"
+	},
+	"explorer.fileNesting.enabled": true,
+	"explorer.fileNesting.expand": false,
+	"files.associations": {
+		"**/components/*.html": "vue",
+		"*.html": "vue-html"
+	},
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	"emmet.includeLanguages": {
+		"vue": "html"
+	},
+	"vscode-edge-devtools.webhint": false
+}

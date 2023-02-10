@@ -26,9 +26,10 @@ mime.types.ts = "text/plain";
 const libraries = Object.fromEntries(
 	await Promise.all(
 		Object.entries({
-			"/css/normalize.css": "modern-normalize",
+			"/normalize.css": "modern-normalize",
 			"/js/lib/twemoji.js": "twemoji/dist/twemoji.esm.js",
 			"/js/lib/vue.js": "vue/dist/vue.esm-browser.js",
+			"/js/lib/vue-use-css.js": "../../node_modules/vue-use-css/dist/vue-use-css.es.js",
 			"/js/lib/vue-class-component.js":
 				"vue-class-component/dist/vue-class-component.esm-browser.js",
 		}).map(async ([requestUrl, packageName]) => {

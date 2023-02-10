@@ -1,5 +1,5 @@
 import { Vue } from "../lib/vue-class-component.js";
-import type { Location, PlacedTile,  } from "../common/types.js";
+import type { Location, PlacedTile } from "../common/types.js";
 import Component from "../lib/Component.js";
 import type { App } from "../client.js";
 import { generateTileUrl } from "../common/constants.js";
@@ -75,4 +75,4 @@ export default class Game extends Vue {
 		const locations = this.parseRawIndexes(rawColumn, rawRow);
 		return this.placedTiles[locations.row]?.[locations.column];
 	}
-}
+ }

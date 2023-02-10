@@ -1,0 +1,74 @@
+
+/** Lobby styles */
+this #lobby {
+	width: 70%;
+	margin: auto;
+}
+
+this button {
+	background: transparent;
+	margin: 10px 0;
+	padding: 10px;
+	display: flex;
+	justify-content: space-between;
+	align-content: space-between;
+	flex-direction: column;
+	border-radius: 15px;
+	flex-wrap: wrap;
+}
+
+this button:hover {
+	background: #f0f0f0;
+}
+
+this .room {
+	width: 100%;
+	height: 70px;
+}
+
+this .room * {
+	margin: 0;
+}
+
+this .room > :last-child {
+	line-height: 100%;
+	font-size: 46px;
+}
+
+this #manage {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+}
+
+this #manage button {
+	height: 60px;
+	width: 40%;
+}
+
+this #manage h2 {
+	margin: auto;
+	width: 100%;
+}
+
+this dialog {
+	justify-content: center;
+	align-items: center;
+	width: 50%;
+	height: 250px;
+}
+
+this dialog[open] {
+	display: flex;
+}
+
+this form {
+	width: 75%;
+}
+
+this form > * {
+	width: 100%;
+	display: block;
+	margin: 15px 0;
+	height: 30px;
+}

@@ -1,28 +1,32 @@
-<section id="game">
-	<section id="board">
-		<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
-			<div
-				class="tile"
-				v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
-				@click="tilePlaced"
-			>
-				<img
-					v-if="getFromBoard(columnIndex, rowIndex)"
-					:src="generateTileUrl(getFromBoard(columnIndex, rowIndex))"
-					:alt="`${getFromBoard(columnIndex, rowIndex).color} ${getFromBoard(columnIndex, rowIndex).shape}`"
-				/>
+<template>
+	<section id="game">
+		<section id="board">
+			<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
+				<div
+					class="tile"
+					v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
+					@click="tilePlaced"
+				>
+					<img
+						v-if="getFromBoard(columnIndex, rowIndex)"
+						:src="generateTileUrl(getFromBoard(columnIndex, rowIndex))"
+						:alt="`${getFromBoard(columnIndex, rowIndex).color} ${
+							getFromBoard(columnIndex, rowIndex).shape
+						}`"
+					/>
+				</div>
 			</div>
-		</div>
+		</section>
+		<section id="hand">
+			<button
+				v-for="[index, tile] in $root.heldTiles.entries()"
+				@click="selectTile"
+				:class="{ selected: index === selectedTile }"
+				:title="`${tile.color} ${tile.shape}`"
+				type="button"
+			>
+				<img :src="generateTileUrl(tile)" :title="`${tile.color} ${tile.shape}`" />
+			</button>
+		</section>
 	</section>
-	<section id="hand">
-		<button
-			v-for="[index, tile] in $root.heldTiles.entries()"
-			@click="selectTile"
-			:class="{ selected: index === selectedTile }"
-			:title="`${tile.color} ${tile.shape}`"
-			type="button"
-		>
-			<img :src="generateTileUrl(tile)" :title="`${tile.color} ${tile.shape}`" />
-		</button>
-	</section>
-</section>
+</template>
