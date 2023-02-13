@@ -5,15 +5,14 @@ import { Options, Vue, VueBase, VueConstructor } from "./lib/vue-class-component
 
 import type { Socket, io as transport } from "socket.io-client";
 import type { ClientToServerEvents, ServerToClientEvents, Tile } from "./common/types.js";
+import { COMPONENTS } from "./common/constants.js";
 declare const io: typeof transport;
 
 twemoji.parse(document.body);
 
-const COMPONENTS = ["Game", "Lobby", "Header"];
-
 const components = Object.fromEntries(
 	COMPONENTS.map((name) => [
-		name,
+		name.toLowerCase(),
 		defineAsyncComponent(
 			async (): Promise<VueConstructor<VueBase>> =>
 				(await import(`./components/${name}.js`)).default,
@@ -50,10 +49,3 @@ export class App extends Vue {
 }
 const app = createApp(App).mount(document.body);
 if (true) (window as any).vue = app;
-function cacheAsyncComponent<C extends object = {}>(component: C): Promise<C> {
-	return "__asyncLoader" in component && typeof component.__asyncLoader === "function"
-		? component.__asyncLoader()?.then(component)
-		: component;
-}
-
-await Promise.all(Object.values(components).map(cacheAsyncComponent));

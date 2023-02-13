@@ -67,7 +67,9 @@ this form {
 
 this form > * {
 	width: 100%;
-	display: block;
-	margin: 15px 0;
+	display: flex;
 	height: 30px;
+	align-items: center;
+	justify-content: center;
+	align-content: center;
 }

@@ -3,7 +3,7 @@ import Component from "../lib/Component.js";
 import type { App } from "../client.js";
 
 @Component()
-export default class Header extends Vue {
+export default class TitleBar extends Vue {
 	// Data
 
 	// Refs
