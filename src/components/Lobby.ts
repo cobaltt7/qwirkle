@@ -3,6 +3,7 @@ import Component from "../lib/Component.js";
 import type { App } from "../client.js";
 import { ROOM_PARAMETER } from "../common/constants.js";
 import type { Rooms } from "../common/types.js";
+import type CreateRoom from "./CreateRoom.js";
 
 @Component()
 export default class Lobby extends Vue {
@@ -11,8 +12,7 @@ export default class Lobby extends Vue {
 
 	// Refs
 	declare readonly $refs: {
-		createRoomDialog: HTMLDialogElement;
-		createRoomInput: HTMLInputElement;
+		createRoomDialog: CreateRoom;
 		joinRoomDialog: HTMLDialogElement;
 		joinRoomInput: HTMLInputElement;
 	};
@@ -25,12 +25,13 @@ export default class Lobby extends Vue {
 		this.$root.socket.on("roomsListUpdate", (rooms) => {
 			this.publicRooms = rooms;
 		});
+		console.log(this)
 	}
 
 	// Methods
 	joinRoom(roomId: string) {
 		this.$root.socket.emit("joinRoom", roomId, (response) => {
-			if (typeof response === "string") this.createRoom(roomId); //alert(response);
+			if (typeof response === "string") alert(response);
 			else {
 				this.$root.roomId = roomId;
 				const url = new URL(location.toString());
@@ -38,12 +39,6 @@ export default class Lobby extends Vue {
 				window.history.replaceState(undefined, "", url.toString());
 				this.$root.heldTiles = response;
 			}
-		});
-	}
-	createRoom(roomId: string) {
-		this.$root.socket.emit("createRoom", roomId, (response) => {
-			if (response) this.joinRoom(roomId);
-			else alert(response);
 		});
 	}
 }

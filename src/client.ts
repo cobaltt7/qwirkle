@@ -10,20 +10,7 @@ declare const io: typeof transport;
 
 twemoji.parse(document.body);
 
-const components = Object.fromEntries(
-	COMPONENTS.map((name) => [
-		name.toLowerCase(),
-		defineAsyncComponent(
-			async (): Promise<VueConstructor<VueBase>> =>
-				(await import(`./components/${name}.js`)).default,
-		),
-	]),
-);
-
-@Options({
-	template: document.body.innerHTML,
-	components,
-})
+@Options({ template: document.body.innerHTML })
 export class App extends Vue {
 	// Data
 	heldTiles: Tile[] = [];
@@ -47,5 +34,17 @@ export class App extends Vue {
 
 	// Methods
 }
-const app = createApp(App).mount(document.body);
+const app = createApp(App);
+
+for (const name of COMPONENTS) {
+	app.component(
+		name.toLowerCase(),
+		defineAsyncComponent(
+			async (): Promise<VueConstructor<VueBase>> =>
+				(await import(`./components/${name}.js`)).default,
+		),
+	);
+}
+
+app.mount(document.body);
 if (true) (window as any).vue = app;

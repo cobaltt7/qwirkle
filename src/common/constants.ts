@@ -18,4 +18,4 @@ export function generateTileUrl({ color, shape }: Tile) {
 	return `./images/tiles/${color}-${shape}.png`;
 }
 export const ROOM_PARAMETER = "roomId";
-export const COMPONENTS = ["Game", "Lobby", "TitleBar"];
+export const COMPONENTS = ["Game", "Lobby", "TitleBar", "CreateRoom"];

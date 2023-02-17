@@ -1,0 +1,41 @@
+<template>
+	<dialog>
+		<form method="dialog" @submit="createRoom($refs.roomId.value)">
+			<h3>Create New Room</h3>
+			<input type="text" placeholder="Room ID" required ref="roomId" />
+			<p>
+				<label>
+					Require login to join
+					<input
+						type="checkbox"
+						ref="authSwitch"
+						@change="toggleAuth"
+						:checked="authOn"
+					/>
+				</label>
+				<label>
+					Discord login
+					<input
+						type="checkbox"
+						checked
+						:disabled="!authOn"
+						ref="discordAuth"
+						@change="toggleAuthService('discord')"
+					/>
+				</label>
+				<label>
+					GitHub login
+					<input
+						type="checkbox"
+						checked
+						:disabled="!authOn"
+						ref="githubAuth"
+						@change="toggleAuthService('github')"
+					/>
+				</label>
+			</p>
+			<label>Hide game from homepage<input type="checkbox" /></label>
+			<button type="submit">Create Room</button>
+		</form>
+	</dialog>
+</template>

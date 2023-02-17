@@ -3,7 +3,7 @@ this #lobby {
 	margin: auto;
 }
 
-this button {
+button {
 	background: transparent;
 	margin: 10px 0;
 	padding: 10px;
@@ -15,7 +15,7 @@ this button {
 	flex-wrap: wrap;
 }
 
-this button:hover {
+button:hover {
 	background: #f0f0f0;
 }
 
@@ -49,26 +49,27 @@ this #manage h2 {
 	width: 100%;
 }
 
-this dialog {
+dialog {
 	justify-content: center;
 	align-items: center;
-	width: 50%;
-	height: 250px;
+	padding: 1.5em 2.5em;
+	width: 500px;
 }
 
-this dialog[open] {
+dialog[open] {
 	display: flex;
 }
 
-this form {
-	width: 75%;
+form > * {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
 }
 
-this form > * {
+form > input,
+form > button,
+form > h3 {
 	width: 100%;
-	display: flex;
 	height: 30px;
-	align-items: center;
-	justify-content: center;
 	align-content: center;
 }
