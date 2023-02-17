@@ -28,10 +28,10 @@ const libraries = Object.fromEntries(
 		Object.entries({
 			"/normalize.css": "modern-normalize",
 			"/js/lib/twemoji.js": "twemoji/dist/twemoji.esm.js",
-			"/js/lib/vue.js": "vue/dist/vue.esm-browser.js",
+			"/js/lib/vue.js": "vue/dist/vue.esm-browser.prod.js",
 			"/js/lib/vue-use-css.js": "../../node_modules/vue-use-css/dist/vue-use-css.es.js",
 			"/js/lib/vue-class-component.js":
-				"vue-class-component/dist/vue-class-component.esm-browser.js",
+				"vue-class-component/dist/vue-class-component.esm-browser.prod.js",
 		}).map(async ([requestUrl, packageName]) => {
 			const resolved = require.resolve(packageName);
 
@@ -42,8 +42,8 @@ const libraries = Object.fromEntries(
 					await fileSystem.readFile(resolved, "utf8").then((file) => {
 						if (path.extname(resolved) === ".js") {
 							file = file.replaceAll(
-								/import\s+(?<importedNames>.+?)\s+from\s+['"`](?<moduleName>[^.].*?)['"`]/gms,
-								'import $<importedNames> from "./$<moduleName>.js"',
+								/import(?<importedNames>(?:\s+|\{).+?(?:\s+|\}))from\s*['"`](?<moduleName>[^./].*?)['"`]/gs,
+								'import$<importedNames>from"./$<moduleName>.js"',
 							);
 						}
 

@@ -1,4 +1,4 @@
-import { ComponentInternalInstance, ComponentOptions, defineAsyncComponent } from "./vue.js";
+import { ComponentOptions, defineAsyncComponent } from "./vue.js";
 import { Options, Vue, VueBase, VueConstructor } from "./vue-class-component.js";
 import useCss from "./vue-use-css.js";
 
@@ -21,29 +21,29 @@ export default function <V extends Vue>(
 					.join(", ");
 			});
 
-			const oldMounted = app.prototype.mounted;
-			app.prototype.mounted = function mounted() {
-				const attrs = useCss(css ?? "");
-				let el = (
-					this.$el instanceof HTMLElement
-						? this.$el
-						: (this.$el as Text).nextElementSibling
-				) as (Element & { __vueParentComponent: ComponentInternalInstance }) | null;
-				const refComponent = el?.__vueParentComponent;
-				do {
-					for (const name in attrs) {
-						if (!Object.prototype.hasOwnProperty.call(attrs, name)) return;
-						el?.setAttribute(name, attrs[name]?.toString() ?? "");
-					}
-					el = el?.nextElementSibling as typeof el;
-				} while (el?.__vueParentComponent == refComponent);
-				oldMounted?.call(this);
-			};
 			const html = await fetch(new URL(`../../components/${app.name}`, import.meta.url)).then(
 				(response) => response.text(),
 			);
 			const dom = new DOMParser().parseFromString(html, "text/html");
-			return Options({ ...options, template: dom.querySelector("template")?.innerHTML })(app);
+			const oldMounted = app.prototype.mounted;
+			const template = dom.querySelector("template");
+
+			app.prototype.mounted = function mounted() {
+				const attrs = useCss(css ?? "");
+				let el =
+					this.$el instanceof HTMLElement
+						? this.$el
+						: (this.$el as Text).nextElementSibling;
+				for (let index = 0; index < (template?.content?.childElementCount ?? 0); index++) {
+					for (const name in attrs) {
+						if (!Object.prototype.hasOwnProperty.call(attrs, name)) return;
+						el?.setAttribute(name, attrs[name]?.toString() ?? "");
+					}
+					el = el?.nextElementSibling ?? null;
+				}
+				oldMounted?.call(this);
+			};
+			return Options({ ...options, template: template?.innerHTML })(app);
 		});
 	};
 }

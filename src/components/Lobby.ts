@@ -30,7 +30,7 @@ export default class Lobby extends Vue {
 	// Methods
 	joinRoom(roomId: string) {
 		this.$root.socket.emit("joinRoom", roomId, (response) => {
-			if (typeof response === "string") this.createRoom(roomId); // TODO: error
+			if (typeof response === "string") this.createRoom(roomId); //alert(response);
 			else {
 				this.$root.roomId = roomId;
 				const url = new URL(location.toString());
