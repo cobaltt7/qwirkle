@@ -50,7 +50,7 @@ export default class Game extends Vue {
 		if (!(event.target instanceof HTMLDivElement && event.target.parentElement?.parentElement))
 			return; // Ignore, user didn't click on tile
 
-		if (this.selectedTile === -1) return; // Warn, user didn't select tile
+		if (this.selectedTile === -1) return; // TODO: Warn, user didn't select tile
 
 		const { row, column } = this.parseRawIndexes(
 			Array.prototype.indexOf.call(event.target.parentElement.children, event.target) + 1,

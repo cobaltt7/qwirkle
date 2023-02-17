@@ -1,14 +1,11 @@
 /** Resets */
 ::selection {
-	/* It can be really hard to read highlighted text with a text-shadow, it should be removed when selected */
 	text-shadow: none;
 
-	/* NOTE: Using this means the color and background-color are set to transparent for selected text... */
 	color: #fff;
 	background-color: #00f;
 }
 
-/* Smoothly animate to different sections within a page, only if the user doesn't mind animations */
 @media (prefers-reduced-motion: no-preference) {
 	html {
 		scroll-behavior: smooth;
@@ -23,18 +20,15 @@ body {
 }
 
 img {
-	/* For responsive images that adjust & adapt */
 	height: auto;
 	max-width: 100%;
 	max-height: 100%;
 
-	/* This isn't needed, but as a user, I get frustrated when I highlight text and the image gets highlighted too */
 	-webkit-user-select: text;
 	user-select: text;
 }
 
 button {
-	/* By default, buttons don't inherit the font colour, this is a useful default to override */
 	color: inherit;
 	cursor: pointer;
 }
@@ -46,11 +40,9 @@ button {
 }
 
 svg {
-	/* Make the SVGs fit the parent container by default */
 	height: 100%;
 	width: 100%;
 
-	/* Optional - make the SVG's fill be the same as the inherited color */
 	fill: currentColor;
 
 	/* Prevent the SVG from altering cursor interaction */
@@ -59,7 +51,6 @@ svg {
 
 iframe,
 video {
-	/* Make iframes & videos fit the parent container by default */
 	height: 100%;
 	width: 100%;
 }

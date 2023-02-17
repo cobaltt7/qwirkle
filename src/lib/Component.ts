@@ -1,9 +1,7 @@
-// decorators.js
 import { ComponentInternalInstance, ComponentOptions, defineAsyncComponent } from "./vue.js";
 import { Options, Vue, VueBase, VueConstructor } from "./vue-class-component.js";
 import useCss from "./vue-use-css.js";
 
-// Declare decorator.
 export default function <V extends Vue>(
 	options: ComponentOptions & ThisType<V> & { template?: never; render?: never } = {},
 ) {
