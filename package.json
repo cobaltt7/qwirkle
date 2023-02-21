@@ -29,7 +29,7 @@
 		"vue-use-css": "1.0.12"
 	},
 	"devDependencies": {
-		"@babel/types": "7.20.7",
+		"@babel/types": "7.21.0",
 		"@redguy12/prettier-config": "2.0.2",
 		"@types/mime-types": "<=2.1.35",
 		"@types/serve-handler": "<=6.1.5",
