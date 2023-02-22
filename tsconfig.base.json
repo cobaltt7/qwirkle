@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"allowJs": true,
+		"alwaysStrict": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"exactOptionalPropertyTypes": false,
+		"experimentalDecorators": true,
+		"forceConsistentCasingInFileNames": true,
+		"importsNotUsedAsValues": "error",
+		"maxNodeModuleJsDepth": 0,
+		"noErrorTruncation": true,
+		"noImplicitAny": true,
+		"noImplicitOverride": true,
+		"noImplicitThis": true,
+		"noUncheckedIndexedAccess": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": false,
+		"strict": true,
+		"useDefineForClassFields": true,
+		"useUnknownInCatchVariables": false
+	},
+	"typeAcquisition": { "enable": true }
+}

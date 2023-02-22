@@ -15,7 +15,7 @@ export const PLACING_ERRORS = [
 ] as const;
 export const JOIN_ERRORS = ["UNDEFINED_ROOM"] as const;
 export function generateTileUrl({ color, shape }: Tile) {
-	return `./images/tiles/${color}-${shape}.png`;
+	return `./tiles/${color}-${shape}.png`;
 }
 export const ROOM_PARAMETER = "roomId";
-export const COMPONENTS = ["Game", "Lobby", "TitleBar", "CreateRoom"];
+// todo rollup

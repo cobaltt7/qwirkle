@@ -12,7 +12,11 @@ export interface ClientToServerEvents {
 		callback: (response: PlacingError | Tile[]) => void,
 	) => void;
 	joinRoom: (roomId: string, callback: (response: JoinError | Tile[]) => void) => void;
-	createRoom: (roomId: string, callback: (response: false | Room) => void) => void;
+	createRoom: (
+		roomData: { roomId: string } & Pick<Room, "auth" | "private">,
+		callback: (response: false | Room) => void,
+	) => void;
+	mounted: () => void;
 }
 export interface InterServerEvents {}
 export interface SocketData {}
@@ -33,6 +37,13 @@ export type PlacingError = (typeof PLACING_ERRORS)[number];
 export type JoinError = (typeof JOIN_ERRORS)[number];
 /** Y by X. */
 export type Board = Record<Location["y"], Record<Location["x"], PlacedTile>>;
-export type Room = { board: Board; deck: Tile[]; host: string; players: Player[] };
+export type Room = {
+	board: Board;
+	deck: Tile[];
+	host: string;
+	players: Player[];
+	auth: boolean | { discord: boolean; github: boolean };
+	private: boolean;
+};
 export type Rooms = Record<string, Room>;
 export type Player = string;
