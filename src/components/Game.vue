@@ -1,5 +1,5 @@
 <template>
-	<section id="board">
+	<section id="board" v-dragscroll>
 		<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
 			<div
 				class="tile"
@@ -33,8 +33,9 @@
 	import type { Location, PlacedTile } from "../common/types";
 	import type App from "./App.vue";
 	import { generateTileUrl } from "../common/constants";
+	import { dragscroll } from 'vue-dragscroll'
 
-	@Options({})
+	@Options({directives:{dragscroll}})
 	export default class Game extends Vue {
 		// Data
 		boardSize: { rows: [number, number]; columns: [number, number] } = {
