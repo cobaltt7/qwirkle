@@ -6,7 +6,7 @@
 	"main": "src/js/server.js",
 	"scripts": {
 		"build": "npm run build:client && npm run build:server",
-		"build:client": "vite build --outDir dist",
+		"build:client": "cd src & npx vite build --outDir ../dist --config ../vite.config.ts",
 		"build:server": "tsc --project src/server/tsconfig.json",
 		"format": "prettier --write \"**\" \"!dist/**\" --ignore-unknown",
 		"serve": "npm run build:server -- --watch & nodemon dist/server --watch dist/server",
