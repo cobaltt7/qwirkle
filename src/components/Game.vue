@@ -33,9 +33,9 @@
 	import type { Location, PlacedTile } from "../common/types";
 	import type App from "./App.vue";
 	import { generateTileUrl } from "../common/constants";
-	import { dragscroll } from 'vue-dragscroll'
+	import { dragscroll } from "vue-dragscroll";
 
-	@Options({directives:{dragscroll}})
+	@Options({ directives: { dragscroll } })
 	export default class Game extends Vue {
 		// Data
 		boardSize: { rows: [number, number]; columns: [number, number] } = {

@@ -31,10 +31,10 @@ export interface Tile {
 	shape: TileShape;
 }
 export interface PlacedTile extends Tile, Location {}
-export type TileColor = (typeof TILE_COLORS)[number];
-export type TileShape = (typeof TILE_SHAPES)[number];
-export type PlacingError = (typeof PLACING_ERRORS)[number];
-export type JoinError = (typeof JOIN_ERRORS)[number];
+export type TileColor = typeof TILE_COLORS[number];
+export type TileShape = typeof TILE_SHAPES[number];
+export type PlacingError = typeof PLACING_ERRORS[number];
+export type JoinError = typeof JOIN_ERRORS[number];
 /** Y by X. */
 export type Board = Record<Location["y"], Record<Location["x"], PlacedTile>>;
 export type Room = {
