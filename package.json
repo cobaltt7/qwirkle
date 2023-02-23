@@ -9,7 +9,8 @@
 		"build:client": "cd src & npx vite build --outDir ../dist --config ../vite.config.ts",
 		"build:server": "tsc --project src/server/tsconfig.json",
 		"format": "prettier --write \"**\" \"!dist/**\" --ignore-unknown",
-		"serve": "npm run build:server -- --watch & nodemon dist/server --watch dist/server",
+		"dev": "npm run build:server -- --watch",
+		"serve":"nodemon dist/server --watch dist/server",
 		"start": "node dist/server",
 		"types": "vue-tsc --project tsconfig.json"
 	},
@@ -36,7 +37,7 @@
 		"nodemon": "2.0.20",
 		"postcss": "8.4.5",
 		"posthtml": "0.16.5",
-		"prettier": "2.8.3",
+		"prettier": "2.8.0",
 		"terser": "5.16.4",
 		"typescript": "4.9.4",
 		"vite": "4.1.3",

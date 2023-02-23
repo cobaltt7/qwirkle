@@ -4,6 +4,7 @@ import cssnano from "cssnano";
 import htmlnano from "htmlnano";
 import posthtml from "posthtml";
 import type { UserConfigExport } from "vite";
+import preload from "./src/server/preload";
 
 process.env.NODE_ENV = "production";
 
@@ -58,8 +59,8 @@ export default {
 	esbuild: { logLimit: 0, treeShaking: true },
 	plugins: [
 		vue(),
+		{ enforce: "post", name: "preload", transformIndexHtml: preload },
 		{
-			apply: "build",
 			enforce: "post",
 			name: "htmlnano",
 			async transformIndexHtml(input) {

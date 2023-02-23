@@ -18,4 +18,3 @@ export function generateTileUrl({ color, shape }: Tile) {
 	return `./tiles/${color}-${shape}.png`;
 }
 export const ROOM_PARAMETER = "roomId";
-// todo rollup
