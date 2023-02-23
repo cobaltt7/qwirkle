@@ -29,7 +29,7 @@
 	"devDependencies": {
 		"@babel/types": "7.21.2",
 		"@redguy12/prettier-config": "2.0.2",
-		"@types/serve-handler": "6.1.1",
+		"@types/serve-handler": "<=6.1.5",
 		"@vitejs/plugin-vue": "4.0.0",
 		"autoprefixer": "10.4.2",
 		"compression": "1.7.4",
