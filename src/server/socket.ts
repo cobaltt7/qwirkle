@@ -28,7 +28,7 @@ export default function connectIo(server: HTTPServer) {
 	>(server);
 
 	io.on("connection", (socket) => {
-		socket.once("mounted", () => socket.emit("roomsListUpdate", rooms));
+		socket.once("mounted", () => socket.emit("roomsListUpdate", getPublicRooms()));
 		socket
 			.on("createRoom", (roomData, callback) => {
 				const roomId = roomData.roomId.trim();
