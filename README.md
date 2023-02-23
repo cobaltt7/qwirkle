@@ -12,7 +12,7 @@ npm run start
 ### Start development server
 
 ```bash
-npm run serve
+npm run serve & npm run dev
 ```
 
 ### Run CI
