@@ -124,11 +124,16 @@
 		border: 1px solid #000;
 		width: 100%;
 		margin-top: 20px;
+		display: flex;
+		flex-direction: column;
+		flex-wrap: wrap;
+		justify-content: center;
 	}
 
 	.row {
 		display: flex;
 		width: min-content;
+		margin: 0 auto;
 	}
 
 	.tile {
