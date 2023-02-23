@@ -13,6 +13,7 @@
 		"start": "node dist/server",
 		"types": "vue-tsc --project tsconfig.json"
 	},
+	"nodemonConfig": {},
 	"browserslist": "defaults and supports es6-module and supports es6-module-dynamic-import",
 	"prettier": "@redguy12/prettier-config",
 	"dependencies": {
@@ -45,5 +46,5 @@
 	"engines": {
 		"node": "18.12.1",
 		"npm": "8.13.2"
-	},"nodemonConfig":{}
+	}
 }
