@@ -1,33 +1,31 @@
 <template>
-	<section id="game">
-		<section id="board">
-			<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
-				<div
-					class="tile"
-					v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
-					@click="tilePlaced"
-				>
-					<img
-						v-if="getFromBoard(columnIndex, rowIndex)"
-						:src="generateTileUrl(getFromBoard(columnIndex, rowIndex))"
-						:alt="`${getFromBoard(columnIndex, rowIndex)?.color} ${
-							getFromBoard(columnIndex, rowIndex)?.shape
-						}`"
-					/>
-				</div>
-			</div>
-		</section>
-		<section id="hand">
-			<button
-				v-for="[index, tile] in $root.heldTiles.entries()"
-				@click="selectTile"
-				:class="{ selected: index === selectedTile }"
-				:title="`${tile.color} ${tile.shape}`"
-				type="button"
+	<section id="board">
+		<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
+			<div
+				class="tile"
+				v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
+				@click="tilePlaced"
 			>
-				<img :src="generateTileUrl(tile)" :title="`${tile.color} ${tile.shape}`" />
-			</button>
-		</section>
+				<img
+					v-if="getFromBoard(columnIndex, rowIndex)"
+					:src="generateTileUrl(getFromBoard(columnIndex, rowIndex))"
+					:alt="`${getFromBoard(columnIndex, rowIndex)?.color} ${
+						getFromBoard(columnIndex, rowIndex)?.shape
+					}`"
+				/>
+			</div>
+		</div>
+	</section>
+	<section id="hand">
+		<button
+			v-for="[index, tile] in $root.heldTiles.entries()"
+			@click="selectTile"
+			:class="{ selected: index === selectedTile }"
+			:title="`${tile.color} ${tile.shape}`"
+			type="button"
+		>
+			<img :src="generateTileUrl(tile)" :title="`${tile.color} ${tile.shape}`" />
+		</button>
 	</section>
 </template>
 <script lang="ts">
@@ -120,13 +118,16 @@
 </script>
 <style scoped>
 	#board {
-		border: 1px solid black;
-		width: fit-content;
-		margin: 20px auto;
+		height: calc(100% - 265px);
+		overflow: auto;
+		border: 1px solid #000;
+		width: 100%;
+		margin-top: 20px;
 	}
 
 	.row {
 		display: flex;
+		width: min-content;
 	}
 
 	.tile {
@@ -144,6 +145,7 @@
 		display: flex;
 		height: 125px;
 		align-items: center;
+		margin: 10px 0;
 	}
 
 	#hand button {
