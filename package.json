@@ -10,7 +10,7 @@
 		"build:server": "tsc --project src/server/tsconfig.json",
 		"format": "prettier --write \"**\" \"!dist/**\" --ignore-unknown",
 		"dev": "npm run build:server -- --watch",
-		"serve":"nodemon dist/server --watch dist/server",
+		"serve": "nodemon dist/server --watch dist/server",
 		"start": "node dist/server",
 		"types": "vue-tsc --project tsconfig.json"
 	},
@@ -27,6 +27,7 @@
 		"vue-class-component": "8.0.0-rc.1"
 	},
 	"devDependencies": {
+		"@babel/types": "7.21.2",
 		"@redguy12/prettier-config": "2.0.2",
 		"@types/serve-handler": "6.1.1",
 		"@vitejs/plugin-vue": "4.0.0",
