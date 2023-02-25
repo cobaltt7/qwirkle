@@ -58,7 +58,25 @@ img.emoji {
 	margin: 0 0.05em 0 0.1em;
 	vertical-align: -0.1em;
 }
+
 html,
 body {
 	height: 100%;
+}
+
+button {
+	background: white;
+	margin: 10px 0;
+	display: flex;
+	flex-direction: column;
+	border-radius: 15px;
+	flex-wrap: wrap;
+}
+
+button:hover {
+	background: #f0f0f0;
+}
+
+button[disabled] {
+	cursor: not-allowed;
 }

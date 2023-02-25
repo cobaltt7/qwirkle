@@ -84,6 +84,9 @@
 	.room {
 		width: 100%;
 		height: 70px;
+		padding: 10px;
+		align-content: space-between;
+		justify-content: space-between;
 	}
 
 	.room * {
@@ -104,27 +107,13 @@
 	#manage button {
 		height: 60px;
 		width: 40%;
+		align-content: space-between;
+		justify-content: space-between;
+		padding: 10px;
 	}
 
 	#manage h2 {
 		margin: auto;
 		width: 100%;
-	}
-</style>
-<style>
-	button {
-		background: transparent;
-		margin: 10px 0;
-		padding: 10px;
-		display: flex;
-		justify-content: space-between;
-		align-content: space-between;
-		flex-direction: column;
-		border-radius: 15px;
-		flex-wrap: wrap;
-	}
-
-	button:hover {
-		background: #f0f0f0;
 	}
 </style>
