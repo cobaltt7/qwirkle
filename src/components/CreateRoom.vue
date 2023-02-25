@@ -111,14 +111,9 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-	}
-
-	form > input,
-	form > button,
-	form > h3 {
-		width: 100%;
-		height: 30px;
 		align-content: center;
+		height: 40px;
+		width: 100%;
 	}
 	form label {
 		display: flex;
