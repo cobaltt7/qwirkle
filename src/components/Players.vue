@@ -34,35 +34,36 @@
 		// Methods
 	}
 </script>
-<style scoped>section {
-	display: flex;
-	align-items: center;
-	height: 130px;
-	overflow: auto;
-	padding-bottom: 5px;
-	margin-bottom: 5px;
-}
+<style scoped>
+	section {
+		display: flex;
+		align-items: center;
+		height: 130px;
+		overflow: auto;
+		padding-bottom: 5px;
+		margin-bottom: 5px;
+	}
 
-div {
-	display: flex;
-	height: 100%;
-	flex-wrap: nowrap;
-	flex-direction: column;
-	justify-content: space-around;
-	margin: 0 5px;
-	background: #555;
-	align-items: center;
-	color: white;
-	padding: 5px;
-	border-radius: 10px;
-}
+	div {
+		display: flex;
+		height: 100%;
+		flex-wrap: nowrap;
+		flex-direction: column;
+		justify-content: space-around;
+		margin: 0 5px;
+		background: #555;
+		align-items: center;
+		color: white;
+		padding: 5px;
+		border-radius: 10px;
+	}
 
-img {
-	height: 90px;
-	width: 90px;
-}
+	img {
+		height: 90px;
+		width: 90px;
+	}
 
-p {
-	margin: 0;
-}
+	p {
+		margin: 0;
+	}
 </style>
