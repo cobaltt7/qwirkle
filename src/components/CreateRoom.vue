@@ -40,11 +40,10 @@
 	</dialog>
 </template>
 <script lang="ts">
-	import { Options, Vue } from "vue-class-component";
+	import { Vue } from "vue-class-component";
 	import type Lobby from "./Lobby.vue";
 	import type App from "./App.vue";
 
-	@Options({})
 	export default class CreateRoom extends Vue {
 		// Data
 		authOn = false;
@@ -61,7 +60,6 @@
 		declare readonly $parent: Lobby;
 
 		// Hooks
-		override mounted() {}
 
 		// Methods
 		createRoom(roomId: string) {

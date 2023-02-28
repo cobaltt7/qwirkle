@@ -3,7 +3,8 @@ import type { JOIN_ERRORS, PLACING_ERRORS, TILE_COLORS, TILE_SHAPES } from "./co
 // Socket.io
 export interface ServerToClientEvents {
 	tilePlaced: (tile: PlacedTile) => void;
-	roomsListUpdate: (rooms: Rooms) => void;
+	roomsUpdate: (rooms: Rooms) => void;
+	playersUpdate: (players: Players) => void;
 }
 export interface ClientToServerEvents {
 	placeTile: (
@@ -47,3 +48,4 @@ export type Room = {
 };
 export type Rooms = Record<string, Room>;
 export type Player = string;
+export type Players = Player[];

@@ -54,10 +54,9 @@
 		override mounted() {
 			const roomId = new URL(location.href).searchParams.get(ROOM_PARAMETER);
 			if (roomId) this.joinRoom(roomId);
-			this.$root.socket.on("roomsListUpdate", (rooms) => {
+			this.$root.socket.on("roomsUpdate", (rooms) => {
 				this.publicRooms = rooms;
 			});
-			this.$root.socket.emit("mounted");
 		}
 
 		// Methods

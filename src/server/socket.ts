@@ -28,8 +28,8 @@ export default function connectIo(server: HTTPServer) {
 	>(server);
 
 	io.on("connection", (socket) => {
-		socket.once("mounted", () => socket.emit("roomsListUpdate", getPublicRooms()));
 		socket
+			.once("mounted", () => socket.emit("roomsUpdate", getPublicRooms()))
 			.on("createRoom", (roomData, callback) => {
 				const roomId = roomData.roomId.trim();
 				if (!roomId || rooms[roomId]) return callback(false);
@@ -45,24 +45,25 @@ export default function connectIo(server: HTTPServer) {
 
 				rooms[roomId]?.players.push(socket.id);
 
-				socket.once("mounted", () => io.emit("roomsListUpdate", getPublicRooms()));
+				io.emit("roomsUpdate", getPublicRooms());
+				io.to(roomId).emit("playersUpdate", room.players);
 
 				callback(room);
 			})
 			.on("joinRoom", (roomId, callback) => {
-				rooms[roomId]?.players.push(socket.id);
+				if (rooms[roomId]?.host !== socket.id) rooms[roomId]?.players.push(socket.id);
 				const room = rooms[roomId];
 				if (!room) return callback("UNDEFINED_ROOM");
 				socket.join(roomId);
-				const { deck } = room;
+				const { deck, players } = room;
 
 				callback((hands[socket.id] ??= generateHand(deck)));
-				socket.once("mounted", () => {
-					Object.values(room.board)
-						.flatMap((column) => Object.values(column))
-						.forEach((tile) => socket.emit("tilePlaced", tile));
-					io.emit("roomsListUpdate", getPublicRooms());
-				});
+				io.emit("roomsUpdate", getPublicRooms());
+				io.to(roomId).emit("playersUpdate", players);
+
+				Object.values(room.board)
+					.flatMap((column) => Object.values(column))
+					.forEach((tile) => socket.emit("tilePlaced", tile));
 			})
 			.on("placeTile", (location, index, callback) => {
 				const roomId = [...socket.rooms.values()][1];

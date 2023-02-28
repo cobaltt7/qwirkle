@@ -2,10 +2,9 @@
 	<header><h1>Qwirkle</h1></header>
 </template>
 <script lang="ts">
-	import { Vue, Options } from "vue-class-component";
+	import { Vue } from "vue-class-component";
 	import type App from "./App.vue";
 
-	@Options({})
 	export default class TitleBar extends Vue {
 		// Data
 

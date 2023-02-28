@@ -1,7 +1,9 @@
 <template>
 	<TitleBar></TitleBar>
-	<Game v-if="roomId"></Game>
-	<Lobby v-else></Lobby>
+	<main>
+		<Game v-if="roomId"></Game>
+		<Lobby v-else></Lobby>
+	</main>
 </template>
 <script lang="ts">
 	import { Options, Vue } from "vue-class-component";
@@ -34,6 +36,7 @@
 					}),
 				);
 			}
+			this.socket.emit("mounted");
 		}
 
 		override updated() {
@@ -43,4 +46,8 @@
 		// Methods
 	}
 </script>
-<style scoped></style>
+<style scoped>
+	main {
+		padding-top: 20px;
+	}
+</style>

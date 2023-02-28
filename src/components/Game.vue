@@ -1,4 +1,5 @@
 <template>
+	<Players />
 	<section id="board" v-dragscroll :style="{ '--scale': scale }">
 		<div id="rows">
 			<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
@@ -38,10 +39,11 @@
 	import { Vue, Options } from "vue-class-component";
 	import type { Location, PlacedTile } from "../common/types";
 	import type App from "./App.vue";
+	import Players from "./Players.vue";
 	import { generateTileUrl } from "../common/constants";
 	import { dragscroll } from "vue-dragscroll";
 
-	@Options({ directives: { dragscroll } })
+	@Options({ directives: { dragscroll }, components: { Players } })
 	export default class Game extends Vue {
 		// Data
 		boardSize: { rows: [number, number]; columns: [number, number] } = {
@@ -69,7 +71,6 @@
 
 				(this.placedTiles[tile.y] ??= {})[tile.x] = tile;
 			});
-			this.$root.socket.emit("mounted");
 		}
 
 		// Methods
@@ -137,11 +138,10 @@
 		height: calc(100% - 265px);
 		overflow: auto;
 		border: 1px solid #000;
-		margin-top: 20px;
 		scrollbar-width: none;
 		--cursor: grab;
 		cursor: var(--cursor);
-
+		position: relative;
 		display: flex;
 		justify-content: flex-start;
 		align-items: flex-start;
@@ -164,7 +164,6 @@
 		width: calc(100px * var(--scale));
 		display: inline-block;
 		cursor: pointer;
-		border: 1px solid;
 	}
 
 	.tile img {
@@ -217,5 +216,10 @@
 		box-shadow: 0 0 5px 0 #000000;
 		height: 100px;
 		margin: auto;
+	}
+</style>
+<style>
+	main {
+		height: calc(100% - 115px);
 	}
 </style>
