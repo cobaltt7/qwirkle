@@ -38,15 +38,15 @@
 	section {
 		display: flex;
 		align-items: center;
-		height: 130px;
+		height: 150px;
 		overflow: auto;
-		padding-bottom: 5px;
-		margin-bottom: 5px;
+		padding-bottom: 10px;
+		margin-bottom: 20px;
+		flex-shrink: 0;
 	}
 
 	div {
 		display: flex;
-		height: 100%;
 		flex-wrap: nowrap;
 		flex-direction: column;
 		justify-content: space-around;
@@ -56,6 +56,8 @@
 		color: white;
 		padding: 5px;
 		border-radius: 10px;
+		min-width: 200px;
+		height: 100%;
 	}
 
 	img {

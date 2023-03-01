@@ -135,7 +135,7 @@
 </script>
 <style scoped>
 	#board {
-		height: calc(100% - 265px);
+		height: 100%;
 		overflow: auto;
 		border: 1px solid #000;
 		scrollbar-width: none;
@@ -197,6 +197,7 @@
 		height: 125px;
 		align-items: center;
 		margin: 10px 0;
+		flex-shrink: 0;
 	}
 
 	#hand button {
@@ -220,6 +221,8 @@
 </style>
 <style>
 	main {
-		height: calc(100% - 115px);
+		height: calc(100% - 100px);
+		display: flex;
+		flex-direction: column;
 	}
 </style>
