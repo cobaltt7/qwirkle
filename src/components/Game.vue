@@ -25,7 +25,7 @@
 	</section>
 	<section id="hand">
 		<button
-			v-for="[index, tile] in $root.heldTiles.entries()"
+			v-for="[index, tile] in $root.hand.entries()"
 			@click="selectTile"
 			:class="{ selected: index === selectedTile }"
 			:title="`${tile.color} ${tile.shape}`"
@@ -116,7 +116,7 @@
 				this.selectedTile,
 				(response) => {
 					if (typeof response === "string") alert(response);
-					else this.$root.heldTiles = response;
+					else this.$root.hand = response;
 				},
 			);
 			this.selectedTile = -1;

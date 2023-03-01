@@ -1,5 +1,5 @@
 <template>
-	<TitleBar></TitleBar>
+	<TitleBar />
 	<main>
 		<Game v-if="roomId"></Game>
 		<RoomsList v-else></RoomsList>
@@ -19,7 +19,7 @@
 	@Options({ components: { TitleBar, Game, RoomsList } })
 	export default class App extends Vue {
 		// Data
-		heldTiles: Tile[] = [];
+		hand: Tile[] = [];
 		roomId: string | null = null;
 		socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 

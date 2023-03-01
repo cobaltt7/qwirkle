@@ -60,7 +60,7 @@
 		}
 
 		// Methods
-		public joinRoom(roomId: string) {
+		joinRoom(roomId: string) {
 			this.$root.socket.emit("joinRoom", roomId, (response) => {
 				if (typeof response === "string") alert(response);
 				else {
