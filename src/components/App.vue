@@ -2,7 +2,7 @@
 	<TitleBar></TitleBar>
 	<main>
 		<Game v-if="roomId"></Game>
-		<Lobby v-else></Lobby>
+		<RoomsList v-else></RoomsList>
 	</main>
 </template>
 <script lang="ts">
@@ -12,11 +12,11 @@
 	import type { Socket } from "socket.io-client";
 	import type { ClientToServerEvents, ServerToClientEvents, Tile } from "../common/types";
 	import Game from "./Game.vue";
-	import Lobby from "./Lobby.vue";
+	import RoomsList from "./RoomsList.vue";
 	import TitleBar from "./TitleBar.vue";
 	import io from "socket.io-client";
 
-	@Options({ components: { TitleBar, Game, Lobby } })
+	@Options({ components: { TitleBar, Game, RoomsList } })
 	export default class App extends Vue {
 		// Data
 		heldTiles: Tile[] = [];

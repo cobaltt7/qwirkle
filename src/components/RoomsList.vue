@@ -1,5 +1,5 @@
 <template>
-	<section id="lobby">
+	<section id="rooms">
 		<section id="rooms">
 			<button
 				@click="joinRoom(id)"
@@ -38,7 +38,7 @@
 	import CreateRoom from "./CreateRoom.vue";
 
 	@Options({ components: { CreateRoom } })
-	export default class Lobby extends Vue {
+	export default class RoomsList extends Vue {
 		// Data
 		publicRooms: Rooms = {};
 
@@ -75,7 +75,7 @@
 	}
 </script>
 <style scoped>
-	#lobby {
+	#rooms {
 		width: 70%;
 		margin: auto;
 	}

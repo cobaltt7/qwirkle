@@ -41,7 +41,7 @@
 </template>
 <script lang="ts">
 	import { Vue } from "vue-class-component";
-	import type Lobby from "./Lobby.vue";
+	import type RoomsList from "./RoomsList.vue";
 	import type App from "./App.vue";
 
 	export default class CreateRoom extends Vue {
@@ -57,7 +57,7 @@
 			privateSwitch: HTMLInputElement;
 		};
 		declare readonly $root: App;
-		declare readonly $parent: Lobby;
+		declare readonly $parent: RoomsList;
 
 		// Hooks
 
