@@ -35,7 +35,7 @@
 			return this.$parent.placedTiles[this.row]?.[this.column];
 		}
 		get scale() {
-			console.log(this.$parent.scale)
+			console.log(this.$parent.scale);
 			return this.$parent.scale;
 		}
 		tilePlaced() {

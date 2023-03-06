@@ -33,7 +33,7 @@
 		centerTile?: PlacedTile;
 
 		// Refs
-		declare readonly $refs: { };
+		declare readonly $refs: {};
 
 		// Hooks
 		override mounted() {
