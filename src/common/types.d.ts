@@ -21,7 +21,7 @@ export interface ClientToServerEvents {
 	) => void;
 	joinRoom: (roomId: string, callback: (response?: JoinError) => void) => void;
 	createRoom: (
-		roomData: { roomId: string } & Pick<Room, "auth" | "private">,
+		roomData: Pick<Room, "auth" | "private">,
 		callback: (response: false | Room) => void,
 	) => void;
 	mounted: () => void;
@@ -57,6 +57,7 @@ export type Room = {
 	auth: boolean | { discord: boolean; github: boolean };
 	private: boolean;
 	started: boolean;
+	id: string;
 };
 export type Rooms = Record<string, Room>;
 /** Y by X. */

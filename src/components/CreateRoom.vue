@@ -1,6 +1,6 @@
 <template>
 	<dialog>
-		<form method="dialog" @submit="createRoom($refs.roomId.value)">
+		<form method="dialog" @submit="createRoom()">
 			<h3>Create New Room</h3>
 			<input type="text" placeholder="Room ID" required ref="roomId" />
 			<p>
@@ -50,7 +50,6 @@
 
 		// Refs
 		declare readonly $refs: {
-			roomId: HTMLInputElement;
 			authSwitch: HTMLInputElement;
 			discordAuth: HTMLInputElement;
 			githubAuth: HTMLInputElement;
@@ -62,11 +61,10 @@
 		// Hooks
 
 		// Methods
-		createRoom(roomId: string) {
+		createRoom() {
 			this.$root.socket.emit(
 				"createRoom",
 				{
-					roomId: roomId,
 					auth: this.authOn
 						? {
 								discord: this.$refs.discordAuth.checked,
@@ -75,9 +73,9 @@
 						: false,
 					private: this.$refs.privateSwitch.checked,
 				},
-				(response) => {
-					if (response) this.$parent.joinRoom(roomId);
-					else alert(response);
+				(room) => {
+					if (room) this.$parent.joinRoom(room.id);
+					else alert(room);
 				},
 			);
 		}

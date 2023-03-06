@@ -39,8 +39,8 @@ export default function connectIo(server: HTTPServer) {
 				socket.emit("playersUpdate", room.players);
 			})
 			.on("createRoom", (roomData, callback) => {
-				const roomId = roomData.roomId.trim();
-				if (!roomId || rooms[roomId]) return callback(false);
+				const roomId = generateRoomId();
+				if (rooms[roomId]) return callback(false);
 				const deck = Array.from(fullDeck);
 				const room: Room = {
 					deck,
@@ -50,6 +50,7 @@ export default function connectIo(server: HTTPServer) {
 					auth: roomData.auth,
 					private: roomData.private,
 					started: false,
+					id: roomId,
 				};
 
 				room.players.push(socket.id);
@@ -212,4 +213,14 @@ function getPublicRooms() {
 	return Object.fromEntries(
 		Object.entries(rooms).filter(([, room]) => !room.private && !room.started),
 	);
+}
+
+function generateRoomId() {
+	const factor = 6;
+	const power = 10 ** factor;
+	const dateSalt = Date.now() % power;
+	return (
+		Math.floor(Math.random() * power + dateSalt).toString(36) +
+		Math.floor(Math.random() * power + dateSalt).toString(36)
+	).substring(0, 8);
 }
