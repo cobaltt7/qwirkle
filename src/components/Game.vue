@@ -3,19 +3,11 @@
 	<section id="board" v-dragscroll :style="{ '--scale': scale }">
 		<div id="rows">
 			<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
-				<div
-					class="tile"
+				<Tile
 					v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
-					@click="tilePlaced"
-				>
-					<img
-						v-if="getFromBoard(columnIndex, rowIndex)"
-						:src="generateTileUrl(getFromBoard(columnIndex, rowIndex))"
-						:alt="`${getFromBoard(columnIndex, rowIndex)?.color} ${
-							getFromBoard(columnIndex, rowIndex)?.shape
-						}`"
-					/>
-				</div>
+					:rowIndex="rowIndex"
+					:columnIndex="columnIndex"
+				/>
 			</div>
 		</div>
 		<div id="zoom">
@@ -40,11 +32,16 @@
 	import type { Location, PlacedTile } from "../common/types";
 	import type App from "./App.vue";
 	import Players from "./Players.vue";
+	import Tile from "./Tile.vue";
 	import { generateTileUrl } from "../common/constants";
 	import { dragscroll } from "vue-dragscroll";
 
-	@Options({ directives: { dragscroll }, components: { Players } })
-	export default class Game extends Vue {
+	@Options({ directives: { dragscroll }, components: { Players, Tile } })
+	export default class Game extends Vue.with(
+		class Props {
+			centerTile!: PlacedTile;
+		},
+	) {
 		// Data
 		boardSize: { rows: [number, number]; columns: [number, number] } = {
 			rows: [0, 0],
@@ -62,15 +59,8 @@
 
 		// Hooks
 		override mounted() {
-			this.$root.socket.on("tilePlaced", (tile) => {
-				if (tile.x < this.boardSize.columns[0]) this.boardSize.columns[0] = tile.x;
-				else if (tile.x > this.boardSize.columns[1]) this.boardSize.columns[1] = tile.x;
-
-				if (tile.y < this.boardSize.rows[0]) this.boardSize.rows[0] = tile.y;
-				else if (tile.y > this.boardSize.rows[1]) this.boardSize.rows[1] = tile.y;
-
-				(this.placedTiles[tile.y] ??= {})[tile.x] = tile;
-			});
+			this.$root.socket.on("tilePlaced", this.tilePlaced);
+			this.tilePlaced(this.$props.centerTile);
 		}
 
 		// Methods
@@ -85,45 +75,14 @@
 				button,
 			);
 		}
-		parseRawIndexes(rawColumn: number, rawRow: number) {
-			return {
-				row: this.boardSize.rows[0] + rawRow - 2,
-				column: this.boardSize.columns[0] + rawColumn - 2,
-			};
-		}
-		tilePlaced(event: Event) {
-			if (
-				!(
-					event.target instanceof HTMLDivElement &&
-					event.target.parentElement?.parentElement
-				)
-			)
-				return; // Ignore, user didn't click on tile
+		tilePlaced(tile: PlacedTile) {
+			if (tile.x < this.boardSize.columns[0]) this.boardSize.columns[0] = tile.x;
+			else if (tile.x > this.boardSize.columns[1]) this.boardSize.columns[1] = tile.x;
 
-			if (this.selectedTile === -1) return; // TODO: Warn, user didn't select tile
+			if (tile.y < this.boardSize.rows[0]) this.boardSize.rows[0] = tile.y;
+			else if (tile.y > this.boardSize.rows[1]) this.boardSize.rows[1] = tile.y;
 
-			const { row, column } = this.parseRawIndexes(
-				Array.prototype.indexOf.call(event.target.parentElement.children, event.target) + 1,
-				Array.prototype.indexOf.call(
-					event.target.parentElement.parentElement.children,
-					event.target.parentElement,
-				) + 1,
-			);
-
-			this.$root.socket.emit(
-				"placeTile",
-				{ y: row, x: column },
-				this.selectedTile,
-				(response) => {
-					if (typeof response === "string") alert(response);
-					else this.$root.hand = response;
-				},
-			);
-			this.selectedTile = -1;
-		}
-		getFromBoard(rawColumn: number, rawRow: number) {
-			const locations = this.parseRawIndexes(rawColumn, rawRow);
-			return this.placedTiles[locations.row]?.[locations.column];
+			(this.placedTiles[tile.y] ??= {})[tile.x] = tile;
 		}
 		zoomIn() {
 			this.scale = Math.min(this.SCALE_BOUNDS[1], this.scale + this.SCALE_INCREMENT);
@@ -157,18 +116,6 @@
 
 	.row {
 		display: flex;
-	}
-
-	.tile {
-		height: calc(100px * var(--scale));
-		width: calc(100px * var(--scale));
-		display: inline-block;
-		cursor: pointer;
-	}
-
-	.tile img {
-		width: 100%; /* TODO: higher quality images */
-		cursor: var(--cursor);
 	}
 
 	#zoom {
@@ -218,11 +165,8 @@
 		height: 100px;
 		margin: auto;
 	}
-</style>
-<style>
-	main {
+
+	:global(main:has(#board)) {
 		height: calc(100% - 100px);
-		display: flex;
-		flex-direction: column;
 	}
 </style>

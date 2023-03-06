@@ -14,6 +14,7 @@
 	import type { Player } from "../common/types.js";
 	import type App from "./App.vue";
 	import type Game from "./Game.vue";
+	import type Lobby from "./Lobby.vue";
 
 	export default class Players extends Vue {
 		// Data
@@ -21,7 +22,7 @@
 
 		// Refs
 		declare readonly $refs: {};
-		declare readonly $parent: Game;
+		declare readonly $parent: Game | Lobby;
 		declare readonly $root: App;
 
 		// Hooks

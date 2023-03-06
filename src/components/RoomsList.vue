@@ -68,7 +68,7 @@
 					const url = new URL(location.toString());
 					url.searchParams.set("roomId", roomId);
 					window.history.replaceState(undefined, "", url.toString());
-					this.$root.heldTiles = response;
+					this.$root.status = "joined";
 				}
 			});
 		}

@@ -9,6 +9,7 @@ import type {
 	ServerToClientEvents,
 	SocketData,
 	Tile,
+	Room,
 } from "../common/types.js";
 
 const fullDeck = TILE_COLORS.map((color) => {
@@ -29,41 +30,67 @@ export default function connectIo(server: HTTPServer) {
 
 	io.on("connection", (socket) => {
 		socket
-			.once("mounted", () => socket.emit("roomsUpdate", getPublicRooms()))
+			.once("mounted", () => {
+				socket.emit("roomsUpdate", getPublicRooms());
+				const roomId = [...socket.rooms.values()][1];
+				if (!roomId) return;
+				const room = rooms[roomId];
+				if (!room) return;
+				socket.emit("playersUpdate", room.players);
+			})
 			.on("createRoom", (roomData, callback) => {
 				const roomId = roomData.roomId.trim();
 				if (!roomId || rooms[roomId]) return callback(false);
 				const deck = Array.from(fullDeck);
-				const room = (rooms[roomId] ??= {
+				const room: Room = {
 					deck,
-					board: { [0]: { [0]: { ...getRandomTile(deck, true), x: 0, y: 0 } } },
+					board: {},
 					host: socket.id,
 					players: [],
 					auth: roomData.auth,
 					private: roomData.private,
-				});
+					started: false,
+				};
 
-				rooms[roomId]?.players.push(socket.id);
+				room.players.push(socket.id);
 
 				io.emit("roomsUpdate", getPublicRooms());
 				io.to(roomId).emit("playersUpdate", room.players);
 
 				callback(room);
+				rooms[roomId] = room;
 			})
 			.on("joinRoom", (roomId, callback) => {
 				if (rooms[roomId]?.host !== socket.id) rooms[roomId]?.players.push(socket.id);
 				const room = rooms[roomId];
 				if (!room) return callback("UNDEFINED_ROOM");
+				if (room.started) return callback("ALREADY_STARTED");
 				socket.join(roomId);
-				const { deck, players } = room;
-
-				callback((hands[socket.id] ??= generateHand(deck)));
+				callback();
 				io.emit("roomsUpdate", getPublicRooms());
-				io.to(roomId).emit("playersUpdate", players);
+				io.to(roomId).emit("playersUpdate", room.players);
+			})
+			.on("startGame", async (callback) => {
+				const roomId = [...socket.rooms.values()][1];
+				if (!roomId) return callback("NOT_IN_ROOM");
+				const room = rooms[roomId];
+				if (!room) return callback("UNDEFINED_ROOM");
+				if (room.started) return callback("ALREADY_STARTED");
 
-				Object.values(room.board)
-					.flatMap((column) => Object.values(column))
-					.forEach((tile) => socket.emit("tilePlaced", tile));
+				room.started = true;
+
+				room.board[0] = {};
+				room.board[0][0] = { ...getRandomTile(room.deck, true), x: 0, y: 0 };
+				io.to(roomId).emit("tilePlaced", room.board[0][0]);
+
+				const allPlayers = await io.in(roomId).fetchSockets();
+				for (const player of allPlayers) {
+					const hand = generateHand(room.deck);
+					hands[socket.id] = hand;
+					player.emit("gameStart", hand, room.board[0][0]);
+				}
+
+				io.to(roomId).emit("playersUpdate", room.players);
 			})
 			.on("placeTile", (location, index, callback) => {
 				const roomId = [...socket.rooms.values()][1];
@@ -182,5 +209,7 @@ function verifyLine(line: PlacedTile[]) {
 }
 
 function getPublicRooms() {
-	return Object.fromEntries(Object.entries(rooms).filter(([, room]) => !room.private));
+	return Object.fromEntries(
+		Object.entries(rooms).filter(([, room]) => !room.private && !room.started),
+	);
 }
