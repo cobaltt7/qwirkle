@@ -10,7 +10,11 @@ import type {
 	SocketData,
 	Tile,
 	Room,
+	JWTClaims,
 } from "../common/types.js";
+import { SignJWT, jwtVerify } from "jose-node-esm-runtime";
+
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 const fullDeck = TILE_COLORS.map((color) => {
 	return TILE_SHAPES.map((shape) => {
@@ -38,14 +42,14 @@ export default function connectIo(server: HTTPServer) {
 				if (!room) return;
 				socket.emit("playersUpdate", room.players);
 			})
-			.on("createRoom", (roomData, callback) => {
+			.on("createRoom", async (roomData, callback) => {
 				const roomId = generateRoomId();
-				if (rooms[roomId]) return callback(false);
+				if (rooms[roomId]) return callback();
 				const deck = Array.from(fullDeck);
 				const room: Room = {
 					deck,
 					board: {},
-					host: socket.id,
+					host: roomData.username,
 					players: [],
 					auth: roomData.auth,
 					private: roomData.private,
@@ -53,16 +57,30 @@ export default function connectIo(server: HTTPServer) {
 					id: roomId,
 				};
 
-				room.players.push(socket.id);
+				room.players.push(roomData.username);
+				rooms[roomId] = room;
 
 				io.emit("roomsUpdate", getPublicRooms());
 				io.to(roomId).emit("playersUpdate", room.players);
 
-				callback(room);
-				rooms[roomId] = room;
+				const jwt = await new SignJWT({ username: roomData.username }as JWTClaims)
+					.setProtectedHeader({ alg: "HS256" })
+					.setIssuedAt()
+					.sign(secret);
+
+				callback(room, jwt);
 			})
-			.on("joinRoom", (roomId, callback) => {
-				if (rooms[roomId]?.host !== socket.id) rooms[roomId]?.players.push(socket.id);
+			.on("joinRoom", async (roomId, auth, callback) => {
+				const { username } =
+					"jwt" in auth
+						? ((await jwtVerify(auth.jwt, secret)).payload as JWTClaims)
+						: auth;
+
+				if (rooms[roomId]?.host !== username) {
+					if (rooms[roomId]?.players.includes(username))
+						return callback("DUPLICATE_USERNAME");
+					rooms[roomId]?.players.push(username);
+				}
 				const room = rooms[roomId];
 				if (!room) return callback("UNDEFINED_ROOM");
 				if (room.started) return callback("ALREADY_STARTED");

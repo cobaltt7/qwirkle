@@ -2,7 +2,13 @@
 	<dialog>
 		<form method="dialog" @submit="createRoom()">
 			<h3>Create New Room</h3>
-			<input type="text" placeholder="Room ID" required ref="roomId" />
+			<input
+				type="text"
+				placeholder="Username"
+				required
+				ref="username"
+				:value="defaultUsername"
+			/>
 			<p>
 				<label>
 					Require login to join
@@ -43,13 +49,16 @@
 	import { Vue } from "vue-class-component";
 	import type RoomsList from "./RoomsList.vue";
 	import type App from "./App.vue";
+	import { getUsername } from "../common/util.js";
 
 	export default class CreateRoom extends Vue {
 		// Data
 		authOn = false;
+		defaultUsername = getUsername();
 
 		// Refs
 		declare readonly $refs: {
+			username: HTMLInputElement;
 			authSwitch: HTMLInputElement;
 			discordAuth: HTMLInputElement;
 			githubAuth: HTMLInputElement;
@@ -72,10 +81,12 @@
 						  }
 						: false,
 					private: this.$refs.privateSwitch.checked,
+					username: this.$refs.username.value,
 				},
-				(room) => {
-					if (room) this.$parent.joinRoom(room.id);
-					else alert(room);
+				(room, jwt) => {
+					if (jwt) localStorage.setItem("auth", jwt);
+					if (room) this.$parent.joinRoom(room.id, this.$refs.username.value);
+					else alert("Error");
 				},
 			);
 		}

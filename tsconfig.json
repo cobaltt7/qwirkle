@@ -8,8 +8,7 @@
 		"moduleResolution": "node",
 		"importHelpers": false,
 		"jsx": "preserve",
-		"lib": ["ES2020", "DOM"],
-		"noEmit": true
+		"lib": ["ES2020", "DOM"]
 	},
 	"exclude": ["src/server/**/*", "dist"],
 	"typeAcquisition": { "enable": true }

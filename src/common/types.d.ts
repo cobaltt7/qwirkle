@@ -19,10 +19,14 @@ export interface ClientToServerEvents {
 		tile: number,
 		callback: (response: PlaceError | Tile[]) => void,
 	) => void;
-	joinRoom: (roomId: string, callback: (response?: JoinError) => void) => void;
+	joinRoom: (
+		roomId: string,
+		auth: { jwt: string } | JWTClaims,
+		callback: (response?: JoinError) => void,
+	) => void;
 	createRoom: (
-		roomData: Pick<Room, "auth" | "private">,
-		callback: (response: false | Room) => void,
+		roomData: JWTClaims & Pick<Room, "auth" | "private">,
+		callback: { (room?: never, jwt?: never): void; (room: Room, jwt: string): void },
 	) => void;
 	mounted: () => void;
 	startGame: (callback: (response: StartError) => void) => void;
@@ -64,3 +68,6 @@ export type Rooms = Record<string, Room>;
 export type Board = Record<Location["y"], Record<Location["x"], PlacedTile>>;
 export type Player = string;
 export type Players = Player[];
+
+// Auth
+export type JWTClaims = { username: string };
