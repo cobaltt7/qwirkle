@@ -1,6 +1,6 @@
 import connectIo from "./socket.js";
 import dotenv from "dotenv";
-await dotenv.config()
+await dotenv.config();
 
 const { default: server } =
 	process.env.NODE_ENV === "production"

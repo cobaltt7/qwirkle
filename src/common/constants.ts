@@ -13,7 +13,7 @@ export const PLACE_ERRORS = [
 	"NOT_IN_ROOM",
 	"UNDEFINED_ROOM",
 ] as const;
-export const JOIN_ERRORS = ["UNDEFINED_ROOM", "ALREADY_STARTED","DUPLICATE_USERNAME"] as const;
+export const JOIN_ERRORS = ["UNDEFINED_ROOM", "ALREADY_STARTED", "DUPLICATE_USERNAME"] as const;
 export const START_ERRORS = ["NOT_IN_ROOM", "UNDEFINED_ROOM", "ALREADY_STARTED"] as const;
 export function generateTileUrl({ color, shape }: Tile) {
 	return `./tiles/${color}-${shape}.png`;

@@ -63,7 +63,7 @@ export default function connectIo(server: HTTPServer) {
 				io.emit("roomsUpdate", getPublicRooms());
 				io.to(roomId).emit("playersUpdate", room.players);
 
-				const jwt = await new SignJWT({ username: roomData.username }as JWTClaims)
+				const jwt = await new SignJWT({ username: roomData.username } as JWTClaims)
 					.setProtectedHeader({ alg: "HS256" })
 					.setIssuedAt()
 					.sign(secret);
