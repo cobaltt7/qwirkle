@@ -21,7 +21,8 @@
 		"skipLibCheck": false,
 		"strict": true,
 		"useDefineForClassFields": true,
-		"useUnknownInCatchVariables": false
+		"useUnknownInCatchVariables": false,
+		"noEmit": true
 	},
 	"typeAcquisition": { "enable": true }
 }

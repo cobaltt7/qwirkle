@@ -44,16 +44,7 @@ export default {
 	css: {
 		postcss: {
 			map: true,
-			plugins: [
-				cssnano({
-					autoprefixer: false,
-					discardUnused: true,
-					mergeIdents: true,
-					reduceIdents: true,
-					zindex: true,
-				}),
-				autoprefixer({ grid: "no-autoplace" }),
-			],
+			plugins: [cssnano(), autoprefixer({ grid: "no-autoplace" })],
 		},
 	},
 	esbuild: { logLimit: 0, treeShaking: true },
@@ -67,8 +58,7 @@ export default {
 				const { html } = await posthtml([
 					htmlnano({
 						collapseAttributeWhitespace: true,
-						collapseBooleanAttributes: true,
-						collapseWhitespace: true,
+						collapseWhitespace: "aggressive",
 						deduplicateAttributeValues: true,
 						mergeScripts: true,
 						mergeStyles: true,
