@@ -1,6 +1,6 @@
 <template>
 	<dialog>
-		<form method="dialog" @submit="createRoom()">
+		<form method="dialog" @submit="createRoom">
 			<h3>Create New Room</h3>
 			<input
 				type="text"

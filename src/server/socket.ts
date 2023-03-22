@@ -1,14 +1,7 @@
 import { Server as SocketServer } from "socket.io";
 import type { Server as HTTPServer } from "node:http";
 import { TILE_COLORS, TILE_SHAPES } from "../common/constants.js";
-import {
-	getPublicRooms,
-	generateRoomId,
-	placeTile,
-	generateHand,
-	getRandomTile,
-	sortHand,
-} from "../common/util.js";
+import { verifyTile } from "../common/util.js";
 import type {
 	ClientToServerEvents,
 	InterServerEvents,
@@ -42,7 +35,7 @@ export default function connectIo(server: HTTPServer) {
 	io.on("connection", (socket) => {
 		socket
 			.once("mounted", () => {
-				socket.emit("roomsUpdate", getPublicRooms(rooms));
+				socket.emit("roomsUpdate", getPublicRooms());
 				const roomId = [...socket.rooms.values()][1];
 				if (!roomId) return;
 				const room = rooms[roomId];
@@ -67,7 +60,7 @@ export default function connectIo(server: HTTPServer) {
 				room.players.push(roomData.username);
 				rooms[roomId] = room;
 
-				io.emit("roomsUpdate", getPublicRooms(rooms));
+				io.emit("roomsUpdate", getPublicRooms());
 				io.to(roomId).emit("playersUpdate", room.players);
 
 				const jwt = await new SignJWT({ username: roomData.username } as JWTClaims)
@@ -93,7 +86,7 @@ export default function connectIo(server: HTTPServer) {
 				if (room.started) return callback("ALREADY_STARTED");
 				socket.join(roomId);
 				callback();
-				io.emit("roomsUpdate", getPublicRooms(rooms));
+				io.emit("roomsUpdate", getPublicRooms());
 				io.to(roomId).emit("playersUpdate", room.players);
 			})
 			.on("startGame", async (callback) => {
@@ -107,7 +100,7 @@ export default function connectIo(server: HTTPServer) {
 
 				room.board[0] = {};
 				room.board[0][0] = { ...getRandomTile(room.deck, true), x: 0, y: 0 };
-				io.to(roomId).emit("tilePlaced", room.board[0][0]);
+				io.to(roomId).emit("tilesPlaced", [room.board[0][0]]);
 
 				const allPlayers = await io.in(roomId).fetchSockets();
 				for (const player of allPlayers) {
@@ -117,31 +110,81 @@ export default function connectIo(server: HTTPServer) {
 				}
 
 				io.to(roomId).emit("playersUpdate", room.players);
+				io.emit("roomsUpdate", getPublicRooms());
 			})
-			.on("placeTile", (location, index, callback) => {
+			.on("placeTile", (tiles, callback) => {
 				const roomId = [...socket.rooms.values()][1];
 				if (!roomId) return callback("NOT_IN_ROOM");
 				const room = rooms[roomId];
 				if (!room) return callback("UNDEFINED_ROOM");
 
-				const hand = hands[socket.id] ?? generateHand(room.deck);
-				const tile = hand[Number(index)];
-				if (!tile) return callback("MISSING_TILE");
+				const hand = (hands[socket.id] ??= generateHand(room.deck));
 
-				const placed = { ...tile, ...location };
-				const error = placeTile(placed, room.board);
-				if (error) return callback(error);
+				const board = structuredClone(room.board);
+				for (const tile of tiles) {
+					if (board[tile.y]?.[tile.x]) return callback("ALREADY_PLACED");
+					(board[tile.y] ??= {})[tile.x] = tile;
 
-				(room.board[placed.y] ??= {})[placed.x] = placed;
-				io.to(roomId).emit("tilePlaced", placed);
+					const index = hand.findIndex(
+						(heldTile) =>
+							heldTile.color === tile.color && heldTile.shape === tile.shape,
+					);
+					if (index === -1) return callback("MISSING_TILE");
 
-				const newTile = getRandomTile(room.deck);
-				if (newTile) hand[Number(index)] = newTile;
-				else hand.splice(index, 1);
+					const newTile = getRandomTile(room.deck);
+					if (newTile) hand[index] = newTile;
+					else hand.splice(index, 1);
+				}
+
+				for (const tile of tiles) {
+					const error = verifyTile(tile, board);
+					if (error) return callback(error);
+				}
+
+				io.to(roomId).emit("tilesPlaced", tiles);
 				callback((hands[socket.id] = sortHand(hand)));
 			})
 			.on("disconnect", () => {
 				// TODO
 			});
 	});
+}
+
+function getPublicRooms() {
+	return Object.fromEntries(
+		Object.entries(rooms).filter(([, room]) => !room.private && !room.started),
+	);
+}
+
+function generateRoomId() {
+	const factor = 6;
+	const power = 10 ** factor;
+	const dateSalt = Date.now() % power;
+	return (
+		Math.floor(Math.random() * power + dateSalt).toString(36) +
+		Math.floor(Math.random() * power + dateSalt).toString(36)
+	).substring(0, 8);
+}
+
+function sortHand(hand: Tile[]) {
+	return hand.sort(
+		(one, two) =>
+			TILE_COLORS.indexOf(one.color) - TILE_COLORS.indexOf(two.color) ||
+			TILE_SHAPES.indexOf(one.shape) - TILE_SHAPES.indexOf(two.shape),
+	);
+}
+
+function getRandomTile(deck: Tile[], required: true): Tile;
+function getRandomTile(deck: Tile[], required?: false): Tile | undefined;
+function getRandomTile(deck: Tile[], required = false): Tile | undefined {
+	const index = Math.floor(Math.random() * deck.length);
+	const tile = deck[index];
+	if (!tile && required) throw new RangeError("Deck is empty");
+	deck.splice(index, 1);
+	return tile;
+}
+
+function generateHand(deck: Tile[], hand: Tile[] = []) {
+	while (deck.length > 0 && hand.length < 6) hand.push(getRandomTile(deck, true));
+	return sortHand(hand);
 }

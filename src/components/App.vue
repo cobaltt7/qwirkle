@@ -26,7 +26,7 @@
 	@Options({ components: { TitleBar, Game, RoomsList, Lobby } })
 	export default class App extends Vue {
 		// Data
-		hand: Tile[] = [];
+		hand: (Tile & { placed?: true })[] = [];
 		roomId: string | null = null;
 		socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 		status: null | "joined" | "started" = null;

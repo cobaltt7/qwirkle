@@ -1,22 +1,30 @@
-import { TILE_COLORS, TILE_SHAPES } from "./constants.js";
-import type { Board, JWTClaims, PlacedTile, PlaceError, Rooms, Tile } from "./types.js";
+import type { Board, JWTClaims, Location, PlacedTile, PlaceError } from "./types.js";
 
 export function getUsername() {
-	const jwt = localStorage.getItem("auth");
-	if (!jwt) return null;
-	const encoded = jwt?.split(".")[1];
-	if (!encoded) return null;
-	return (JSON.parse(window.atob(encoded)) as JWTClaims).username;
+	try {
+		const jwt = localStorage.getItem("auth");
+		if (!jwt) throw new ReferenceError("Missing JWT");
+		const encoded = jwt?.split(".")[1];
+		if (!encoded) throw new SyntaxError("Invalid JWT");
+		const { username } = JSON.parse(window.atob(encoded)) as JWTClaims;
+		if (!username || typeof username !== "string")
+			throw new TypeError("Username must be a string");
+		return username;
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
 }
 
-export function placeTile(tile: PlacedTile, board: Board): PlaceError | undefined {
-	const row = board[tile.y] ?? {};
-	if (row[tile.x]) return "ALREADY_PLACED";
+export function verifyTile(location: Location, board: Board): PlaceError | undefined {
+	const row = board[location.y] ?? {};
+	const tile = board[location.y]?.[location.x];
+	if (!tile) return "UNKNOWN_TILE";
 
-	let top = board[tile.y - 1]?.[tile.x],
-		bottom = board[tile.y + 1]?.[tile.x],
-		right = row[tile.x + 1],
-		left = row[tile.x - 1];
+	let top = board[location.y - 1]?.[location.x],
+		bottom = board[location.y + 1]?.[location.x],
+		right = row[location.x + 1],
+		left = row[location.x - 1];
 	if (!top && !bottom && !right && !left) return "NO_NEIGHBORS";
 
 	const neighborhood: { row: PlacedTile[]; column: PlacedTile[] } = { row: [], column: [] };
@@ -34,12 +42,12 @@ export function placeTile(tile: PlacedTile, board: Board): PlaceError | undefine
 	if (top || bottom) {
 		if (top) {
 			do neighborhood.column.unshift(top);
-			while ((top = board[top.y - 1]?.[tile.x]));
+			while ((top = board[top.y - 1]?.[location.x]));
 		}
 		neighborhood.column.push(tile);
 		if (bottom) {
 			do neighborhood.column.push(bottom);
-			while ((bottom = board[bottom.y + 1]?.[tile.x]));
+			while ((bottom = board[bottom.y + 1]?.[location.x]));
 		}
 	}
 
@@ -47,32 +55,6 @@ export function placeTile(tile: PlacedTile, board: Board): PlaceError | undefine
 	if (rowResult) return `${rowResult}_ROW_ITEMS`;
 	const columnResult = verifyLine(neighborhood.column);
 	if (columnResult) return `${columnResult}_COLUMN_ITEMS`;
-}
-
-export function getRandomTile(deck: Tile[], required: true): Tile;
-export function getRandomTile(deck: Tile[], required?: false): Tile | undefined;
-export function getRandomTile(deck: Tile[], required = false): Tile | undefined {
-	const index = Math.floor(Math.random() * deck.length);
-	const tile = deck[index];
-	if (!tile && required) throw new RangeError("Deck is empty");
-	deck.splice(index, 1);
-	return tile;
-}
-
-export function generateHand(deck: Tile[]) {
-	const hand = [];
-	while (deck.length > 0 && hand.length < 6) {
-		hand.push(getRandomTile(deck, true));
-	}
-	return sortHand(hand);
-}
-
-export function sortHand(hand: Tile[]) {
-	return hand.sort(
-		(one, two) =>
-			TILE_COLORS.indexOf(one.color) - TILE_COLORS.indexOf(two.color) ||
-			TILE_SHAPES.indexOf(one.shape) - TILE_SHAPES.indexOf(two.shape),
-	);
 }
 
 export function verifyLine(line: PlacedTile[]) {
@@ -88,20 +70,4 @@ export function verifyLine(line: PlacedTile[]) {
 			);
 		}) && "DUPLICATE"
 	);
-}
-
-export function getPublicRooms(rooms: Rooms) {
-	return Object.fromEntries(
-		Object.entries(rooms).filter(([, room]) => !room.private && !room.started),
-	);
-}
-
-export function generateRoomId() {
-	const factor = 6;
-	const power = 10 ** factor;
-	const dateSalt = Date.now() % power;
-	return (
-		Math.floor(Math.random() * power + dateSalt).toString(36) +
-		Math.floor(Math.random() * power + dateSalt).toString(36)
-	).substring(0, 8);
 }

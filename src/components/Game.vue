@@ -4,6 +4,7 @@
 		<div id="rows">
 			<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
 				<Tile
+					ref="tiles"
 					v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
 					:rowIndex="rowIndex"
 					:columnIndex="columnIndex"
@@ -19,17 +20,21 @@
 		<button
 			v-for="[index, tile] in $root.hand.entries()"
 			@click="selectTile"
-			:class="{ selected: index === selectedTile }"
+			:class="{ selected: index === selectedTile || tile.placed, placed: tile.placed }"
 			:title="`${tile.color} ${tile.shape}`"
 			type="button"
 		>
 			<img :src="generateTileUrl(tile)" :title="`${tile.color} ${tile.shape}`" />
 		</button>
 	</section>
+	<section id="buttons" v-if="takingTurn">
+		<button @click="reset" type="button">Reset Hand</button>
+		<button @click="place" type="button">Place Tiles</button>
+	</section>
 </template>
 <script lang="ts">
 	import { Vue, Options } from "vue-class-component";
-	import type { Location, PlacedTile } from "../common/types";
+	import type { Board, PlacedTile } from "../common/types";
 	import type App from "./App.vue";
 	import Players from "./Players.vue";
 	import Tile from "./Tile.vue";
@@ -47,20 +52,32 @@
 			rows: [0, 0],
 			columns: [0, 0],
 		};
-		placedTiles: Record<Location["y"], Record<Location["x"], PlacedTile>> = {};
+		board: Board = {};
 		selectedTile = -1;
 		scale = 1;
+		takingTurn = false;
 		SCALE_BOUNDS = [0.35, 1.5] as const;
 		SCALE_INCREMENT = 0.05 as const;
 
+		// Computed
+
 		// Refs
-		declare readonly $refs: {};
+		declare readonly $refs: {
+			tiles: Tile[];
+		};
 		declare readonly $root: App;
 
 		// Hooks
 		override mounted() {
-			this.$root.socket.on("tilePlaced", this.tilePlaced);
-			this.tilePlaced(this.$props.centerTile);
+			this.$root.socket.on("tilesPlaced", (tiles) => {
+				tiles.map((tile) => {
+					(this.board[tile.y] ??= {})[tile.x] = tile;
+				});
+				this.onBoardUpdate();
+			});
+
+			(this.board[0] ??= {})[0] = this.centerTile;
+			this.onBoardUpdate();
 		}
 
 		// Methods
@@ -70,25 +87,66 @@
 			const button = event.target.closest("button");
 			if (!button) return; // Ignore, user didn't click on tile
 
-			this.selectedTile = Array.prototype.indexOf.call(
-				button.parentNode?.children ?? [],
-				button,
-			);
+			const index = Array.prototype.indexOf.call(button.parentNode?.children ?? [], button);
+			const tile = this.$root.hand[index];
+			if (tile && !tile?.placed) this.selectedTile = index;
 		}
-		tilePlaced(tile: PlacedTile) {
-			if (tile.x < this.boardSize.columns[0]) this.boardSize.columns[0] = tile.x;
-			else if (tile.x > this.boardSize.columns[1]) this.boardSize.columns[1] = tile.x;
+		onBoardUpdate() {
+			const tiles = Object.values(this.board)
+				.map((row) => Object.values(row))
+				.flat();
 
-			if (tile.y < this.boardSize.rows[0]) this.boardSize.rows[0] = tile.y;
-			else if (tile.y > this.boardSize.rows[1]) this.boardSize.rows[1] = tile.y;
-
-			(this.placedTiles[tile.y] ??= {})[tile.x] = tile;
+			this.boardSize = tiles.reduce(
+				({ rows: [smallestY, largestY], columns: [smallestX, largestX] }, tile) => ({
+					rows: [
+						tile.y < smallestY ? tile.y : smallestY,
+						tile.y > largestY ? tile.y : largestY,
+					],
+					columns: [
+						tile.x < smallestX ? tile.x : smallestX,
+						tile.x > largestX ? tile.x : largestX,
+					],
+				}),
+				{ rows: [0, 0], columns: [0, 0] } as typeof this.boardSize,
+			);
+			this.$refs.tiles.map((tile) => {
+				tile.tile = this.board[tile.y]?.[tile.x] ?? null;
+			});
+			this.takingTurn = !!tiles.find((tile) => tile.temporary);
 		}
 		zoomIn() {
 			this.scale = Math.min(this.SCALE_BOUNDS[1], this.scale + this.SCALE_INCREMENT);
 		}
 		zoomOut() {
 			this.scale = Math.max(this.SCALE_BOUNDS[0], this.scale - this.SCALE_INCREMENT);
+		}
+		place() {
+			const tiles = Object.values(this.board)
+				.map((row) => Object.values(row).filter((tile) => tile.temporary))
+				.flat()
+				.map((tile) => ({ ...tile, temporary: undefined }));
+
+			this.$root.socket.emit("placeTile", tiles, (response) => {
+				if (typeof response === "string") alert(response);
+				else this.$root.hand = response;
+
+				this.reset();
+			});
+		}
+		reset() {
+			this.selectedTile = -1;
+			for (const index in this.board) {
+				if (!this.board.hasOwnProperty(index)) continue;
+
+				const row = this.board[index];
+				if (!row) continue;
+
+				const filtered = Object.entries(row).filter(([, tile]) => !tile.temporary);
+				this.board[index] = Object.fromEntries(filtered);
+			}
+
+			this.onBoardUpdate();
+			this.$root.hand = this.$root.hand.map((tile) => ({ ...tile, placed: undefined }));
 		}
 	}
 </script>
@@ -154,6 +212,10 @@
 		padding: 0;
 		width: 125px;
 		background: #eee;
+	}
+
+	.placed {
+		filter: contrast(0.5);
 	}
 
 	.selected {

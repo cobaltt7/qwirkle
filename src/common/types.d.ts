@@ -8,16 +8,15 @@ import type {
 
 // Socket.io
 export interface ServerToClientEvents {
-	tilePlaced: (tile: PlacedTile) => void;
+	tilesPlaced: (tiles: PlacedTile[]) => void;
 	roomsUpdate: (rooms: Rooms) => void;
 	playersUpdate: (players: Players) => void;
 	gameStart: (hand: Tile[], start: PlacedTile) => void;
 }
 export interface ClientToServerEvents {
 	placeTile: (
-		location: Location,
-		tile: number,
-		callback: (response: PlaceError | Tile[]) => void,
+		tiles: PlacedTile[],
+		callback: (hand: PlaceError | Tile[]) => void,
 	) => void;
 	joinRoom: (
 		roomId: string,
@@ -43,7 +42,9 @@ export interface Tile {
 	color: TileColor;
 	shape: TileShape;
 }
-export interface PlacedTile extends Tile, Location {}
+export interface PlacedTile extends Tile, Location {
+	temporary?: boolean;
+}
 export type TileColor = typeof TILE_COLORS[number];
 export type TileShape = typeof TILE_SHAPES[number];
 
@@ -64,7 +65,7 @@ export type Room = {
 	id: string;
 };
 export type Rooms = Record<string, Room>;
-/** Y by X. */
+/** Rows by columns */
 export type Board = Record<Location["y"], Record<Location["x"], PlacedTile>>;
 export type Player = string;
 export type Players = Player[];
