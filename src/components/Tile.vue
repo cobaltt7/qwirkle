@@ -1,11 +1,6 @@
 <template @board-update="boardUpdate">
 	<div @click="tilePlaced">
-		<!-- <img v-if="tile" :src="generateTileUrl(tile)" :alt="`${tile.color} ${tile.shape}`" /> -->
-		{{ tile?.color }} {{ tile?.shape }}
-		<br />
-		X: {{ x }}; Y: {{ y }}
-		<br>
-		{{ i }}
+		<img v-if="tile" :src="generateTileUrl(tile)" :alt="`${tile.color} ${tile.shape}`" />
 	</div>
 </template>
 <script lang="ts">
@@ -25,7 +20,6 @@
 	) {
 		// Data
 		tile: PlacedTile | null = null;
-		ind=0
 
 		// Computed
 		get y() {
@@ -36,9 +30,6 @@
 		}
 		get scale() {
 			return this.$parent.scale;
-		}
-		get i() {
-			return this.ind++
 		}
 
 		// Refs
@@ -57,21 +48,21 @@
 
 			const tile = this.$root.hand[this.$parent.selectedTile];
 			if (!tile) return alert("MISSING_TILE2");
+			if (
+				this.$parent.board[this.y]?.[this.x] &&
+				this.$parent.board[this.y]?.[this.x]?.temporary !== "ignore"
+			)
+				return alert("ALREADY_PLACED");
 
-			const placed = { ...tile, x: this.x, y: this.y, temporary: true };
+			const placed: PlacedTile = { ...tile, x: this.x, y: this.y, temporary: "ignore" };
+			(this.$parent.board[placed.y] ??= {})[placed.x] = placed;
 
-			const board = toRaw(this.$parent.board);
-
-			if (board[placed.y]?.[placed.x]) return alert("ALREADY_PLACED");
-			(board[placed.y] ??= {})[placed.x] = placed;
-
-			const error = verifyTile(placed, board);
+			const error = verifyTile(placed, this.$parent.board);
 			if (error) return alert(error);
 
 			tile.placed = true;
 			this.$parent.selectedTile = -1;
-
-			(this.$parent.board[placed.y] ??= {})[placed.x] = placed;
+			placed.temporary = true;
 			this.$parent.onBoardUpdate();
 		}
 		generateTileUrl = generateTileUrl;
@@ -83,7 +74,6 @@
 		width: calc(100px * var(--scale));
 		display: inline-block;
 		cursor: pointer;
-		border: solid;
 	}
 
 	img {

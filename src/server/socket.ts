@@ -118,7 +118,7 @@ export default function connectIo(server: HTTPServer) {
 				const room = rooms[roomId];
 				if (!room) return callback("UNDEFINED_ROOM");
 
-				const hand = (hands[socket.id] ??= generateHand(room.deck));
+				const hand = [...(hands[socket.id] ?? [])];
 
 				const board = structuredClone(room.board);
 				for (const tile of tiles) {
@@ -141,6 +141,7 @@ export default function connectIo(server: HTTPServer) {
 					if (error) return callback(error);
 				}
 
+				room.board = board;
 				io.to(roomId).emit("tilesPlaced", tiles);
 				callback((hands[socket.id] = sortHand(hand)));
 			})

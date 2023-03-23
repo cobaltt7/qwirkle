@@ -26,10 +26,13 @@
 		>
 			<img :src="generateTileUrl(tile)" :title="`${tile.color} ${tile.shape}`" />
 		</button>
-	</section>
-	<section id="buttons" v-if="takingTurn">
-		<button @click="reset" type="button">Reset Hand</button>
-		<button @click="place" type="button">Place Tiles</button>
+		<section id="buttons" v-if="score">
+			<p>
+				<b>{{ score }}</b> points
+			</p>
+			<button @click="reset" type="button">Reset Hand</button>
+			<button @click="place" type="button">Place Tiles</button>
+		</section>
 	</section>
 </template>
 <script lang="ts">
@@ -40,6 +43,7 @@
 	import Tile from "./Tile.vue";
 	import { generateTileUrl } from "../common/constants";
 	import { dragscroll } from "vue-dragscroll";
+	import { getScore } from "../common/util.js";
 
 	@Options({ directives: { dragscroll }, components: { Players, Tile } })
 	export default class Game extends Vue.with(
@@ -55,9 +59,9 @@
 		board: Board = {};
 		selectedTile = -1;
 		scale = 1;
-		takingTurn = false;
 		SCALE_BOUNDS = [0.35, 1.5] as const;
 		SCALE_INCREMENT = 0.05 as const;
+		score = 0;
 
 		// Computed
 
@@ -78,6 +82,7 @@
 
 			(this.board[0] ??= {})[0] = this.centerTile;
 			this.onBoardUpdate();
+			window.board = this.board;
 		}
 
 		// Methods
@@ -94,7 +99,8 @@
 		onBoardUpdate() {
 			const tiles = Object.values(this.board)
 				.map((row) => Object.values(row))
-				.flat();
+				.flat()
+				.filter((tile) => tile.temporary !== "ignore");
 
 			this.boardSize = tiles.reduce(
 				({ rows: [smallestY, largestY], columns: [smallestX, largestX] }, tile) => ({
@@ -111,8 +117,12 @@
 			);
 			this.$refs.tiles.map((tile) => {
 				tile.tile = this.board[tile.y]?.[tile.x] ?? null;
+				if (tile.tile?.temporary === "ignore") tile.tile = null;
 			});
-			this.takingTurn = !!tiles.find((tile) => tile.temporary);
+			this.score = getScore(
+				tiles.filter((tile) => tile.temporary),
+				this.board,
+			);
 		}
 		zoomIn() {
 			this.scale = Math.min(this.SCALE_BOUNDS[1], this.scale + this.SCALE_INCREMENT);
@@ -122,8 +132,9 @@
 		}
 		place() {
 			const tiles = Object.values(this.board)
-				.map((row) => Object.values(row).filter((tile) => tile.temporary))
+				.map((row) => Object.values(row))
 				.flat()
+				.filter((tile) => tile.temporary === true)
 				.map((tile) => ({ ...tile, temporary: undefined }));
 
 			this.$root.socket.emit("placeTile", tiles, (response) => {
@@ -205,13 +216,17 @@
 		flex-shrink: 0;
 	}
 
-	#hand button {
+	#hand > button {
 		height: 100%;
 		border: none;
 		margin: 5px;
 		padding: 0;
 		width: 125px;
 		background: #eee;
+	}
+
+	#buttons p {
+		margin: 0 0 0 8px;
 	}
 
 	.placed {

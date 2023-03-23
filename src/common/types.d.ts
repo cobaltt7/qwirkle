@@ -14,10 +14,7 @@ export interface ServerToClientEvents {
 	gameStart: (hand: Tile[], start: PlacedTile) => void;
 }
 export interface ClientToServerEvents {
-	placeTile: (
-		tiles: PlacedTile[],
-		callback: (hand: PlaceError | Tile[]) => void,
-	) => void;
+	placeTile: (tiles: PlacedTile[], callback: (hand: PlaceError | Tile[]) => void) => void;
 	joinRoom: (
 		roomId: string,
 		auth: { jwt: string } | JWTClaims,
@@ -43,7 +40,7 @@ export interface Tile {
 	shape: TileShape;
 }
 export interface PlacedTile extends Tile, Location {
-	temporary?: boolean;
+	temporary?: boolean | "ignore";
 }
 export type TileColor = typeof TILE_COLORS[number];
 export type TileShape = typeof TILE_SHAPES[number];
@@ -65,7 +62,7 @@ export type Room = {
 	id: string;
 };
 export type Rooms = Record<string, Room>;
-/** Rows by columns */
+/** Rows by columns. */
 export type Board = Record<Location["y"], Record<Location["x"], PlacedTile>>;
 export type Player = string;
 export type Players = Player[];
