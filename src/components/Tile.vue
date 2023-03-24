@@ -39,6 +39,9 @@
 		// Hooks
 
 		// Methods
+		override mounted() {
+			this.tile = this.$parent.board[this.y]?.[this.x] ?? null;
+		}
 		boardUpdate() {
 			this.tile = this.$parent.board[this.y]?.[this.x] ?? null;
 		}

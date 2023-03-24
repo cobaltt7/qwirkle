@@ -1,13 +1,13 @@
 <template>
-	<Players />
+	<PlayersList />
 	<button @click="startGame">Start Game</button>
 </template>
 <script lang="ts">
 	import { Vue, Options } from "vue-class-component";
 	import type App from "./App.vue";
-	import Players from "./Players.vue";
+	import PlayersList from "./PlayersList.vue";
 
-	@Options({ components: { Players } })
+	@Options({ components: { PlayersList } })
 	export default class Lobby extends Vue {
 		// Data
 

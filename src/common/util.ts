@@ -83,7 +83,7 @@ export function getNeighborhood(tile: PlacedTile, board: Board) {
 	return neighborhood;
 }
 
-export function getScore(tiles: PlacedTile[], board: Board) {
+export function calculatePoints(tiles: PlacedTile[], board: Board) {
 	return getNeighborhoods(tiles, board).reduce(
 		(acc, { length }) => acc + length * (Number(length === 6) + 1),
 		0,

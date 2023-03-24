@@ -10,7 +10,7 @@ import type {
 export interface ServerToClientEvents {
 	tilesPlaced: (tiles: PlacedTile[]) => void;
 	roomsUpdate: (rooms: Rooms) => void;
-	playersUpdate: (players: PlayersList) => void;
+	playersUpdate: (players: Players) => void;
 	gameStart: (hand: Tile[], start: PlacedTile) => void;
 }
 export interface ClientToServerEvents {
@@ -57,7 +57,7 @@ export type Room = {
 	board: Board;
 	deck: Tile[];
 	host: string;
-	players: PlayersList;
+	players: Players;
 	auth: boolean | { discord: boolean; github: boolean };
 	private: boolean;
 	started: boolean;
@@ -66,7 +66,7 @@ export type Room = {
 export type Rooms = Record<string, Room>;
 /** Rows by columns. */
 export type Board = Record<Location["y"], Record<Location["x"], PlacedTile>>;
-export type PlayersList = Record<string, { points: number }>;
+export type Players = Record<string, { score: number }>;
 
 // Auth
 export type JWTClaims = { username: string };

@@ -1,7 +1,7 @@
 import { Server as SocketServer } from "socket.io";
 import type { Server as HTTPServer } from "node:http";
 import { TILE_COLORS, TILE_SHAPES } from "../common/constants.js";
-import { verifyTile, getScore } from "../common/util.js";
+import { verifyTile, calculatePoints } from "../common/util.js";
 import type {
 	ClientToServerEvents,
 	InterServerEvents,
@@ -58,7 +58,7 @@ export default function connectIo(server: HTTPServer) {
 				};
 
 				socket.data.username = roomData.username;
-				room.players[roomData.username] = { points: 0 };
+				room.players[roomData.username] = { score: 0 };
 				rooms[roomId] = room;
 
 				io.emit("roomsUpdate", getPublicRooms());
@@ -76,13 +76,14 @@ export default function connectIo(server: HTTPServer) {
 					"jwt" in auth
 						? ((await jwtVerify(auth.jwt, secret)).payload as JWTClaims)
 						: auth;
+				socket.data.username = username;
 
 				const room = rooms[roomId];
 				if (!room) return callback("UNDEFINED_ROOM");
 
 				if (room?.host !== username) {
 					if (room?.players[username]) return callback("DUPLICATE_USERNAME");
-					room.players[username] = { points: 0 };
+					room.players[username] = { score: 0 };
 				}
 				if (room.started) return callback("ALREADY_STARTED");
 				socket.join(roomId);
@@ -144,8 +145,9 @@ export default function connectIo(server: HTTPServer) {
 
 				room.board = board;
 				room.players[socket.data.username] = {
-					points:
-						(room.players[socket.data.username]?.points || 0) + getScore(tiles, board),
+					score:
+						(room.players[socket.data.username]?.score || 0) +
+						calculatePoints(tiles, board),
 				};
 				io.to(roomId).emit("tilesPlaced", tiles);
 				io.to(roomId).emit("playersUpdate", room.players);

@@ -9,7 +9,7 @@
 			>
 				<h2>Room {{ id }}</h2>
 				<p>Host: {{ room.host }}</p>
-				<div>👥 {{ room.players.length }}</div>
+				<div>👥 {{ Object.keys(room.players).length }}</div>
 			</button>
 		</section>
 		<section id="manage">

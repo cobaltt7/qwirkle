@@ -1,5 +1,5 @@
 <template>
-	<Players />
+	<PlayersList :scores="true" />
 	<section id="board" v-dragscroll :style="{ '--scale': scale }">
 		<div id="rows">
 			<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
@@ -39,13 +39,13 @@
 	import { Vue, Options } from "vue-class-component";
 	import type { Board, PlacedTile } from "../common/types";
 	import type App from "./App.vue";
-	import Players from "./Players.vue";
+	import PlayersList from "./PlayersList.vue";
 	import Tile from "./Tile.vue";
 	import { generateTileUrl } from "../common/constants";
 	import { dragscroll } from "vue-dragscroll";
-	import { getScore } from "../common/util.js";
+	import { calculatePoints } from "../common/util.js";
 
-	@Options({ directives: { dragscroll }, components: { Players, Tile } })
+	@Options({ directives: { dragscroll }, components: { PlayersList, Tile } })
 	export default class Game extends Vue.with(
 		class Props {
 			centerTile!: PlacedTile;
@@ -118,7 +118,7 @@
 				tile.tile = this.board[tile.y]?.[tile.x] ?? null;
 				if (tile.tile?.temporary === "ignore") tile.tile = null;
 			});
-			this.score = getScore(
+			this.score = calculatePoints(
 				tiles.filter((tile) => tile.temporary),
 				this.board,
 			);

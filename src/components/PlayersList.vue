@@ -2,23 +2,29 @@
 	<section>
 		<div v-for="player in Object.entries(players)">
 			<img
-				:src="`https://api.dicebear.com/5.x/fun-emoji/png?backgroundType=gradientLinear,solid&seed=${player}`"
+				:src="`https://api.dicebear.com/5.x/fun-emoji/png?backgroundType=gradientLinear,solid&seed=${player[0]}`"
 				:alt="`${player[0]}\`'s avatar'`"
 			/>
-			<p>{{ player[0] }}</p>
+			<p>
+				{{ player[0] }} <span v-if="scores">{{ player[1].score }}</span>
+			</p>
 		</div>
 	</section>
 </template>
 <script lang="ts">
 	import { Vue } from "vue-class-component";
-	import type { PlayersList } from "../common/types.js";
+	import type { Players } from "../common/types.js";
 	import type App from "./App.vue";
 	import type Game from "./Game.vue";
 	import type Lobby from "./Lobby.vue";
 
-	export default class Players extends Vue {
+	export default class PlayersList extends Vue.with(
+		class Props {
+			scores?: boolean;
+		},
+	) {
 		// Data
-		players: PlayersList = {};
+		players: Players = {};
 
 		// Refs
 		declare readonly $refs: {};
@@ -68,5 +74,15 @@
 
 	p {
 		margin: 0;
+	}
+
+	span {
+		align-items: center;
+		background-color: orange;
+		border-radius: 25px;
+		color: #000;
+		display: inline-flex;
+		justify-content: center;
+		padding: 0 5px;
 	}
 </style>
