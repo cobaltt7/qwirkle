@@ -82,7 +82,6 @@
 
 			(this.board[0] ??= {})[0] = this.centerTile;
 			this.onBoardUpdate();
-			window.board = this.board;
 		}
 
 		// Methods

@@ -1,24 +1,24 @@
 <template>
 	<section>
-		<div v-for="player in players">
+		<div v-for="player in Object.entries(players)">
 			<img
 				:src="`https://api.dicebear.com/5.x/fun-emoji/png?backgroundType=gradientLinear,solid&seed=${player}`"
-				:alt="`${player}\`'s avatar'`"
+				:alt="`${player[0]}\`'s avatar'`"
 			/>
-			<p>{{ player }}</p>
+			<p>{{ player[0] }}</p>
 		</div>
 	</section>
 </template>
 <script lang="ts">
 	import { Vue } from "vue-class-component";
-	import type { Player } from "../common/types.js";
+	import type { PlayersList } from "../common/types.js";
 	import type App from "./App.vue";
 	import type Game from "./Game.vue";
 	import type Lobby from "./Lobby.vue";
 
 	export default class Players extends Vue {
 		// Data
-		players: Player[] = [];
+		players: PlayersList = {};
 
 		// Refs
 		declare readonly $refs: {};

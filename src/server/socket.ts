@@ -1,7 +1,7 @@
 import { Server as SocketServer } from "socket.io";
 import type { Server as HTTPServer } from "node:http";
 import { TILE_COLORS, TILE_SHAPES } from "../common/constants.js";
-import { verifyTile } from "../common/util.js";
+import { verifyTile, getScore } from "../common/util.js";
 import type {
 	ClientToServerEvents,
 	InterServerEvents,
@@ -50,14 +50,15 @@ export default function connectIo(server: HTTPServer) {
 					deck,
 					board: {},
 					host: roomData.username,
-					players: [],
+					players: {},
 					auth: roomData.auth,
 					private: roomData.private,
 					started: false,
 					id: roomId,
 				};
 
-				room.players.push(roomData.username);
+				socket.data.username = roomData.username;
+				room.players[roomData.username] = { points: 0 };
 				rooms[roomId] = room;
 
 				io.emit("roomsUpdate", getPublicRooms());
@@ -76,13 +77,13 @@ export default function connectIo(server: HTTPServer) {
 						? ((await jwtVerify(auth.jwt, secret)).payload as JWTClaims)
 						: auth;
 
-				if (rooms[roomId]?.host !== username) {
-					if (rooms[roomId]?.players.includes(username))
-						return callback("DUPLICATE_USERNAME");
-					rooms[roomId]?.players.push(username);
-				}
 				const room = rooms[roomId];
 				if (!room) return callback("UNDEFINED_ROOM");
+
+				if (room?.host !== username) {
+					if (room?.players[username]) return callback("DUPLICATE_USERNAME");
+					room.players[username] = { points: 0 };
+				}
 				if (room.started) return callback("ALREADY_STARTED");
 				socket.join(roomId);
 				callback();
@@ -105,20 +106,20 @@ export default function connectIo(server: HTTPServer) {
 				const allPlayers = await io.in(roomId).fetchSockets();
 				for (const player of allPlayers) {
 					const hand = generateHand(room.deck);
-					hands[socket.id] = hand;
+					hands[player.data.username] = hand;
 					player.emit("gameStart", hand, room.board[0][0]);
 				}
 
 				io.to(roomId).emit("playersUpdate", room.players);
 				io.emit("roomsUpdate", getPublicRooms());
 			})
-			.on("placeTile", (tiles, callback) => {
+			.on("placeTile", async (tiles, callback) => {
 				const roomId = [...socket.rooms.values()][1];
-				if (!roomId) return callback("NOT_IN_ROOM");
+				if (!roomId || !socket.data.username) return callback("NOT_IN_ROOM");
 				const room = rooms[roomId];
 				if (!room) return callback("UNDEFINED_ROOM");
 
-				const hand = [...(hands[socket.id] ?? [])];
+				const hand = [...(hands[socket.data.username] ?? [])];
 
 				const board = structuredClone(room.board);
 				for (const tile of tiles) {
@@ -142,8 +143,13 @@ export default function connectIo(server: HTTPServer) {
 				}
 
 				room.board = board;
+				room.players[socket.data.username] = {
+					points:
+						(room.players[socket.data.username]?.points || 0) + getScore(tiles, board),
+				};
 				io.to(roomId).emit("tilesPlaced", tiles);
-				callback((hands[socket.id] = sortHand(hand)));
+				io.to(roomId).emit("playersUpdate", room.players);
+				callback((hands[socket.data.username] = sortHand(hand)));
 			})
 			.on("disconnect", () => {
 				// TODO

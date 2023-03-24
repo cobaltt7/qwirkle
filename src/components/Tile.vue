@@ -4,7 +4,6 @@
 	</div>
 </template>
 <script lang="ts">
-	import { toRaw } from "vue";
 	import { Vue } from "vue-class-component";
 	import { generateTileUrl } from "../common/constants.js";
 	import type { PlacedTile } from "../common/types.js";
