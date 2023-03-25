@@ -1,15 +1,16 @@
 {
 	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
+		"allowImportingTsExtensions": true,
 		"baseUrl": ".",
 		"types": ["vite/client"],
 		"target": "ES2020",
 		"module": "ES2020",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"importHelpers": false,
 		"jsx": "preserve",
 		"lib": ["ES2020", "DOM"]
 	},
-	"exclude": ["src/server/**/*", "dist", "vite.config.ts.*"],
+	"exclude": ["server/**/*", "dist", "vite.config.ts.*"],
 	"typeAcquisition": { "enable": true }
 }

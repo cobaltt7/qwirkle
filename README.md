@@ -20,4 +20,5 @@ npm run types -- --watch & npm run serve & npm run dev
 ```bash
 npm run format
 npm run types
+npm run test
 ```

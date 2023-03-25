@@ -7,7 +7,7 @@ import preload from "./preload.js";
 
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const vite = await createViteServer({
-	publicDir: "src/public",
+	publicDir: "app/public",
 	build: {
 		target: "esnext",
 		minify: false,
@@ -20,7 +20,7 @@ const vite = await createViteServer({
 });
 export default http.createServer(async (request, response) => {
 	try {
-		if (request.url === "/main.ts") request.url = "/src/main.ts";
+		if (request.url === "/main.ts") request.url = "/app/main.ts";
 		vite.middlewares(request, response, serveHtml(request, response));
 	} catch (error) {
 		response
@@ -35,7 +35,7 @@ function serveHtml(_: http.IncomingMessage, response: http.ServerResponse) {
 	return async function (error?: Error) {
 		if (error) throw error;
 		const html = await fileSystem.readFile(
-			path.resolve(dirname, "../../src/index.html"),
+			path.resolve(dirname, "../../app/index.html"),
 			"utf-8",
 		);
 

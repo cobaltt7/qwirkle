@@ -1,18 +1,16 @@
 import vue from "@vitejs/plugin-vue";
 import autoprefixer from "autoprefixer";
-import cssnano from "cssnano";
-import htmlnano from "htmlnano";
-import posthtml from "posthtml";
 import type { UserConfigExport } from "vite";
-import preload from "./src/server/preload";
+import preload from "./server/preload";
 
 process.env.NODE_ENV = "production";
 
 export default {
-	publicDir: "src/public",
+	publicDir: "app/public",
 	build: {
 		target: "es2020",
 		minify: "terser",
+		cssMinify: true,
 		rollupOptions: { output: { compact: true }, preserveEntrySignatures: "strict" },
 		terserOptions: {
 			compress: {
@@ -41,48 +39,9 @@ export default {
 			parse: { html5_comments: false },
 		},
 	},
-	css: {
-		postcss: {
-			map: true,
-			plugins: [cssnano(), autoprefixer({ grid: "no-autoplace" })],
-		},
-	},
+	css: { postcss: { map: true, plugins: [autoprefixer({ grid: "no-autoplace" })] } },
 	esbuild: { logLimit: 0, treeShaking: true },
-	plugins: [
-		vue(),
-		{ enforce: "post", name: "preload", transformIndexHtml: preload },
-		{
-			enforce: "post",
-			name: "htmlnano",
-			async transformIndexHtml(input) {
-				const { html } = await posthtml([
-					htmlnano({
-						collapseAttributeWhitespace: true,
-						collapseWhitespace: "aggressive",
-						deduplicateAttributeValues: true,
-						mergeScripts: true,
-						mergeStyles: true,
-						minifyJs: false,
-						minifyJson: true,
-						minifySvg: {
-							cleanupListOfValues: true,
-							convertStyleToAttrs: true,
-							reusePaths: true,
-							sortAttrs: true,
-						},
-						normalizeAttributeValues: true,
-						removeAttributeQuotes: true,
-						removeComments: "all",
-						removeEmptyAttributes: true,
-						removeRedundantAttributes: true,
-						sortAttributes: "frequency",
-						sortAttributesWithLists: "frequency",
-					}),
-				]).process(input);
-				return html;
-			},
-		},
-	],
+	plugins: [vue(), { enforce: "post", name: "preload", transformIndexHtml: preload }],
 	logLevel: "error",
 	appType: "custom",
 } satisfies UserConfigExport;

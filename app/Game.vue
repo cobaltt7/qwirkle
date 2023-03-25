@@ -43,7 +43,7 @@
 	import Tile from "./Tile.vue";
 	import { generateTileUrl } from "../common/constants";
 	import { dragscroll } from "vue-dragscroll";
-	import { calculatePoints } from "../common/util.js";
+	import { calculatePoints } from "../common/util.ts";
 
 	@Options({ directives: { dragscroll }, components: { PlayersList, Tile } })
 	export default class Game extends Vue.with(

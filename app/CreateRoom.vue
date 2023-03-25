@@ -49,7 +49,7 @@
 	import { Vue } from "vue-class-component";
 	import type RoomsList from "./RoomsList.vue";
 	import type App from "./App.vue";
-	import { getUsername } from "../common/util.js";
+	import { getUsername } from "../common/util.ts";
 
 	export default class CreateRoom extends Vue {
 		// Data

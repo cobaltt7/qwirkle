@@ -8,7 +8,7 @@ const { default: server } =
 		: await import("./dev-server.js");
 
 connectIo(server);
-server.listen(3000, () => {
+server.listen(process.env.PORT ?? 3000, () => {
 	console.log("Server up!");
 });
 

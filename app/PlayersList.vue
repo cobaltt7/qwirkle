@@ -13,7 +13,7 @@
 </template>
 <script lang="ts">
 	import { Vue } from "vue-class-component";
-	import type { Players } from "../common/types.js";
+	import type { Players } from "../common/types.ts";
 	import type App from "./App.vue";
 	import type Game from "./Game.vue";
 	import type Lobby from "./Lobby.vue";

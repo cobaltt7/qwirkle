@@ -113,9 +113,9 @@ export default function connectIo(server: HTTPServer) {
 					);
 				}
 
-				Object.entries(room.players).map(([username]) => {
-					hands[player.data.username];
-				});
+				// Object.entries(room.players).map(([username]) => {
+				// 	hands[player.data.username];
+				// });
 
 				io.to(roomId).emit("playersUpdate", room.players);
 				io.emit("roomsUpdate", getPublicRooms());

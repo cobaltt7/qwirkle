@@ -2,5 +2,5 @@
 .git
 node_modules/
 dist/
-*.local
+**/.env
 vite.config.ts.timestamp-*

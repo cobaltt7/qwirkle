@@ -4,7 +4,7 @@ export const TILE_COLORS = ["red", "orange", "yellow", "green", "blue", "purple"
 export const TILE_SHAPES = ["circle", "clover", "diamond", "square", "star", "triangle"] as const;
 export const QWIRKLE_LENGTH = 6;
 export const HAND_SIZE = 6;
-export const DUPLICATE_TILES=3
+export const DUPLICATE_TILES = 3;
 
 export const PLACE_ERRORS = [
 	"ALREADY_PLACED",

@@ -8,7 +8,6 @@
 		"exactOptionalPropertyTypes": false,
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
-		"importsNotUsedAsValues": "error",
 		"maxNodeModuleJsDepth": 0,
 		"noErrorTruncation": true,
 		"noImplicitAny": true,

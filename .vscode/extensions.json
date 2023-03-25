@@ -1,3 +1,8 @@
 {
-	"recommendations": ["esbenp.prettier-vscode", "vue.volar", "vue.vscode-typescript-vue-plugin"]
+	"recommendations": [
+		"esbenp.prettier-vscode",
+		"vue.volar",
+		"vue.vscode-typescript-vue-plugin",
+		"antfu.file-nesting"
+	]
 }

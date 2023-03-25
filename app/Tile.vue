@@ -5,9 +5,9 @@
 </template>
 <script lang="ts">
 	import { Vue } from "vue-class-component";
-	import { generateTileUrl } from "../common/constants.js";
-	import type { PlacedTile } from "../common/types.js";
-	import { verifyTile } from "../common/util.js";
+	import { generateTileUrl } from "../common/constants.ts";
+	import type { PlacedTile } from "../common/types.ts";
+	import { verifyTile } from "../common/util.ts";
 	import type App from "./App.vue";
 	import type Game from "./Game.vue";
 

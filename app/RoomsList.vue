@@ -43,7 +43,7 @@
 	import { ROOM_PARAMETER } from "../common/constants";
 	import type { Rooms } from "../common/types";
 	import CreateRoom from "./CreateRoom.vue";
-	import { getUsername } from "../common/util.js";
+	import { getUsername } from "../common/util.ts";
 
 	@Options({ components: { CreateRoom } })
 	export default class RoomsList extends Vue {

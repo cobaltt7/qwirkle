@@ -7,5 +7,13 @@
 	"vscode-edge-devtools.webhint": false,
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"path-intellisense.extensionOnImport": false,
-	"cSpell.words": ["JWT"]
+	"cSpell.words": ["JWT", "vnode"],
+	"files.exclude": {
+		"**/node_modules": true,
+		"vite.config.ts.*": true
+	},
+	"explorer.fileNesting.enabled": true,
+	"explorer.fileNesting.patterns": {
+		"index.html": "main.ts, style.css"
+	}
 }
