@@ -1,4 +1,14 @@
-import type { Board, JWTClaims, Location, PlacedTile, PlaceError } from "./types.js";
+import { QWIRKLE_LENGTH } from "./constants.js";
+import type {
+	Tile,
+	Board,
+	JWTClaims,
+	Location,
+	PlacedTile,
+	PlaceError,
+	TileColor,
+	TileShape,
+} from "./types.js";
 
 export function getUsername() {
 	try {
@@ -85,7 +95,7 @@ export function getNeighborhood(tile: PlacedTile, board: Board) {
 
 export function calculatePoints(tiles: PlacedTile[], board: Board) {
 	return getNeighborhoods(tiles, board).reduce(
-		(acc, { length }) => acc + length * (Number(length === 6) + 1),
+		(acc, { length }) => acc + length * (Number(length === QWIRKLE_LENGTH) + 1),
 		0,
 	);
 }
@@ -103,4 +113,23 @@ export function getNeighborhoods(tiles: PlacedTile[], board: Board) {
 					(foundLine) => foundLine[0] === line[0] && foundLine.at(-1) === line.at(-1),
 				) === index,
 		);
+}
+
+function count(arr: Tile[], key: "color" | "shape") {
+	const counts: Partial<Record<TileColor | TileShape, number>> = {};
+	let largestFound = 0;
+
+	for (const tile of arr) {
+		const value = tile[key];
+
+		const count = (counts[value] || 0) + 1;
+		if (count > largestFound) largestFound = count;
+
+		counts[value] = count;
+	}
+
+	return largestFound;
+}
+export function countTiles(tiles: Tile[]) {
+	return Math.max(count(tiles, "color"), count(tiles, "shape"));
 }

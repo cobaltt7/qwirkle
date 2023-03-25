@@ -1,6 +1,6 @@
 import { Server as SocketServer } from "socket.io";
 import type { Server as HTTPServer } from "node:http";
-import { TILE_COLORS, TILE_SHAPES } from "../common/constants.js";
+import { DUPLICATE_TILES, HAND_SIZE, TILE_COLORS, TILE_SHAPES } from "../common/constants.js";
 import { verifyTile, calculatePoints } from "../common/util.js";
 import type {
 	ClientToServerEvents,
@@ -18,7 +18,7 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 const fullDeck = TILE_COLORS.map((color) => {
 	return TILE_SHAPES.map((shape) => {
-		return Array<Tile>(3).fill({ color, shape });
+		return Array<Tile>(DUPLICATE_TILES).fill({ color, shape });
 	});
 }).flat(2);
 const rooms: Rooms = {};
@@ -106,10 +106,16 @@ export default function connectIo(server: HTTPServer) {
 
 				const allPlayers = await io.in(roomId).fetchSockets();
 				for (const player of allPlayers) {
-					const hand = generateHand(room.deck);
-					hands[player.data.username] = hand;
-					player.emit("gameStart", hand, room.board[0][0]);
+					player.emit(
+						"gameStart",
+						(hands[player.data.username] ||= generateHand(room.deck)),
+						room.board[0][0],
+					);
 				}
+
+				Object.entries(room.players).map(([username]) => {
+					hands[player.data.username];
+				});
 
 				io.to(roomId).emit("playersUpdate", room.players);
 				io.emit("roomsUpdate", getPublicRooms());
@@ -194,6 +200,6 @@ function getRandomTile(deck: Tile[], required = false): Tile | undefined {
 }
 
 function generateHand(deck: Tile[], hand: Tile[] = []) {
-	while (deck.length > 0 && hand.length < 6) hand.push(getRandomTile(deck, true));
+	while (deck.length && hand.length < HAND_SIZE) hand.push(getRandomTile(deck, true));
 	return sortHand(hand);
 }
