@@ -1,10 +1,5 @@
-import type {
-	START_ERRORS,
-	JOIN_ERRORS,
-	PLACE_ERRORS,
-	TILE_COLORS,
-	TILE_SHAPES,
-} from "./constants";
+import type { PlaceError, JoinError, StartError, TileColor, TileShape } from "./constants.js";
+import { JWTClaims } from "./util.js";
 
 // Socket.io
 export interface ServerToClientEvents {
@@ -44,13 +39,6 @@ export interface Tile {
 export interface PlacedTile extends Tile, Location {
 	temporary?: boolean | "ignore";
 }
-export type TileColor = typeof TILE_COLORS[number];
-export type TileShape = typeof TILE_SHAPES[number];
-
-// Errors
-export type PlaceError = typeof PLACE_ERRORS[number];
-export type JoinError = typeof JOIN_ERRORS[number];
-export type StartError = typeof START_ERRORS[number];
 
 // Game
 export type Room = {
@@ -67,6 +55,3 @@ export type Rooms = Record<string, Room>;
 /** Rows by columns. */
 export type Board = Record<Location["y"], Record<Location["x"], PlacedTile>>;
 export type Players = Record<string, { score: number }>;
-
-// Auth
-export type JWTClaims = { username: string };

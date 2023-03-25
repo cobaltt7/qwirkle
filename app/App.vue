@@ -16,7 +16,7 @@
 		ServerToClientEvents,
 		Tile,
 		PlacedTile,
-	} from "../common/types";
+	} from "../common/types.ts";
 	import Game from "./Game.vue";
 	import RoomsList from "./RoomsList.vue";
 	import TitleBar from "./TitleBar.vue";

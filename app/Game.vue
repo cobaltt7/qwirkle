@@ -37,11 +37,11 @@
 </template>
 <script lang="ts">
 	import { Vue, Options } from "vue-class-component";
-	import type { Board, PlacedTile } from "../common/types";
+	import type { Board, PlacedTile } from "../common/types.ts";
 	import type App from "./App.vue";
 	import PlayersList from "./PlayersList.vue";
 	import Tile from "./Tile.vue";
-	import { generateTileUrl } from "../common/constants";
+	import { generateTileUrl } from "../common/util.ts";
 	import { dragscroll } from "vue-dragscroll";
 	import { calculatePoints } from "../common/util.ts";
 

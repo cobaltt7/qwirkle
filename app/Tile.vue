@@ -5,11 +5,12 @@
 </template>
 <script lang="ts">
 	import { Vue } from "vue-class-component";
-	import { generateTileUrl } from "../common/constants.ts";
+	import { generateTileUrl } from "../common/util.ts";
 	import type { PlacedTile } from "../common/types.ts";
 	import { verifyTile } from "../common/util.ts";
 	import type App from "./App.vue";
 	import type Game from "./Game.vue";
+import { PlaceError } from "../common/constants.ts";
 
 	export default class Tile extends Vue.with(
 		class Props {
@@ -49,12 +50,12 @@
 			if (this.$parent.selectedTile === -1) return; // TODO: Warn, user didn't select tile
 
 			const tile = this.$root.hand[this.$parent.selectedTile];
-			if (!tile) return alert("MISSING_TILE2");
+			if (!tile) return alert(PlaceError.MissingTile);
 			if (
 				this.$parent.board[this.y]?.[this.x] &&
 				this.$parent.board[this.y]?.[this.x]?.temporary !== "ignore"
 			)
-				return alert("ALREADY_PLACED");
+				return alert(PlaceError.AlreadyPlaced);
 
 			const placed: PlacedTile = { ...tile, x: this.x, y: this.y, temporary: "ignore" };
 			(this.$parent.board[placed.y] ??= {})[placed.x] = placed;

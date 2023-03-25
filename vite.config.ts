@@ -1,7 +1,7 @@
 import vue from "@vitejs/plugin-vue";
 import autoprefixer from "autoprefixer";
 import type { UserConfigExport } from "vite";
-import preload from "./server/preload";
+import preload from "./server/preload.ts";
 
 process.env.NODE_ENV = "production";
 
@@ -44,4 +44,5 @@ export default {
 	plugins: [vue(), { enforce: "post", name: "preload", transformIndexHtml: preload }],
 	logLevel: "error",
 	appType: "custom",
+	test: { coverage: { all: true, reporter: ["text", "text-summary"] } },
 } satisfies UserConfigExport;

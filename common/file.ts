@@ -1,4 +1,4 @@
-import { writeFile } from "fs/promises";
+import { writeFile } from "node:fs/promises";
 import type { Tile } from "./types.js";
 import { countTiles } from "./util.js";
 

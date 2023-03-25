@@ -40,8 +40,8 @@
 <script lang="ts">
 	import { Vue, Options } from "vue-class-component";
 	import type App from "./App.vue";
-	import { ROOM_PARAMETER } from "../common/constants";
-	import type { Rooms } from "../common/types";
+	import { ROOM_PARAMETER } from "../common/constants.ts";
+	import type { Rooms } from "../common/types.ts";
 	import CreateRoom from "./CreateRoom.vue";
 	import { getUsername } from "../common/util.ts";
 

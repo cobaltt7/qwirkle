@@ -1,7 +1,9 @@
-import { generateTileUrl, TILE_COLORS, TILE_SHAPES } from "../common/constants.js";
+import { TILE_COLORS, TILE_SHAPES } from "../common/constants.js";
 import { renderList, Fragment, openBlock, createElementBlock } from "vue";
 import { renderToString } from "vue/server-renderer";
-import type { TileColor, TileShape } from "../common/types.js";
+import { generateTileUrl } from "../common/util.js";
+import { TileShape } from "../common/constants.js";
+import { TileColor } from "../common/constants.js";
 
 export default async function preload(input: string) {
 	openBlock();

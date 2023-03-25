@@ -1,13 +1,9 @@
-import { QWIRKLE_LENGTH } from "./constants.js";
+import { PlaceError, QWIRKLE_LENGTH, TileColor, TileShape } from "./constants.js";
 import type {
 	Tile,
 	Board,
-	JWTClaims,
 	Location,
 	PlacedTile,
-	PlaceError,
-	TileColor,
-	TileShape,
 } from "./types.js";
 
 export function getUsername() {
@@ -25,24 +21,26 @@ export function getUsername() {
 		return null;
 	}
 }
+export type JWTClaims = { username: string };
 
 export function verifyTile(location: Location, board: Board): PlaceError | undefined {
 	const tile = board[location.y]?.[location.x];
-	if (!tile) return "UNKNOWN_TILE";
+	if (!tile) return PlaceError.UnknownTile;
 
 	const neighborhood = getNeighborhood(tile, board);
-	if (neighborhood.row.length < 2 && neighborhood.column.length < 2) return "NO_NEIGHBORS";
+	if (neighborhood.row.length < 2 && neighborhood.column.length < 2)
+		return PlaceError.NoNeighbors;
 
 	const rowResult = verifyLine(neighborhood.row);
-	if (rowResult) return `${rowResult}_ROW_ITEMS`;
+	if (rowResult) return PlaceError[`${rowResult}RowItems`];
 	const columnResult = verifyLine(neighborhood.column);
-	if (columnResult) return `${columnResult}_COLUMN_ITEMS`;
+	if (columnResult) return PlaceError[`${columnResult}ColumnItems`];
 }
 
-export function verifyLine(line: PlacedTile[]) {
+function verifyLine(line: PlacedTile[]) {
 	const isSameColor = line.every((tile) => tile.color === line[0]?.color);
 	const isSameShape = line.every((tile) => tile.shape === line[0]?.shape);
-	if (!(isSameColor || isSameShape)) return "INCONSISTENT";
+	if (!(isSameColor || isSameShape)) return "Inconsistent";
 
 	return (
 		line.some((tile, index) => {
@@ -50,7 +48,7 @@ export function verifyLine(line: PlacedTile[]) {
 			return (
 				line.findIndex((item) => item[isSameColor ? "shape" : "color"] === key) !== index
 			);
-		}) && "DUPLICATE"
+		}) && "Duplicate"
 	);
 }
 
@@ -128,8 +126,12 @@ function count(arr: Tile[], key: "color" | "shape") {
 		counts[value] = count;
 	}
 
-	return largestFound;
+	return largestFound * (Number(largestFound === QWIRKLE_LENGTH) + 1);
 }
 export function countTiles(tiles: Tile[]) {
 	return Math.max(count(tiles, "color"), count(tiles, "shape"));
+}
+
+export function generateTileUrl({ color, shape }: Tile) {
+	return `./tiles/${color}-${shape}.png`;
 }

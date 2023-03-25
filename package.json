@@ -12,7 +12,7 @@
 		"format": "prettier --write \"**\" \"!dist/**\" --ignore-unknown",
 		"serve": "nodemon dist/server --watch dist/server",
 		"start": "node dist/server",
-		"test": "vitest run",
+		"test": "vitest run --coverage",
 		"types": "vue-tsc --project tsconfig.json"
 	},
 	"browserslist": "defaults and supports es6-module and supports es6-module-dynamic-import",
@@ -35,6 +35,7 @@
 		"@redguy12/prettier-config": "2.0.2",
 		"@types/serve-handler": "<=6.1.5",
 		"@vitejs/plugin-vue": "4.1.0",
+		"@vitest/coverage-c8": "0.29.7",
 		"autoprefixer": "10.4.14",
 		"nodemon": "2.0.22",
 		"postcss": "8.4.21",
