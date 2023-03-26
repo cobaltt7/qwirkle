@@ -1,9 +1,14 @@
 <template>
 	<section>
-		<div v-for="player in Object.entries(players)">
+		<div
+			:class="{ active: player[0] === username }"
+			v-for="player in Object.entries(players).sort(
+				([, one], [, two]) => one.index - two.index,
+			)"
+		>
 			<img
 				:src="`https://api.dicebear.com/5.x/fun-emoji/png?backgroundType=gradientLinear,solid&seed=${player[0]}`"
-				:alt="`${player[0]}\`'s avatar'`"
+				:alt="`${player[0]}'s avatar`"
 			/>
 			<p>
 				{{ player[0] }} <span v-if="scores">{{ player[1].score }}</span>
@@ -17,6 +22,7 @@
 	import type App from "./App.vue";
 	import type Game from "./Game.vue";
 	import type Lobby from "./Lobby.vue";
+	import { getUsername } from "../common/util.ts";
 
 	export default class PlayersList extends Vue.with(
 		class Props {
@@ -25,6 +31,7 @@
 	) {
 		// Data
 		players: Players = {};
+		username = getUsername();
 
 		// Refs
 		declare readonly $refs: {};
@@ -65,6 +72,10 @@
 		border-radius: 10px;
 		min-width: 200px;
 		height: 100%;
+	}
+
+	.active {
+		background-color: rgb(43, 43, 43);
 	}
 
 	img {

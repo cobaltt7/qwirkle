@@ -54,4 +54,4 @@ export type Room = {
 export type Rooms = Record<string, Room>;
 /** Rows by columns. */
 export type Board = { [y: number]: { [x: number]: PlacedTile } };
-export type Players = Record<string, { score: number }>;
+export type Players = Record<string, { index: number; score: number }>;

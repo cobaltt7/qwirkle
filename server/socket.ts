@@ -9,7 +9,7 @@ import {
 	TILE_COLORS,
 	TILE_SHAPES,
 } from "../common/constants.js";
-import { verifyTile, calculatePoints, JWTClaims } from "../common/util.js";
+import { verifyTile, calculatePoints, JWTClaims, countTiles } from "../common/util.js";
 import type {
 	ClientToServerEvents,
 	InterServerEvents,
@@ -65,7 +65,7 @@ export default function connectIo(server: HTTPServer) {
 				};
 
 				socket.data.username = roomData.username;
-				room.players[roomData.username] = { score: 0 };
+				room.players[roomData.username] = { index: 0, score: 0 };
 				rooms[roomId] = room;
 
 				io.emit("roomsUpdate", getPublicRooms());
@@ -90,7 +90,7 @@ export default function connectIo(server: HTTPServer) {
 
 				if (room?.host !== username) {
 					if (room?.players[username]) return callback(JoinError.DuplicateUsername);
-					room.players[username] = { score: 0 };
+					room.players[username] = { index: 0, score: 0 };
 				}
 				if (room.started) return callback(JoinError.AlreadyStarted);
 				socket.join(roomId);
@@ -115,14 +115,20 @@ export default function connectIo(server: HTTPServer) {
 				for (const player of allPlayers) {
 					player.emit(
 						"gameStart",
-						(hands[player.data.username] ||= generateHand(room.deck)),
+						(hands[player.data.username] ??= generateHand(room.deck)),
 						room.board[0][0],
 					);
 				}
 
-				// Object.entries(room.players).map(([username]) => {
-				// 	hands[player.data.username];
-				// });
+				const sortedPlayers = Object.entries(room.players)
+					.map(([username]) => [username, countTiles(hands[username] ?? [])] as const)
+					.sort(([, one], [, two]) => two - one);
+				for (const [index, [username]] of sortedPlayers.entries()) {
+					const player = room.players[username];
+					if (!player) continue;
+					player.index = index;
+					room.players[username] = player;
+				}
 
 				io.to(roomId).emit("playersUpdate", room.players);
 				io.emit("roomsUpdate", getPublicRooms());
@@ -157,10 +163,10 @@ export default function connectIo(server: HTTPServer) {
 				}
 
 				room.board = board;
+				const player = room.players[socket.data.username];
 				room.players[socket.data.username] = {
-					score:
-						(room.players[socket.data.username]?.score || 0) +
-						calculatePoints(tiles, board),
+					index: player?.index ?? 0,
+					score: (player?.score ?? 0) + calculatePoints(tiles, board),
 				};
 				io.to(roomId).emit("tilesPlaced", tiles);
 				io.to(roomId).emit("playersUpdate", room.players);

@@ -109,14 +109,19 @@ function getNeighborhood(tile: PlacedTile, board: Board) {
 export function countTiles(tiles: Tile[]) {
 	return Math.max(count(tiles, "color"), count(tiles, "shape"));
 }
-function count(arr: Tile[], key: "color" | "shape") {
+function count(tiles: Tile[], key: "color" | "shape") {
 	const counts: Partial<Record<TileColor | TileShape, number>> = {};
 	let largestFound = 0;
 
-	for (const tile of arr) {
+	for (const tile of tiles.filter(
+		(tile, index) =>
+			tiles.findIndex(
+				(foundTile) => foundTile.color === tile.color && foundTile.shape === tile.shape,
+			) === index,
+	)) {
 		const value = tile[key];
 
-		const count = (counts[value] || 0) + 1;
+		const count = (counts[value] ?? 0) + 1;
 		if (count > largestFound) largestFound = count;
 
 		counts[value] = count;
