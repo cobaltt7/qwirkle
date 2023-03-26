@@ -137,7 +137,7 @@
 				.map((tile) => ({ ...tile, temporary: undefined }));
 
 			this.$root.socket.emit("placeTile", tiles, (response) => {
-				if (typeof response === "string") alert(response);
+				if (typeof response === "number") alert(response);
 				else this.$root.hand = response;
 
 				this.reset();

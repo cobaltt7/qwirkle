@@ -77,7 +77,7 @@
 				roomId,
 				username === this.defaultUsername && jwt ? { jwt } : { username },
 				(response) => {
-					if (typeof response === "string") alert(response);
+					if (typeof response === "number") alert(response);
 					else {
 						this.$root.roomId = roomId;
 						const url = new URL(location.toString());
