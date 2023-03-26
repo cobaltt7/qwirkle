@@ -1,6 +1,6 @@
 !**
 .git
 node_modules/
-dist/
+.output/
 **/.env
 vite.config.ts.timestamp-*

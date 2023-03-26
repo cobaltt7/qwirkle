@@ -31,7 +31,6 @@ export function verifyTile(location: Location, board: Board): PlaceError | undef
 	const columnResult = verifyLine(neighborhood.column);
 	if (columnResult) return PlaceError[`${columnResult}ColumnItems`];
 }
-
 function verifyLine(line: PlacedTile[]) {
 	const isSameColor = line.every((tile) => tile.color === line[0]?.color);
 	const isSameShape = line.every((tile) => tile.shape === line[0]?.shape);
@@ -47,7 +46,28 @@ function verifyLine(line: PlacedTile[]) {
 	);
 }
 
-export function getNeighborhood(tile: PlacedTile, board: Board) {
+export function calculatePoints(tiles: PlacedTile[], board: Board) {
+	return getNeighborhoods(tiles, board).reduce(
+		(acc, { length }) => acc + length * (Number(length === QWIRKLE_LENGTH) + 1),
+		0,
+	);
+}
+function getNeighborhoods(tiles: PlacedTile[], board: Board) {
+	return tiles
+		.map((tile) => {
+			const { column, row } = getNeighborhood(tile, board);
+			return [column, row];
+		})
+		.flat()
+		.filter(
+			(line, index, lines) =>
+				line.length > 1 &&
+				lines.findIndex(
+					(foundLine) => foundLine[0] === line[0] && foundLine.at(-1) === line.at(-1),
+				) === index,
+		);
+}
+function getNeighborhood(tile: PlacedTile, board: Board) {
 	let top = board[tile.y - 1]?.[tile.x],
 		bottom = board[tile.y + 1]?.[tile.x],
 		right = board[tile.y]?.[tile.x + 1],
@@ -86,28 +106,9 @@ export function getNeighborhood(tile: PlacedTile, board: Board) {
 	return neighborhood;
 }
 
-export function calculatePoints(tiles: PlacedTile[], board: Board) {
-	return getNeighborhoods(tiles, board).reduce(
-		(acc, { length }) => acc + length * (Number(length === QWIRKLE_LENGTH) + 1),
-		0,
-	);
+export function countTiles(tiles: Tile[]) {
+	return Math.max(count(tiles, "color"), count(tiles, "shape"));
 }
-export function getNeighborhoods(tiles: PlacedTile[], board: Board) {
-	return tiles
-		.map((tile) => {
-			const { column, row } = getNeighborhood(tile, board);
-			return [column, row];
-		})
-		.flat()
-		.filter(
-			(line, index, lines) =>
-				line.length > 1 &&
-				lines.findIndex(
-					(foundLine) => foundLine[0] === line[0] && foundLine.at(-1) === line.at(-1),
-				) === index,
-		);
-}
-
 function count(arr: Tile[], key: "color" | "shape") {
 	const counts: Partial<Record<TileColor | TileShape, number>> = {};
 	let largestFound = 0;
@@ -122,9 +123,6 @@ function count(arr: Tile[], key: "color" | "shape") {
 	}
 
 	return largestFound * (Number(largestFound === QWIRKLE_LENGTH) + 1);
-}
-export function countTiles(tiles: Tile[]) {
-	return Math.max(count(tiles, "color"), count(tiles, "shape"));
 }
 
 export function generateTileUrl({ color, shape }: Tile) {

@@ -7,7 +7,7 @@
 		"moduleResolution": "node",
 		"lib": ["ES2022", "DOM"],
 		"noEmit": false,
-		"outDir": "../dist/"
+		"outDir": "../.output/"
 	},
 	"typeAcquisition": { "enable": true }
 }
