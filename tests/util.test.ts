@@ -1,13 +1,24 @@
 import { describe, expect, it } from "vitest";
-import { verifyTile, calculatePoints, countTiles, generateTileUrl } from "../common/util.ts";
-import { PlaceError } from "../common/constants.ts";
-import { Board, PlacedTile } from "../common/types";
+import {
+	verifyTile,
+	calculatePoints,
+	countTiles,
+	generateTileUrl,
+	generateRoomId,
+	getPublicRooms,
+	sortHand,
+	getRandomTile,
+	generateDeck,
+} from "../common/util.ts";
+import { PlaceError, TileColor, TileShape } from "../common/constants.ts";
+import { Board, PlacedTile, Tile } from "../common/types";
+import { generateHand } from "../common/util.ts";
 
 describe("verifyTile", () => {
 	it("should fail without neighbors", () =>
-		expect(verifyTile({ x: 0, y: 0 }, [[{ x: 0, y: 0, color: "blue", shape: "circle" }]])).toBe(
-			PlaceError.NoNeighbors,
-		));
+		expect(
+			verifyTile({ x: 0, y: 0 }, [[{ x: 0, y: 0, color: "blue", shape: "circle" }]]),
+		).toEqual(PlaceError.NoNeighbors));
 
 	it("should fail on inconsistent row items", () =>
 		expect(
@@ -17,7 +28,7 @@ describe("verifyTile", () => {
 					{ x: 1, y: 0, color: "green", shape: "triangle" },
 				],
 			]),
-		).toBe(PlaceError.InconsistentRowItems));
+		).toEqual(PlaceError.InconsistentRowItems));
 
 	it("should fail on duplicate row items", () =>
 		expect(
@@ -27,7 +38,7 @@ describe("verifyTile", () => {
 					{ x: 1, y: 0, color: "blue", shape: "circle" },
 				],
 			]),
-		).toBe(PlaceError.DuplicateRowItems));
+		).toEqual(PlaceError.DuplicateRowItems));
 
 	it("should fail on inconsistent column items", () =>
 		expect(
@@ -35,7 +46,7 @@ describe("verifyTile", () => {
 				[{ x: 0, y: 0, color: "blue", shape: "circle" }],
 				[{ x: 0, y: 1, color: "green", shape: "triangle" }],
 			]),
-		).toBe(PlaceError.InconsistentColumnItems));
+		).toEqual(PlaceError.InconsistentColumnItems));
 
 	it("should fail on duplicate column items", () =>
 		expect(
@@ -43,10 +54,10 @@ describe("verifyTile", () => {
 				[{ x: 0, y: 0, color: "blue", shape: "circle" }],
 				[{ x: 0, y: 1, color: "blue", shape: "circle" }],
 			]),
-		).toBe(PlaceError.DuplicateColumnItems));
+		).toEqual(PlaceError.DuplicateColumnItems));
 
 	it("should fail on a missing tile", () =>
-		expect(verifyTile({ x: 0, y: 0 }, [])).toBe(PlaceError.UnknownTile));
+		expect(verifyTile({ x: 0, y: 0 }, [])).toEqual(PlaceError.UnknownTile));
 
 	it("should pass with a matching color in the row", () =>
 		expect(
@@ -95,7 +106,7 @@ describe("calculatePoints", () => {
 		];
 		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
 
-		expect(calculatePoints(tiles, board)).toBe(3);
+		expect(calculatePoints(tiles, board)).toEqual(3);
 	});
 
 	it("should count both lines when creating a T shape", () => {
@@ -108,7 +119,7 @@ describe("calculatePoints", () => {
 		];
 		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
 
-		expect(calculatePoints(tiles, board)).toBe(5);
+		expect(calculatePoints(tiles, board)).toEqual(5);
 	});
 
 	it("should count all lines when adding an adjacent line", () => {
@@ -125,7 +136,7 @@ describe("calculatePoints", () => {
 		];
 		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
 
-		expect(calculatePoints(tiles, board)).toBe(8);
+		expect(calculatePoints(tiles, board)).toEqual(8);
 	});
 
 	it("should count applicable lines when extending an adjacent line", () => {
@@ -144,7 +155,7 @@ describe("calculatePoints", () => {
 		];
 		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
 
-		expect(calculatePoints(tiles, board)).toBe(6);
+		expect(calculatePoints(tiles, board)).toEqual(6);
 	});
 
 	it("should give a bonus when playing a Qwirkle", () => {
@@ -163,7 +174,7 @@ describe("calculatePoints", () => {
 		];
 		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
 
-		expect(calculatePoints(tiles, board)).toBe(12);
+		expect(calculatePoints(tiles, board)).toEqual(12);
 	});
 
 	it("should give a bonus when playing an adjcant Qwirkle", () => {
@@ -179,7 +190,7 @@ describe("calculatePoints", () => {
 		];
 		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
 
-		expect(calculatePoints(tiles, board)).toBe(14);
+		expect(calculatePoints(tiles, board)).toEqual(14);
 	});
 });
 
@@ -194,7 +205,7 @@ describe("countTiles", () => {
 				{ color: "green", shape: "circle" },
 				{ color: "purple", shape: "star" },
 			]),
-		).toBe(2));
+		).toEqual(2));
 
 	it("should count by shape", () =>
 		expect(
@@ -206,7 +217,7 @@ describe("countTiles", () => {
 				{ color: "blue", shape: "diamond" },
 				{ color: "purple", shape: "clover" },
 			]),
-		).toBe(2));
+		).toEqual(2));
 
 	it("should count by both", () =>
 		expect(
@@ -218,7 +229,7 @@ describe("countTiles", () => {
 				{ color: "blue", shape: "diamond" },
 				{ color: "purple", shape: "clover" },
 			]),
-		).toBe(2));
+		).toEqual(2));
 
 	it("should ignore duplicates", () =>
 		expect(
@@ -230,7 +241,7 @@ describe("countTiles", () => {
 				{ color: "blue", shape: "diamond" },
 				{ color: "purple", shape: "clover" },
 			]),
-		).toBe(1));
+		).toEqual(1));
 
 	it("should return 1 without matches", () =>
 		expect(
@@ -242,9 +253,9 @@ describe("countTiles", () => {
 				{ color: "red", shape: "star" },
 				{ color: "yellow", shape: "triangle" },
 			]),
-		).toBe(1));
+		).toEqual(1));
 
-	it("should fallback to 0", () => expect(countTiles([])).toBe(0));
+	it("should fallback to 0", () => expect(countTiles([])).toEqual(0));
 
 	it("should count full Qwirkles", () =>
 		expect(
@@ -256,12 +267,148 @@ describe("countTiles", () => {
 				{ color: "blue", shape: "star" },
 				{ color: "blue", shape: "triangle" },
 			]),
-		).toBe(12));
+		).toEqual(12));
 });
 
 describe("generateTileUrl", () => {
 	it("should generate a tile url", () =>
-		expect(generateTileUrl({ color: "blue", shape: "circle" })).toBe(
+		expect(generateTileUrl({ color: "blue", shape: "circle" })).toEqual(
 			"./tiles/blue-circle.png",
 		));
+});
+
+describe("getPublicRooms", () => {
+	const baseRoom = { auth: false, board: {}, deck: [], host: "foobar", id: "a", players: {} };
+
+	it("should remove private unstarted rooms", () =>
+		expect(getPublicRooms({ a: { ...baseRoom, private: true, started: false } })).toEqual({}));
+
+	it("should remove public started rooms", () =>
+		expect(getPublicRooms({ a: { ...baseRoom, private: false, started: true } })).toEqual({}));
+
+	it("should remove private started rooms", () =>
+		expect(getPublicRooms({ a: { ...baseRoom, private: true, started: true } })).toEqual({}));
+
+	it("should not remove public unstarted rooms", () =>
+		expect(getPublicRooms({ a: { ...baseRoom, private: false, started: false } })).toEqual({
+			a: { ...baseRoom, private: false, started: false },
+		}));
+});
+
+describe("generateRoomId", () => {
+	it("should be 8 characters long", () => expect(generateRoomId().length).toEqual(8));
+});
+
+describe("sortHand", () => {
+	it("should sort colors", () =>
+		expect(
+			sortHand([
+				{ color: "red", shape: "star" },
+				{ color: "blue", shape: "star" },
+				{ color: "green", shape: "star" },
+				{ color: "orange", shape: "star" },
+				{ color: "purple", shape: "star" },
+				{ color: "yellow", shape: "star" },
+			]),
+		).toEqual([
+			{ color: "red", shape: "star" },
+			{ color: "orange", shape: "star" },
+			{ color: "yellow", shape: "star" },
+			{ color: "green", shape: "star" },
+			{ color: "blue", shape: "star" },
+			{ color: "purple", shape: "star" },
+		]));
+
+	it("should sort shapes", () =>
+		expect(
+			sortHand([
+				{ color: "red", shape: "star" },
+				{ color: "red", shape: "circle" },
+				{ color: "red", shape: "triangle" },
+				{ color: "red", shape: "diamond" },
+				{ color: "red", shape: "clover" },
+				{ color: "red", shape: "square" },
+			]),
+		).toEqual([
+			{ color: "red", shape: "circle" },
+			{ color: "red", shape: "clover" },
+			{ color: "red", shape: "diamond" },
+			{ color: "red", shape: "square" },
+			{ color: "red", shape: "star" },
+			{ color: "red", shape: "triangle" },
+		]));
+
+	it("should sort both", () =>
+		expect(
+			sortHand([
+				{ color: "green", shape: "triangle" },
+				{ color: "yellow", shape: "triangle" },
+				{ color: "yellow", shape: "diamond" },
+				{ color: "purple", shape: "star" },
+				{ color: "purple", shape: "clover" },
+				{ color: "red", shape: "star" },
+			]),
+		).toEqual([
+			{ color: "red", shape: "star" },
+			{ color: "yellow", shape: "diamond" },
+			{ color: "yellow", shape: "triangle" },
+			{ color: "green", shape: "triangle" },
+			{ color: "purple", shape: "clover" },
+			{ color: "purple", shape: "star" },
+		]));
+});
+
+describe("getRandomTile", () => {
+	it("should remove it from the deck", () => {
+		const deck: Tile[] = [{ color: "red", shape: "star" }];
+		getRandomTile(deck);
+		expect(deck.length).toEqual(0);
+	});
+
+	it("should throw an error without a tile", () =>
+		expect(() => getRandomTile([], true)).toThrowError(new RangeError("Deck is empty")));
+
+	it("should not throw an error without a tile", () =>
+		expect(getRandomTile([])).toEqual(undefined));
+
+	it("should get a tile", () =>
+		expect(getRandomTile([{ color: "red", shape: "square" }])).toEqual({
+			color: "red",
+			shape: "square",
+		}));
+});
+
+describe("generateHand", () => {
+	it("should not error with an empty deck", () => expect(generateHand([])).toEqual([]));
+
+	it("should give 6 tiles with a full deck", () =>
+		expect(generateHand(generateDeck()).length).toEqual(6));
+
+	it("should remove tiles from the deck", () => {
+		const deck: Tile[] = [{ color: "red", shape: "star" }];
+		generateHand(deck);
+		expect(deck.length).toEqual(0);
+	});
+
+	it("should have tiles", () => {
+		const deck: Tile[] = [{ color: "red", shape: "star" }];
+		expect(generateHand([...deck])).toEqual(deck);
+	});
+});
+
+describe("generateDeck", () => {
+	it("should have 3 of a tile", () =>
+		expect(
+			generateDeck().filter((tile) => tile.color === "red" && tile.shape === "circle").length,
+		).toEqual(3));
+
+	it("should have 6 shapes", () =>
+		expect(
+			generateDeck().reduce((acc, tile) => acc.add(tile.shape), new Set<TileShape>()).size,
+		).toEqual(6));
+
+	it("should have 6 colors", () =>
+		expect(
+			generateDeck().reduce((acc, tile) => acc.add(tile.color), new Set<TileColor>()).size,
+		).toEqual(6));
 });

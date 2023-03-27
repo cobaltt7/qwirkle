@@ -1,15 +1,14 @@
 import { Server as SocketServer } from "socket.io";
 import type { Server as HTTPServer } from "node:http";
+import { JoinError, PlaceError, StartError } from "../common/constants.js";
 import {
-	DUPLICATE_TILES,
-	HAND_SIZE,
-	JoinError,
-	PlaceError,
-	StartError,
-	TILE_COLORS,
-	TILE_SHAPES,
-} from "../common/constants.js";
-import { verifyTile, calculatePoints, JWTClaims, countTiles } from "../common/util.js";
+	verifyTile,
+	calculatePoints,
+	JWTClaims,
+	countTiles,
+	generateDeck,
+	getPublicRooms,
+} from "../common/util.js";
 import type {
 	ClientToServerEvents,
 	InterServerEvents,
@@ -20,14 +19,14 @@ import type {
 	Room,
 } from "../common/types.js";
 import { SignJWT, jwtVerify } from "jose-node-esm-runtime";
+import { generateRoomId } from "../common/util.js";
+import { getRandomTile } from "../common/util.js";
+import { generateHand } from "../common/util.js";
+import { sortHand } from "../common/util.js";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
-const fullDeck = TILE_COLORS.map((color) => {
-	return TILE_SHAPES.map((shape) => {
-		return Array<Tile>(DUPLICATE_TILES).fill({ color, shape });
-	});
-}).flat(2);
+const fullDeck = generateDeck();
 const rooms: Rooms = {};
 const hands: Record<string, Tile[]> = {};
 
@@ -42,7 +41,7 @@ export default function connectIo(server: HTTPServer) {
 	io.on("connection", (socket) => {
 		socket
 			.once("mounted", () => {
-				socket.emit("roomsUpdate", getPublicRooms());
+				socket.emit("roomsUpdate", getPublicRooms(rooms));
 				const roomId = [...socket.rooms.values()][1];
 				if (!roomId) return;
 				const room = rooms[roomId];
@@ -68,7 +67,7 @@ export default function connectIo(server: HTTPServer) {
 				room.players[roomData.username] = { index: 0, score: 0 };
 				rooms[roomId] = room;
 
-				io.emit("roomsUpdate", getPublicRooms());
+				io.emit("roomsUpdate", getPublicRooms(rooms));
 				io.to(roomId).emit("playersUpdate", room.players);
 
 				const jwt = await new SignJWT({ username: roomData.username } as JWTClaims)
@@ -95,7 +94,7 @@ export default function connectIo(server: HTTPServer) {
 				if (room.started) return callback(JoinError.AlreadyStarted);
 				socket.join(roomId);
 				callback();
-				io.emit("roomsUpdate", getPublicRooms());
+				io.emit("roomsUpdate", getPublicRooms(rooms));
 				io.to(roomId).emit("playersUpdate", room.players);
 			})
 			.on("startGame", async (callback) => {
@@ -131,7 +130,7 @@ export default function connectIo(server: HTTPServer) {
 				}
 
 				io.to(roomId).emit("playersUpdate", room.players);
-				io.emit("roomsUpdate", getPublicRooms());
+				io.emit("roomsUpdate", getPublicRooms(rooms));
 			})
 			.on("placeTile", async (tiles, callback) => {
 				const roomId = [...socket.rooms.values()][1];
@@ -176,43 +175,4 @@ export default function connectIo(server: HTTPServer) {
 				// TODO
 			});
 	});
-}
-
-function getPublicRooms() {
-	return Object.fromEntries(
-		Object.entries(rooms).filter(([, room]) => !room.private && !room.started),
-	);
-}
-
-function generateRoomId() {
-	const factor = 6;
-	const power = 10 ** factor;
-	const dateSalt = Date.now() % power;
-	return (
-		Math.floor(Math.random() * power + dateSalt).toString(36) +
-		Math.floor(Math.random() * power + dateSalt).toString(36)
-	).substring(0, 8);
-}
-
-function sortHand(hand: Tile[]) {
-	return hand.sort(
-		(one, two) =>
-			TILE_COLORS.indexOf(one.color) - TILE_COLORS.indexOf(two.color) ||
-			TILE_SHAPES.indexOf(one.shape) - TILE_SHAPES.indexOf(two.shape),
-	);
-}
-
-function getRandomTile(deck: Tile[], required: true): Tile;
-function getRandomTile(deck: Tile[], required?: false): Tile | undefined;
-function getRandomTile(deck: Tile[], required = false): Tile | undefined {
-	const index = Math.floor(Math.random() * deck.length);
-	const tile = deck[index];
-	if (!tile && required) throw new RangeError("Deck is empty");
-	deck.splice(index, 1);
-	return tile;
-}
-
-function generateHand(deck: Tile[], hand: Tile[] = []) {
-	while (deck.length && hand.length < HAND_SIZE) hand.push(getRandomTile(deck, true));
-	return sortHand(hand);
 }

@@ -1,5 +1,14 @@
-import { PlaceError, QWIRKLE_LENGTH, TileColor, TileShape } from "./constants.js";
-import type { Tile, Board, Location, PlacedTile } from "./types.js";
+import {
+	DUPLICATE_TILES,
+	HAND_SIZE,
+	PlaceError,
+	QWIRKLE_LENGTH,
+	TILE_COLORS,
+	TILE_SHAPES,
+	TileColor,
+	TileShape,
+} from "./constants.js";
+import type { Tile, Board, Location, PlacedTile, Rooms } from "./types.js";
 
 export function getUsername() {
 	try {
@@ -132,4 +141,51 @@ function count(tiles: Tile[], key: "color" | "shape") {
 
 export function generateTileUrl({ color, shape }: Tile) {
 	return `./tiles/${color}-${shape}.png`;
+}
+
+export function getPublicRooms(rooms: Rooms): Rooms {
+	return Object.fromEntries(
+		Object.entries(rooms).filter(([, room]) => !room.private && !room.started),
+	);
+}
+
+export function generateRoomId() {
+	const factor = 6;
+	const power = 10 ** factor;
+	const dateSalt = Date.now() % power;
+	return (
+		Math.floor(Math.random() * power + dateSalt).toString(36) +
+		Math.floor(Math.random() * power + dateSalt).toString(36)
+	).substring(0, 8);
+}
+
+export function sortHand(hand: Tile[]) {
+	return hand.sort(
+		(one, two) =>
+			TILE_COLORS.indexOf(one.color) - TILE_COLORS.indexOf(two.color) ||
+			TILE_SHAPES.indexOf(one.shape) - TILE_SHAPES.indexOf(two.shape),
+	);
+}
+
+export function getRandomTile(deck: Tile[], required: true): Tile;
+export function getRandomTile(deck: Tile[], required?: false): Tile | undefined;
+export function getRandomTile(deck: Tile[], required = false): Tile | undefined {
+	const index = Math.floor(Math.random() * deck.length);
+	const tile = deck[index];
+	if (!tile && required) throw new RangeError("Deck is empty");
+	deck.splice(index, 1);
+	return tile;
+}
+
+export function generateHand(deck: Tile[], hand: Tile[] = []) {
+	while (deck.length && hand.length < HAND_SIZE) hand.push(getRandomTile(deck, true));
+	return sortHand(hand);
+}
+
+export function generateDeck() {
+	return TILE_COLORS.map((color) => {
+		return TILE_SHAPES.map((shape) => {
+			return Array<Tile>(DUPLICATE_TILES).fill({ color, shape });
+		});
+	}).flat(2);
 }
