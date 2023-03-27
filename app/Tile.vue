@@ -10,7 +10,7 @@
 	import { verifyTile } from "../common/util.ts";
 	import type App from "./App.vue";
 	import type Game from "./Game.vue";
-import { PlaceError } from "../common/constants.ts";
+	import { PlaceError } from "../common/constants.ts";
 
 	export default class Tile extends Vue.with(
 		class Props {

@@ -1,10 +1,5 @@
 import { PlaceError, QWIRKLE_LENGTH, TileColor, TileShape } from "./constants.js";
-import type {
-	Tile,
-	Board,
-	Location,
-	PlacedTile,
-} from "./types.js";
+import type { Tile, Board, Location, PlacedTile } from "./types.js";
 
 export function getUsername() {
 	try {
