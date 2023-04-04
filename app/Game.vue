@@ -34,6 +34,7 @@
 			<button @click="place" type="button">Place Tiles</button>
 		</section>
 	</section>
+	<div id="deck" :style="{ '--deck-size': deckSize }" :title="`${deckLength} tiles left`"></div>
 </template>
 <script lang="ts">
 	import { Vue, Options } from "vue-class-component";
@@ -41,7 +42,7 @@
 	import type App from "./App.vue";
 	import PlayersList from "./PlayersList.vue";
 	import Tile from "./Tile.vue";
-	import { generateTileUrl } from "../common/util.ts";
+	import { generateDeck, generateTileUrl } from "../common/util.ts";
 	import { dragscroll } from "vue-dragscroll";
 	import { calculatePoints } from "../common/util.ts";
 
@@ -62,6 +63,8 @@
 		SCALE_BOUNDS = [0.35, 1.5] as const;
 		SCALE_INCREMENT = 0.05 as const;
 		score = 0;
+		deckSize = 1;
+		deckLength = generateDeck().length;
 
 		// Computed
 
@@ -73,10 +76,13 @@
 
 		// Hooks
 		override mounted() {
-			this.$root.socket.on("tilesPlaced", (tiles) => {
+			const fullDeck = this.deckLength;
+			this.$root.socket.on("tilesPlaced", (tiles, deckLength) => {
 				tiles.map((tile) => {
 					(this.board[tile.y] ??= {})[tile.x] = tile;
 				});
+				this.deckSize = deckLength / fullDeck;
+				this.deckLength = deckLength;
 				this.onBoardUpdate();
 			});
 
@@ -240,6 +246,12 @@
 		box-shadow: 0 0 5px 0 #000000;
 		height: 100px;
 		margin: auto;
+	}
+
+	#deck {
+		height: 10px;
+		width: calc(100% * var(--deck-size));
+		background: #61afef;
 	}
 
 	:global(main:has(#board)) {

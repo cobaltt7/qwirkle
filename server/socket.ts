@@ -108,7 +108,7 @@ export default function connectIo(server: HTTPServer) {
 
 				room.board[0] = {};
 				room.board[0][0] = { ...getRandomTile(room.deck, true), x: 0, y: 0 };
-				io.to(roomId).emit("tilesPlaced", [room.board[0][0]]);
+				io.to(roomId).emit("tilesPlaced", [room.board[0][0]], room.deck.length);
 
 				const allPlayers = await io.in(roomId).fetchSockets();
 				for (const player of allPlayers) {
@@ -167,7 +167,7 @@ export default function connectIo(server: HTTPServer) {
 					index: player?.index ?? 0,
 					score: (player?.score ?? 0) + calculatePoints(tiles, board),
 				};
-				io.to(roomId).emit("tilesPlaced", tiles);
+				io.to(roomId).emit("tilesPlaced", tiles, room.deck.length);
 				io.to(roomId).emit("playersUpdate", room.players);
 				callback((hands[socket.data.username] = sortHand(hand)));
 			})
