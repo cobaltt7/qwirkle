@@ -16,6 +16,7 @@
 		ServerToClientEvents,
 		Tile,
 		PlacedTile,
+		PublicRoom,
 	} from "../common/types.ts";
 	import Game from "./Game.vue";
 	import RoomsList from "./RoomsList.vue";
@@ -27,7 +28,7 @@
 	export default class App extends Vue {
 		// Data
 		hand: (Tile & { placed?: true })[] = [];
-		roomId: string | null = null;
+		room: PublicRoom | null = null;
 		socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 		status: null | "joined" | "started" = null;
 		centerTile?: PlacedTile;

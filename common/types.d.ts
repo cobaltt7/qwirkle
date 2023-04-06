@@ -4,7 +4,7 @@ import { JWTClaims } from "./util.js";
 // Socket.io
 export interface ServerToClientEvents {
 	tilesPlaced: (tiles: PlacedTile[], deckLength: number) => void;
-	roomsUpdate: (rooms: Rooms) => void;
+	roomsUpdate: (rooms: PublicRooms) => void;
 	playersUpdate: (players: Players) => void;
 	gameStart: (hand: Tile[], start: PlacedTile) => void;
 }
@@ -52,6 +52,8 @@ export type Room = {
 	id: string;
 };
 export type Rooms = Record<string, Room>;
+export type PublicRoom = Pick<Room, "host" | "players" | "auth" | "started" | "id">;
+export type PublicRooms = Record<string, PublicRoom>;
 /** Rows by columns. */
 export type Board = { [y: number]: { [x: number]: PlacedTile } };
 export type Players = Record<string, { index: number; score: number }>;

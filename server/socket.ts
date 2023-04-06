@@ -103,6 +103,7 @@ export default function connectIo(server: HTTPServer) {
 				const room = rooms[roomId];
 				if (!room) return callback(StartError.UndefinedRoom);
 				if (room.started) return callback(StartError.AlreadyStarted);
+				if (room.host !== socket.data.username) return callback(StartError.NoPermissions);
 
 				room.started = true;
 

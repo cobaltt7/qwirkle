@@ -41,14 +41,14 @@
 	import { Vue, Options } from "vue-class-component";
 	import type App from "./App.vue";
 	import { ROOM_PARAMETER } from "../common/constants.ts";
-	import type { Rooms } from "../common/types.ts";
+	import type { PublicRooms } from "../common/types.ts";
 	import CreateRoom from "./CreateRoom.vue";
 	import { getUsername } from "../common/util.ts";
 
 	@Options({ components: { CreateRoom } })
 	export default class RoomsList extends Vue {
 		// Data
-		publicRooms: Rooms = {};
+		publicRooms: PublicRooms = {};
 		defaultUsername = getUsername();
 
 		// Refs
@@ -79,7 +79,7 @@
 				(response) => {
 					if (typeof response === "number") alert(response);
 					else {
-						this.$root.roomId = roomId;
+						this.$root.room = this.publicRooms[roomId]??null;
 						const url = new URL(location.toString());
 						url.searchParams.set("roomId", roomId);
 						window.history.replaceState(undefined, "", url.toString());

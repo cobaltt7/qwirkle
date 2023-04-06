@@ -8,7 +8,7 @@ import {
 	TileColor,
 	TileShape,
 } from "./constants.js";
-import type { Tile, Board, Location, PlacedTile, Rooms } from "./types.js";
+import type { Tile, Board, Location, PlacedTile, Rooms, PublicRooms } from "./types.js";
 
 export function getUsername() {
 	try {
@@ -143,9 +143,20 @@ export function generateTileUrl({ color, shape }: Tile) {
 	return `./tiles/${color}-${shape}.png`;
 }
 
-export function getPublicRooms(rooms: Rooms): Rooms {
+export function getPublicRooms(rooms: Rooms): PublicRooms {
 	return Object.fromEntries(
-		Object.entries(rooms).filter(([, room]) => !room.private && !room.started),
+		Object.entries(rooms)
+			.filter(([, room]) => !room.private && !room.started)
+			.map(([id, room]) => [
+				id,
+				{
+					auth: room.auth,
+					host: room.host,
+					players: room.players,
+					started: room.started,
+					id: room.id,
+				},
+			]),
 	);
 }
 
