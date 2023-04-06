@@ -25,10 +25,10 @@ export enum JoinError {
 	AlreadyStarted,
 }
 export enum StartError {
-UndefinedRoom,
-NotInRoom,
-AlreadyStarted,
-NoPermissions
+	UndefinedRoom,
+	NotInRoom,
+	AlreadyStarted,
+	NoPermissions,
 }
 
 export const ROOM_PARAMETER = "roomId";

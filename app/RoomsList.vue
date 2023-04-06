@@ -79,7 +79,7 @@
 				(response) => {
 					if (typeof response === "number") alert(response);
 					else {
-						this.$root.room = this.publicRooms[roomId]??null;
+						this.$root.room = this.publicRooms[roomId] ?? null;
 						const url = new URL(location.toString());
 						url.searchParams.set("roomId", roomId);
 						window.history.replaceState(undefined, "", url.toString());
