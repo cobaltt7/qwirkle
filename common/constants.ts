@@ -6,6 +6,7 @@ export type TileShape = typeof TILE_SHAPES[number];
 export const QWIRKLE_LENGTH = 6;
 export const HAND_SIZE = 6;
 export const DUPLICATE_TILES = 3;
+export const GO_OUT_BONUS = 6;
 
 export enum PlaceError {
 	UndefinedRoom,
@@ -29,6 +30,9 @@ export enum StartError {
 	NotInRoom,
 	AlreadyStarted,
 	NoPermissions,
+}
+export enum EndReason {
+	NoTiles,
 }
 
 export const ROOM_PARAMETER = "roomId";

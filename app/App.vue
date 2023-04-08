@@ -3,7 +3,8 @@
 	<main>
 		<RoomsList v-if="!status" />
 		<Lobby v-else-if="status === 'joined'" />
-		<Game v-else :centerTile="centerTile" />
+		<Game v-else-if="status === 'started'" :centerTile="centerTile" />
+		<Leaderboard v-else />
 	</main>
 </template>
 <script lang="ts">
@@ -22,16 +23,19 @@
 	import RoomsList from "./RoomsList.vue";
 	import TitleBar from "./TitleBar.vue";
 	import Lobby from "./Lobby.vue";
+	import Leaderboard from "./Leaderboard.vue";
 	import io from "socket.io-client";
+	import { EndReason } from "../common/constants.ts";
 
-	@Options({ components: { TitleBar, Game, RoomsList, Lobby } })
+	@Options({ components: { TitleBar, Game, RoomsList, Lobby, Leaderboard } })
 	export default class App extends Vue {
 		// Data
 		hand: (Tile & { placed?: true })[] = [];
 		room: PublicRoom | null = null;
 		socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
-		status: null | "joined" | "started" = null;
+		status: null | "joined" | "started" | "ended" = null;
 		centerTile?: PlacedTile;
+		endReason?: EndReason;
 
 		// Refs
 		declare readonly $refs: {};
@@ -48,11 +52,16 @@
 			}
 			this.socket.emit("mounted");
 
-			this.socket.on("gameStart", (hand, tile) => {
-				this.centerTile = tile;
-				this.hand = hand;
-				this.status = "started";
-			});
+			this.socket
+				.on("gameStart", (hand, tile) => {
+					this.centerTile = tile;
+					this.hand = hand;
+					this.status = "started";
+				})
+				.on("gameEnd", (reason) => {
+					this.endReason = reason;
+					this.status = "ended";
+				});
 		}
 
 		override updated() {

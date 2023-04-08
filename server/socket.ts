@@ -1,6 +1,6 @@
 import { Server as SocketServer } from "socket.io";
 import type { Server as HTTPServer } from "node:http";
-import { JoinError, PlaceError, StartError } from "../common/constants.js";
+import { JoinError, PlaceError, StartError, EndReason, GO_OUT_BONUS } from "../common/constants.js";
 import {
 	verifyTile,
 	calculatePoints,
@@ -115,7 +115,7 @@ export default function connectIo(server: HTTPServer) {
 				for (const player of allPlayers) {
 					player.emit(
 						"gameStart",
-						(hands[player.data.username] ??= generateHand(room.deck)),
+						(hands[player.data.username] = generateHand(room.deck)),
 						room.board[0][0],
 					);
 				}
@@ -166,11 +166,15 @@ export default function connectIo(server: HTTPServer) {
 				const player = room.players[socket.data.username];
 				room.players[socket.data.username] = {
 					index: player?.index ?? 0,
-					score: (player?.score ?? 0) + calculatePoints(tiles, board),
+					score:
+						(player?.score ?? 0) +
+						calculatePoints(tiles, board) +
+						GO_OUT_BONUS * +!hand.length,
 				};
 				io.to(roomId).emit("tilesPlaced", tiles, room.deck.length);
 				io.to(roomId).emit("playersUpdate", room.players);
 				callback((hands[socket.data.username] = sortHand(hand)));
+				if (!hand.length) io.to(roomId).emit("gameEnd", EndReason.NoTiles);
 			})
 			.on("disconnect", () => {
 				// TODO

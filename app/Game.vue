@@ -29,6 +29,7 @@
 		<section id="buttons" v-if="score">
 			<p>
 				<b>{{ score }}</b> points
+				<i v-if="endingGame"><br />Will end game</i>
 			</p>
 			<button @click="reset" type="button">Reset Hand</button>
 			<button @click="place" type="button">Place Tiles</button>
@@ -45,6 +46,7 @@
 	import { generateDeck, generateTileUrl } from "../common/util.ts";
 	import { dragscroll } from "vue-dragscroll";
 	import { calculatePoints } from "../common/util.ts";
+	import { GO_OUT_BONUS } from "../common/constants.ts";
 
 	@Options({ directives: { dragscroll }, components: { PlayersList, Tile } })
 	export default class Game extends Vue.with(
@@ -65,6 +67,7 @@
 		score = 0;
 		deckSize = 1;
 		deckLength = generateDeck().length;
+		endingGame = false;
 
 		// Computed
 
@@ -124,10 +127,9 @@
 				tile.tile = this.board[tile.y]?.[tile.x] ?? null;
 				if (tile.tile?.temporary === "ignore") tile.tile = null;
 			});
-			this.score = calculatePoints(
-				tiles.filter((tile) => tile.temporary),
-				this.board,
-			);
+			const placed = tiles.filter((tile) => tile.temporary);
+			this.endingGame = placed.length === this.$root.hand.length && this.deckLength === 0;
+			this.score = calculatePoints(placed, this.board) + GO_OUT_BONUS * +this.endingGame;
 		}
 		zoomIn() {
 			this.scale = Math.min(this.SCALE_BOUNDS[1], this.scale + this.SCALE_INCREMENT);
