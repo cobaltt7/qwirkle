@@ -11,7 +11,7 @@
 	</section>
 </template>
 <script lang="ts">
-	import { Options, Vue, prop } from "vue-class-component";
+	import { Component, Vue, Hook, Prop } from "vue-facing-decorator";
 	import type { Players } from "../common/types.ts";
 	import type App from "./App.vue";
 	import type Game from "./Game.vue";
@@ -19,30 +19,22 @@
 	import PlayerCard from "./PlayerCard.vue";
 	import { getUsername } from "../common/util.ts";
 
-	@Options({ components: { PlayerCard } })
-	export default class PlayersList extends Vue.with(
-		class Props {
-			scores?: boolean;
-			players = prop<Players>({ default: {} });
-		},
-	) {
-		// Data
-		username = getUsername();
-		computedPlayers=this.players
+	@Component({ components: { PlayerCard } })
+	export default class PlayersList extends Vue {
+		@Prop scores?: boolean;
+		@Prop({ default: {} }) players!: Players;
 
-		// Refs
-		declare readonly $refs: {};
+		username = getUsername();
+		computedPlayers = this.players;
+
 		declare readonly $parent: Game | Lobby;
 		declare readonly $root: App;
 
-		// Hooks
-		override mounted() {
+		@Hook mounted() {
 			this.$root.socket.on("playersUpdate", (players) => {
 				this.computedPlayers = players;
 			});
 		}
-
-		// Methods
 	}
 </script>
 <style scoped>

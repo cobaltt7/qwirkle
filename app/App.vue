@@ -8,7 +8,7 @@
 	</main>
 </template>
 <script lang="ts">
-	import { Options, Vue } from "vue-class-component";
+	import { Component, Hook, Vue } from "vue-facing-decorator";
 	import twemoji from "twemoji";
 
 	import type { Socket } from "socket.io-client";
@@ -27,9 +27,8 @@
 	import io from "socket.io-client";
 	import { EndReason } from "../common/constants.ts";
 
-	@Options({ components: { TitleBar, Game, RoomsList, Lobby, Leaderboard } })
+	@Component({ components: { TitleBar, Game, RoomsList, Lobby, Leaderboard } })
 	export default class App extends Vue {
-		// Data
 		hand: (Tile & { placed?: true })[] = [];
 		room: PublicRoom | null = null;
 		socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
@@ -37,13 +36,8 @@
 		centerTile?: PlacedTile;
 		endReason?: EndReason;
 
-		// Refs
-		declare readonly $refs: {};
-
-		// Hooks
-		override mounted() {
+		@Hook mounted() {
 			if (true) {
-				// TODO: drop in prod
 				this.socket.on("connect", () =>
 					this.socket.io.on("open", () => {
 						setTimeout(() => (location.href = location.href), 2000);
@@ -64,11 +58,9 @@
 				});
 		}
 
-		override updated() {
+		@Hook updated() {
 			twemoji.parse(document.body);
 		}
-
-		// Methods
 	}
 </script>
 <style scoped>

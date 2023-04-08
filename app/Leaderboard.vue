@@ -20,32 +20,26 @@
 			:player="{ ...orderedPlayers[2][1], username: orderedPlayers[2][0] }"
 		/>
 	</div>
-	<PlayersList :players="orderedPlayers"/>
+	<PlayersList :players="orderedPlayers" />
 </template>
 <script lang="ts">
-	import { Options, Vue } from "vue-class-component";
+	import { Component, Vue, Hook } from "vue-facing-decorator";
 	import type App from "./App.vue";
 	import PlayerCard from "./PlayerCard.vue";
 	import PlayersList from "./PlayersList.vue";
 	import { Player } from "../common/types.js";
 
-	@Options({ components: { PlayersList, PlayerCard } })
+	@Component({ components: { PlayersList, PlayerCard } })
 	export default class Leaderboard extends Vue {
-		// Data
 		orderedPlayers?: [string, Player][];
 
-		// Refs
-		declare readonly $refs: {};
 		declare readonly $root: App;
 
-		// Hooks
-		override mounted() {
+		@Hook mounted() {
 			this.orderedPlayers = Object.entries(this.$root.room?.players || {}).sort(
 				([, one], [, two]) => two.score - one.score,
 			);
 		}
-
-		// Methods
 	}
 </script>
 <style scoped></style>

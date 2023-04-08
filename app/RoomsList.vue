@@ -13,17 +13,17 @@
 			</button>
 		</section>
 		<section id="manage">
-			<button type="button" @click="$refs.createRoomDialog.$el.showModal()">
+			<button type="button" @click="createRoomDialog.$el.showModal()">
 				<h2>Create New Room</h2>
 			</button>
-			<button type="button" @click="$refs.joinRoomDialog.showModal()">
+			<button type="button" @click="joinRoomDialog.showModal()">
 				<h2>Join Private Room</h2>
 			</button>
 		</section>
 	</section>
 	<CreateRoom ref="createRoomDialog" />
 	<dialog ref="joinRoomDialog">
-		<form method="dialog" @submit="joinRoom($refs.joinRoomInput.value)">
+		<form method="dialog" @submit="joinRoom(joinRoomInput.value)">
 			<h3>Join private room</h3>
 			<input placeholder="Room ID" ref="joinRoomInput" required />
 			<input
@@ -38,30 +38,25 @@
 	</dialog>
 </template>
 <script lang="ts">
-	import { Vue, Options } from "vue-class-component";
+	import { Vue, Component, Ref, Hook } from "vue-facing-decorator";
 	import type App from "./App.vue";
 	import { ROOM_PARAMETER } from "../common/constants.ts";
 	import type { PublicRooms } from "../common/types.ts";
 	import CreateRoom from "./CreateRoom.vue";
 	import { getUsername } from "../common/util.ts";
 
-	@Options({ components: { CreateRoom } })
+	@Component({ components: { CreateRoom } })
 	export default class RoomsList extends Vue {
-		// Data
 		publicRooms: PublicRooms = {};
 		defaultUsername = getUsername();
 
-		// Refs
-		declare readonly $refs: {
-			createRoomDialog: CreateRoom;
-			joinRoomDialog: HTMLDialogElement;
-			joinRoomInput: HTMLInputElement;
-			username: HTMLInputElement;
-		};
+		@Ref readonly createRoomDialog!: CreateRoom;
+		@Ref readonly joinRoomDialog!: HTMLDialogElement;
+		@Ref readonly joinRoomInput!: HTMLInputElement;
+		@Ref readonly username!: HTMLInputElement;
 		declare readonly $root: App;
 
-		// Hooks
-		override mounted() {
+		@Hook mounted() {
 			const roomId = new URL(location.href).searchParams.get(ROOM_PARAMETER);
 			if (roomId) this.joinRoom(roomId);
 			this.$root.socket.on("roomsUpdate", (rooms) => {
@@ -69,8 +64,7 @@
 			});
 		}
 
-		// Methods
-		joinRoom(roomId: string, username = this.$refs.username.value) {
+		joinRoom(roomId: string, username = this.username.value) {
 			const jwt = localStorage.getItem("auth");
 			this.$root.socket.emit(
 				"joinRoom",

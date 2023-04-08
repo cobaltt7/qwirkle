@@ -2,19 +2,11 @@
 	<header><h1>Qwirkle</h1></header>
 </template>
 <script lang="ts">
-	import { Vue } from "vue-class-component";
+	import { Vue } from "vue-facing-decorator";
 	import type App from "./App.vue";
 
 	export default class TitleBar extends Vue {
-		// Data
-
-		// Refs
-		declare readonly $refs: {};
 		declare readonly $root: App;
-
-		// Hooks
-
-		// Methods
 	}
 </script>
 <style scoped>

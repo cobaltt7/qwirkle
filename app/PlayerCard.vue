@@ -10,26 +10,16 @@
 	</div>
 </template>
 <script lang="ts">
-	import { Vue, prop } from "vue-class-component";
+	import { Vue, Prop } from "vue-facing-decorator";
 	import type { Player } from "../common/types";
 	import type App from "./App.vue.ts";
 
-	export default class PlayerCard extends Vue.with(
-		class Props {
-			scores?: boolean;
-			active = prop<boolean>({ default: false });
-			player!: Player & { username: string };
-		},
-	) {
-		// Data
+	export default class PlayerCard extends Vue {
+		@Prop() scores?: boolean;
+		@Prop({ default: false }) active!: boolean;
+		@Prop({ required: true }) player!: Player & { username: string };
 
-		// Refs
-		declare readonly $refs: {};
 		declare readonly $root: App;
-
-		// Hooks
-
-		// Methods
 	}
 </script>
 <style scoped>

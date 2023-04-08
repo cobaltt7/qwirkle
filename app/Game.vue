@@ -38,7 +38,7 @@
 	<div id="deck" :style="{ '--deck-size': deckSize }" :title="`${deckLength} tiles left`"></div>
 </template>
 <script lang="ts">
-	import { Vue, Options } from "vue-class-component";
+	import { Vue, Component, Prop, Ref, Hook } from "vue-facing-decorator";
 	import type { Board, PlacedTile } from "../common/types.ts";
 	import type App from "./App.vue";
 	import PlayersList from "./PlayersList.vue";
@@ -48,13 +48,10 @@
 	import { calculatePoints } from "../common/util.ts";
 	import { GO_OUT_BONUS } from "../common/constants.ts";
 
-	@Options({ directives: { dragscroll }, components: { PlayersList, Tile } })
-	export default class Game extends Vue.with(
-		class Props {
-			centerTile!: PlacedTile;
-		},
-	) {
-		// Data
+	@Component({ directives: { dragscroll }, components: { PlayersList, Tile } })
+	export default class Game extends Vue {
+		@Prop({ required: true }) centerTile!: PlacedTile;
+
 		boardSize: { rows: [number, number]; columns: [number, number] } = {
 			rows: [0, 0],
 			columns: [0, 0],
@@ -69,16 +66,10 @@
 		deckLength = generateDeck().length;
 		endingGame = false;
 
-		// Computed
-
-		// Refs
-		declare readonly $refs: {
-			tiles: Tile[];
-		};
+		@Ref readonly tiles!: Tile[];
 		declare readonly $root: App;
 
-		// Hooks
-		override mounted() {
+		@Hook mounted() {
 			const fullDeck = this.deckLength;
 			this.$root.socket.on("tilesPlaced", (tiles, deckLength) => {
 				tiles.map((tile) => {
@@ -93,12 +84,11 @@
 			this.onBoardUpdate();
 		}
 
-		// Methods
 		generateTileUrl = generateTileUrl;
 		selectTile(event: Event) {
-			if (!(event.target instanceof Element)) return; // Idk how this could happen but TS says it can
+			if (!(event.target instanceof Element)) return;
 			const button = event.target.closest("button");
-			if (!button) return; // Ignore, user didn't click on tile
+			if (!button) return;
 
 			const index = Array.prototype.indexOf.call(button.parentNode?.children ?? [], button);
 			const tile = this.$root.hand[index];
@@ -123,7 +113,7 @@
 				}),
 				{ rows: [0, 0], columns: [0, 0] } as typeof this.boardSize,
 			);
-			this.$refs.tiles.map((tile) => {
+			this.tiles.map((tile) => {
 				tile.tile = this.board[tile.y]?.[tile.x] ?? null;
 				if (tile.tile?.temporary === "ignore") tile.tile = null;
 			});

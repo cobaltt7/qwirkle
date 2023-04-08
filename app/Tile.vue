@@ -4,7 +4,7 @@
 	</div>
 </template>
 <script lang="ts">
-	import { Vue } from "vue-class-component";
+	import { Prop, Vue, Hook } from "vue-facing-decorator";
 	import { generateTileUrl } from "../common/util.ts";
 	import type { PlacedTile } from "../common/types.ts";
 	import { verifyTile } from "../common/util.ts";
@@ -12,43 +12,32 @@
 	import type Game from "./Game.vue";
 	import { PlaceError } from "../common/constants.ts";
 
-	export default class Tile extends Vue.with(
-		class Props {
-			columnIndex!: number;
-			rowIndex!: number;
-		},
-	) {
-		// Data
+	export default class Tile extends Vue {
+		@Prop({ required: true }) columnIndex!: number;
+		@Prop({ required: true }) rowIndex!: number;
+
 		tile: PlacedTile | null = null;
 
-		// Computed
 		get y() {
-			return this.$parent.boardSize.rows[0] + this.$props.rowIndex - 2;
+			return this.$parent.boardSize.rows[0] + this.rowIndex - 2;
 		}
 		get x() {
-			return this.$parent.boardSize.columns[0] + this.$props.columnIndex - 2;
+			return this.$parent.boardSize.columns[0] + this.columnIndex - 2;
 		}
 		get scale() {
 			return this.$parent.scale;
 		}
 
-		// Refs
-		declare readonly $refs: {};
 		declare readonly $parent: Game;
 		declare readonly $root: App;
 
-		// Hooks
-
-		// Methods
-		override mounted() {
+		@Hook mounted() {
 			this.tile = this.$parent.board[this.y]?.[this.x] ?? null;
 		}
 		boardUpdate() {
 			this.tile = this.$parent.board[this.y]?.[this.x] ?? null;
 		}
 		tilePlaced() {
-			if (this.$parent.selectedTile === -1) return; // TODO: Warn, user didn't select tile
-
 			const tile = this.$root.hand[this.$parent.selectedTile];
 			if (!tile) return alert(PlaceError.MissingTile);
 			if (

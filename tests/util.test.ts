@@ -291,7 +291,7 @@ describe("getPublicRooms", () => {
 
 	it("should not remove public unstarted rooms", () =>
 		expect(getPublicRooms({ a: { ...baseRoom, private: false, started: false } })).toEqual({
-			a: { ...baseRoom, private: false, started: false },
+			a: { auth: false, host: "foobar", id: "a", players: {}, started: false },
 		}));
 });
 

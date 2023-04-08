@@ -46,58 +46,51 @@
 	</dialog>
 </template>
 <script lang="ts">
-	import { Vue } from "vue-class-component";
+	import { Ref, Vue } from "vue-facing-decorator";
 	import type RoomsList from "./RoomsList.vue";
 	import type App from "./App.vue";
 	import { getUsername } from "../common/util.ts";
 
 	export default class CreateRoom extends Vue {
-		// Data
 		authOn = false;
 		defaultUsername = getUsername();
 
-		// Refs
-		declare readonly $refs: {
-			username: HTMLInputElement;
-			authSwitch: HTMLInputElement;
-			discordAuth: HTMLInputElement;
-			githubAuth: HTMLInputElement;
-			privateSwitch: HTMLInputElement;
-		};
+		@Ref readonly username!: HTMLInputElement;
+		@Ref readonly authSwitch!: HTMLInputElement;
+		@Ref readonly discordAuth!: HTMLInputElement;
+		@Ref readonly githubAuth!: HTMLInputElement;
+		@Ref readonly privateSwitch!: HTMLInputElement;
 		declare readonly $root: App;
 		declare readonly $parent: RoomsList;
 
-		// Hooks
-
-		// Methods
 		createRoom() {
 			this.$root.socket.emit(
 				"createRoom",
 				{
 					auth: this.authOn
 						? {
-								discord: this.$refs.discordAuth.checked,
-								github: this.$refs.githubAuth.checked,
+								discord: this.discordAuth.checked,
+								github: this.githubAuth.checked,
 						  }
 						: false,
-					private: this.$refs.privateSwitch.checked,
-					username: this.$refs.username.value,
+					private: this.privateSwitch.checked,
+					username: this.username.value,
 				},
 				(room, jwt) => {
 					if (jwt) localStorage.setItem("auth", jwt);
-					if (room) this.$parent.joinRoom(room.id, this.$refs.username.value);
+					if (room) this.$parent.joinRoom(room.id, this.username.value);
 					else alert("Error");
 				},
 			);
 		}
 
 		toggleAuth() {
-			this.authOn = this.$refs.authSwitch.checked;
+			this.authOn = this.authSwitch.checked;
 		}
 		toggleAuthService(service: "discord" | "github") {
-			if (!this.$refs.discordAuth.checked && !this.$refs.githubAuth.checked) {
+			if (!this.discordAuth.checked && !this.githubAuth.checked) {
 				this.authOn = false;
-				this.$refs[`${service}Auth`].checked = true;
+				this[`${service}Auth`].checked = true;
 			}
 		}
 	}

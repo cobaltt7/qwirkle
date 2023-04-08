@@ -175,9 +175,6 @@ export default function connectIo(server: HTTPServer) {
 				io.to(roomId).emit("playersUpdate", room.players);
 				callback((hands[socket.data.username] = sortHand(hand)));
 				if (!hand.length) io.to(roomId).emit("gameEnd", EndReason.NoTiles);
-			})
-			.on("disconnect", () => {
-				// TODO
 			});
 	});
 }
