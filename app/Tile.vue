@@ -4,7 +4,7 @@
 	</div>
 </template>
 <script lang="ts">
-	import { Prop, Vue, Hook } from "vue-facing-decorator";
+	import { Prop, Vue, Hook, Component } from "vue-facing-decorator";
 	import { generateTileUrl } from "../common/util.ts";
 	import type { PlacedTile } from "../common/types.ts";
 	import { verifyTile } from "../common/util.ts";
@@ -12,6 +12,7 @@
 	import type Game from "./Game.vue";
 	import { PlaceError } from "../common/constants.ts";
 
+	@Component
 	export default class Tile extends Vue {
 		@Prop({ required: true }) columnIndex!: number;
 		@Prop({ required: true }) rowIndex!: number;

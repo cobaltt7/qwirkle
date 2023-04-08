@@ -10,10 +10,11 @@
 	</div>
 </template>
 <script lang="ts">
-	import { Vue, Prop } from "vue-facing-decorator";
+	import { Vue, Prop, Component } from "vue-facing-decorator";
 	import type { Player } from "../common/types";
 	import type App from "./App.vue.ts";
 
+	@Component
 	export default class PlayerCard extends Vue {
 		@Prop() scores?: boolean;
 		@Prop({ default: false }) active!: boolean;

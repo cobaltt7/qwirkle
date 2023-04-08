@@ -2,9 +2,10 @@
 	<header><h1>Qwirkle</h1></header>
 </template>
 <script lang="ts">
-	import { Vue } from "vue-facing-decorator";
+	import { Component, Vue } from "vue-facing-decorator";
 	import type App from "./App.vue";
 
+	@Component
 	export default class TitleBar extends Vue {
 		declare readonly $root: App;
 	}

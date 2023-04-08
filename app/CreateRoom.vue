@@ -46,11 +46,12 @@
 	</dialog>
 </template>
 <script lang="ts">
-	import { Ref, Vue } from "vue-facing-decorator";
+	import { Component, Ref, Vue } from "vue-facing-decorator";
 	import type RoomsList from "./RoomsList.vue";
 	import type App from "./App.vue";
 	import { getUsername } from "../common/util.ts";
 
+	@Component
 	export default class CreateRoom extends Vue {
 		authOn = false;
 		defaultUsername = getUsername();
