@@ -4,36 +4,26 @@
 			:scores="scores"
 			:player="{ ...player[1], username: player[0] }"
 			:active="player[0] === username"
-			v-for="player in Object.entries(computedPlayers).sort(
+			v-for="player in Object.entries(players).sort(
 				([, one], [, two]) => one.index - two.index,
 			)"
 		/>
 	</section>
 </template>
 <script lang="ts">
-	import { Component, Vue, Hook, Prop } from "vue-facing-decorator";
+	import { Component, Vue, Prop } from "vue-facing-decorator";
 	import type { Players } from "../common/types.ts";
-	import type App from "./App.vue";
-	import type Game from "./Game.vue";
-	import type Lobby from "./Lobby.vue";
 	import PlayerCard from "./PlayerCard.vue";
-	import { getUsername } from "../common/util.ts";
+	import useStore from "../common/store.ts";
 
 	@Component({ components: { PlayerCard } })
 	export default class PlayersList extends Vue {
 		@Prop scores?: boolean;
-		@Prop({ default: {} }) players!: Players;
+		@Prop({ required: true }) players!: Players;
 
-		username = getUsername();
-		computedPlayers = this.players;
-
-		declare readonly $parent: Game | Lobby;
-		declare readonly $root: App;
-
-		@Hook mounted() {
-			this.$root.socket.on("playersUpdate", (players) => {
-				this.computedPlayers = players;
-			});
+		get username() {
+			const state = useStore();
+			return state.username;
 		}
 	}
 </script>

@@ -6,7 +6,7 @@
 				type="text"
 				placeholder="Username"
 				required
-				ref="username"
+				ref="usernameInput"
 				:value="defaultUsername"
 			/>
 			<p>
@@ -46,26 +46,32 @@
 	</dialog>
 </template>
 <script lang="ts">
-	import { Component, Ref, Vue } from "vue-facing-decorator";
-	import type RoomsList from "./RoomsList.vue";
-	import type App from "./App.vue";
-	import { getUsername } from "../common/util.ts";
+	import { Component, Hook, Ref, Vue } from "vue-facing-decorator";
+	import useStore from "../common/store.ts";
+	import socket from "../common/socket.ts";
 
 	@Component
 	export default class CreateRoom extends Vue {
 		authOn = false;
-		defaultUsername = getUsername();
+		defaultUsername: string | null = null;
 
-		@Ref readonly username!: HTMLInputElement;
+		@Ref readonly usernameInput!: HTMLInputElement;
 		@Ref readonly authSwitch!: HTMLInputElement;
 		@Ref readonly discordAuth!: HTMLInputElement;
 		@Ref readonly githubAuth!: HTMLInputElement;
 		@Ref readonly privateSwitch!: HTMLInputElement;
-		declare readonly $root: App;
-		declare readonly $parent: RoomsList;
+
+		@Hook mounted() {
+			const state = useStore();
+			this.defaultUsername = state.username;
+		}
 
 		createRoom() {
-			this.$root.socket.emit(
+			const state = useStore();
+			if (this.usernameInput.value) state.username = this.usernameInput.value;
+			if (!state.username) return;
+
+			socket.emit(
 				"createRoom",
 				{
 					auth: this.authOn
@@ -75,12 +81,17 @@
 						  }
 						: false,
 					private: this.privateSwitch.checked,
-					username: this.username.value,
+					username: state.username,
 				},
-				(room, jwt) => {
-					if (jwt) localStorage.setItem("auth", jwt);
-					if (room) this.$parent.joinRoom(room.id, this.username.value);
-					else alert("Error");
+				(jwt, room) => {
+					localStorage.setItem("auth", jwt);
+					if (!room) return alert("Error");
+
+					state.room = room;
+					const url = new URL(location.toString());
+					url.searchParams.set("roomId", room.id);
+					window.history.replaceState(undefined, "", url.toString());
+					state.status = "joined";
 				},
 			);
 		}

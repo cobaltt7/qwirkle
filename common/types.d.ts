@@ -24,7 +24,7 @@ export interface ClientToServerEvents {
 	) => void;
 	createRoom: (
 		roomData: JWTClaims & Pick<Room, "auth" | "private">,
-		callback: { (room?: never, jwt?: never): void; (room: Room, jwt: string): void },
+		callback: { (jwt: string, room?: Room): void },
 	) => void;
 	mounted: () => void;
 	startGame: (callback: (response: StartError) => void) => void;

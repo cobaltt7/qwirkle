@@ -1,22 +1,30 @@
 <template>
-	<PlayersList />
-	<button @click="startGame" v-if="$root.room?.host === username">Start Game</button>
+	<PlayersList :players="players" />
+	<button @click="startGame" v-if="host === username">Start Game</button>
 </template>
 <script lang="ts">
 	import { Vue, Component } from "vue-facing-decorator";
-	import type App from "./App.vue";
 	import PlayersList from "./PlayersList.vue";
-	import { getUsername } from "../common/util.js";
+	import useStore from "../common/store.js";
+import socket from "../common/socket.js";
 
 	@Component({ components: { PlayersList } })
 	export default class Lobby extends Vue {
-		host?: string;
-		username = getUsername();
-
-		declare readonly $root: App;
+		get username() {
+			const state = useStore();
+			return state.username;
+		}
+		get host() {
+			const state = useStore();
+			return state.room?.host;
+		}
+		get players() {
+			const state = useStore();
+			return state.room?.players;
+		}
 
 		startGame() {
-			this.$root.socket.emit("startGame", alert);
+			socket.emit("startGame", alert);
 		}
 	}
 </script>

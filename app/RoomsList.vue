@@ -30,7 +30,7 @@
 				type="text"
 				placeholder="Username"
 				required
-				ref="username"
+				ref="usernameInput"
 				:value="defaultUsername"
 			/>
 			<button type="submit">Join</button>
@@ -39,45 +39,49 @@
 </template>
 <script lang="ts">
 	import { Vue, Component, Ref, Hook } from "vue-facing-decorator";
-	import type App from "./App.vue";
 	import { ROOM_PARAMETER } from "../common/constants.ts";
-	import type { PublicRooms } from "../common/types.ts";
 	import CreateRoom from "./CreateRoom.vue";
-	import { getUsername } from "../common/util.ts";
+	import useStore from "../common/store.ts";
+	import socket from "../common/socket.ts";
 
 	@Component({ components: { CreateRoom } })
 	export default class RoomsList extends Vue {
-		publicRooms: PublicRooms = {};
-		defaultUsername = getUsername();
+		defaultUsername: string | null = null;
+
+		get publicRooms() {
+			const state = useStore();
+			return state.publicRooms;
+		}
 
 		@Ref readonly createRoomDialog!: CreateRoom;
 		@Ref readonly joinRoomDialog!: HTMLDialogElement;
 		@Ref readonly joinRoomInput!: HTMLInputElement;
-		@Ref readonly username!: HTMLInputElement;
-		declare readonly $root: App;
+		@Ref readonly usernameInput!: HTMLInputElement;
 
 		@Hook mounted() {
+			const state = useStore();
+			this.defaultUsername = state.username;
 			const roomId = new URL(location.href).searchParams.get(ROOM_PARAMETER);
 			if (roomId) this.joinRoom(roomId);
-			this.$root.socket.on("roomsUpdate", (rooms) => {
-				this.publicRooms = rooms;
-			});
 		}
 
-		joinRoom(roomId: string, username = this.username.value) {
+		joinRoom(roomId: string, username = this.usernameInput.value) {
+			const state = useStore();
+			state.username = username;
+
 			const jwt = localStorage.getItem("auth");
-			this.$root.socket.emit(
+			socket.emit(
 				"joinRoom",
 				roomId,
 				username === this.defaultUsername && jwt ? { jwt } : { username },
 				(response) => {
 					if (typeof response === "number") alert(response);
 					else {
-						this.$root.room = this.publicRooms[roomId] ?? null;
+						state.room = this.publicRooms[roomId] ?? null;
 						const url = new URL(location.toString());
 						url.searchParams.set("roomId", roomId);
 						window.history.replaceState(undefined, "", url.toString());
-						this.$root.status = "joined";
+						state.status = "joined";
 					}
 				},
 			);

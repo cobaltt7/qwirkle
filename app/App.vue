@@ -3,7 +3,7 @@
 	<main>
 		<RoomsList v-if="!status" />
 		<Lobby v-else-if="status === 'joined'" />
-		<Game v-else-if="status === 'started'" :centerTile="centerTile" />
+		<Game v-else-if="status === 'started'" />
 		<Leaderboard v-else />
 	</main>
 </template>
@@ -11,51 +11,23 @@
 	import { Component, Hook, Vue } from "vue-facing-decorator";
 	import twemoji from "twemoji";
 
-	import type { Socket } from "socket.io-client";
-	import type {
-		ClientToServerEvents,
-		ServerToClientEvents,
-		Tile,
-		PlacedTile,
-		PublicRoom,
-	} from "../common/types.ts";
 	import Game from "./Game.vue";
 	import RoomsList from "./RoomsList.vue";
 	import TitleBar from "./TitleBar.vue";
 	import Lobby from "./Lobby.vue";
 	import Leaderboard from "./Leaderboard.vue";
-	import io from "socket.io-client";
-	import { EndReason } from "../common/constants.ts";
+	import useStore from "../common/store.js";
+	import socket from "../common/socket.js";
 
 	@Component({ components: { TitleBar, Game, RoomsList, Lobby, Leaderboard } })
 	export default class App extends Vue {
-		hand: (Tile & { placed?: true })[] = [];
-		room: PublicRoom | null = null;
-		socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
-		status: null | "joined" | "started" | "ended" = null;
-		centerTile?: PlacedTile;
-		endReason?: EndReason;
+		get status() {
+			const store = useStore();
+			return store.status;
+		}
 
 		@Hook mounted() {
-			if (true) {
-				this.socket.on("connect", () =>
-					this.socket.io.on("open", () => {
-						setTimeout(() => (location.href = location.href), 2000);
-					}),
-				);
-			}
-			this.socket.emit("mounted");
-
-			this.socket
-				.on("gameStart", (hand, tile) => {
-					this.centerTile = tile;
-					this.hand = hand;
-					this.status = "started";
-				})
-				.on("gameEnd", (reason) => {
-					this.endReason = reason;
-					this.status = "ended";
-				});
+			socket.connect();
 		}
 
 		@Hook updated() {

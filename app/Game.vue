@@ -1,13 +1,13 @@
 <template>
-	<PlayersList :scores="true" />
+	<PlayersList :scores="true" :players="players" />
 	<section id="board" v-dragscroll :style="{ '--scale': scale }">
 		<div id="rows">
 			<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
 				<Tile
-					ref="tiles"
 					v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
 					:rowIndex="rowIndex"
 					:columnIndex="columnIndex"
+					:scale="scale"
 				/>
 			</div>
 		</div>
@@ -18,7 +18,7 @@
 	</section>
 	<section id="hand">
 		<button
-			v-for="[index, tile] in $root.hand.entries()"
+			v-for="[index, tile] in hand.entries()"
 			@click="selectTile"
 			:class="{ selected: index === selectedTile || tile.placed, placed: tile.placed }"
 			:title="`${tile.color} ${tile.shape}`"
@@ -26,100 +26,82 @@
 		>
 			<img :src="generateTileUrl(tile)" :title="`${tile.color} ${tile.shape}`" />
 		</button>
-		<section id="buttons" v-if="score">
+		<section id="buttons" v-if="workingScore">
 			<p>
-				<b>{{ score }}</b> points
+				<b>{{ workingScore }}</b> points
 				<i v-if="endingGame"><br />Will end game</i>
 			</p>
 			<button @click="reset" type="button">Reset Hand</button>
 			<button @click="place" type="button">Place Tiles</button>
 		</section>
 	</section>
-	<div id="deck" :style="{ '--deck-size': deckSize }" :title="`${deckLength} tiles left`"></div>
+	<div
+		id="deck"
+		:style="{ '--deck-size': deckLength / fullDeckSize }"
+		:title="`${deckLength} tiles left`"
+	></div>
 </template>
 <script lang="ts">
-	import { Vue, Component, Prop, Ref, Hook } from "vue-facing-decorator";
-	import type { Board, PlacedTile } from "../common/types.ts";
-	import type App from "./App.vue";
+	import { Vue, Component, Hook } from "vue-facing-decorator";
 	import PlayersList from "./PlayersList.vue";
 	import Tile from "./Tile.vue";
-	import { generateDeck, generateTileUrl } from "../common/util.ts";
+	import { generateTileUrl } from "../common/util.ts";
 	import { dragscroll } from "vue-dragscroll";
-	import { calculatePoints } from "../common/util.ts";
-	import { GO_OUT_BONUS } from "../common/constants.ts";
+	import useStore from "../common/store.ts";
+	import { DUPLICATE_TILES, TILE_COLORS, TILE_SHAPES } from "../common/constants.ts";
+import socket from "../common/socket.ts";
 
 	@Component({ directives: { dragscroll }, components: { PlayersList, Tile } })
 	export default class Game extends Vue {
-		@Prop({ required: true }) centerTile!: PlacedTile;
-
-		boardSize: { rows: [number, number]; columns: [number, number] } = {
-			rows: [0, 0],
-			columns: [0, 0],
-		};
-		board: Board = {};
-		selectedTile = -1;
 		scale = 1;
 		SCALE_BOUNDS = [0.35, 1.5] as const;
 		SCALE_INCREMENT = 0.05 as const;
-		score = 0;
-		deckSize = 1;
-		deckLength = generateDeck().length;
-		endingGame = false;
+		fullDeckSize = TILE_COLORS.length * TILE_SHAPES.length * DUPLICATE_TILES;
 
-		@Ref readonly tiles!: Tile[];
-		declare readonly $root: App;
+		get endingGame() {
+			const state = useStore();
+			return state.endingGame;
+		}
+		get boardSize() {
+			const state = useStore();
+			return state.boardSize;
+		}
+		get hand() {
+			const state = useStore();
+			return state.hand;
+		}
+		get players() {
+			const state = useStore();
+			return state.room?.players ?? {};
+		}
+		get selectedTile() {
+			const state = useStore();
+			return state.selectedTile;
+		}
+		get workingScore() {
+			const state = useStore();
+			return state.workingScore;
+		}
+		get deckLength() {
+			const state = useStore();
+			return state.deckLength;
+		}
 
 		@Hook mounted() {
-			const fullDeck = this.deckLength;
-			this.$root.socket.on("tilesPlaced", (tiles, deckLength) => {
-				tiles.map((tile) => {
-					(this.board[tile.y] ??= {})[tile.x] = tile;
-				});
-				this.deckSize = deckLength / fullDeck;
-				this.deckLength = deckLength;
-				this.onBoardUpdate();
-			});
-
-			(this.board[0] ??= {})[0] = this.centerTile;
-			this.onBoardUpdate();
+			const state = useStore();
+			if (state.centerTile) (state.board[0] ??= {})[0] = state.centerTile;
 		}
 
 		generateTileUrl = generateTileUrl;
 		selectTile(event: Event) {
+			const state = useStore();
 			if (!(event.target instanceof Element)) return;
 			const button = event.target.closest("button");
 			if (!button) return;
 
 			const index = Array.prototype.indexOf.call(button.parentNode?.children ?? [], button);
-			const tile = this.$root.hand[index];
-			if (tile && !tile?.placed) this.selectedTile = index;
-		}
-		onBoardUpdate() {
-			const tiles = Object.values(this.board)
-				.map((row) => Object.values(row))
-				.flat()
-				.filter((tile) => tile.temporary !== "ignore");
-
-			this.boardSize = tiles.reduce(
-				({ rows: [smallestY, largestY], columns: [smallestX, largestX] }, tile) => ({
-					rows: [
-						tile.y < smallestY ? tile.y : smallestY,
-						tile.y > largestY ? tile.y : largestY,
-					],
-					columns: [
-						tile.x < smallestX ? tile.x : smallestX,
-						tile.x > largestX ? tile.x : largestX,
-					],
-				}),
-				{ rows: [0, 0], columns: [0, 0] } as typeof this.boardSize,
-			);
-			this.tiles.map((tile) => {
-				tile.tile = this.board[tile.y]?.[tile.x] ?? null;
-				if (tile.tile?.temporary === "ignore") tile.tile = null;
-			});
-			const placed = tiles.filter((tile) => tile.temporary);
-			this.endingGame = placed.length === this.$root.hand.length && this.deckLength === 0;
-			this.score = calculatePoints(placed, this.board) + GO_OUT_BONUS * +this.endingGame;
+			const tile = this.hand[index];
+			if (tile && !tile?.placed) state.selectedTile = index;
 		}
 		zoomIn() {
 			this.scale = Math.min(this.SCALE_BOUNDS[1], this.scale + this.SCALE_INCREMENT);
@@ -128,33 +110,34 @@
 			this.scale = Math.max(this.SCALE_BOUNDS[0], this.scale - this.SCALE_INCREMENT);
 		}
 		place() {
-			const tiles = Object.values(this.board)
+			const state = useStore();
+			const tiles = Object.values(state.board)
 				.map((row) => Object.values(row))
 				.flat()
 				.filter((tile) => tile.temporary === true)
 				.map((tile) => ({ ...tile, temporary: undefined }));
 
-			this.$root.socket.emit("placeTile", tiles, (response) => {
+			socket.emit("placeTile", tiles, (response) => {
 				if (typeof response === "number") alert(response);
-				else this.$root.hand = response;
+				else state.hand = response;
 
 				this.reset();
 			});
 		}
 		reset() {
-			this.selectedTile = -1;
-			for (const index in this.board) {
-				if (!this.board.hasOwnProperty(index)) continue;
+			const state = useStore();
+			for (const index in state.board) {
+				if (!state.board.hasOwnProperty(index)) continue;
 
-				const row = this.board[index];
+				const row = state.board[index];
 				if (!row) continue;
 
 				const filtered = Object.entries(row).filter(([, tile]) => !tile.temporary);
-				this.board[index] = Object.fromEntries(filtered);
+				state.board[index] = Object.fromEntries(filtered);
 			}
 
-			this.onBoardUpdate();
-			this.$root.hand = this.$root.hand.map((tile) => ({ ...tile, placed: undefined }));
+			state.selectedTile = -1;
+			state.hand = this.hand.map((tile) => ({ ...tile, placed: undefined }));
 		}
 	}
 </script>

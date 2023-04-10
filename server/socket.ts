@@ -39,18 +39,22 @@ export default function connectIo(server: HTTPServer) {
 	>(server);
 
 	io.on("connection", (socket) => {
+		socket.emit("roomsUpdate", getPublicRooms(rooms));
+		const roomId = [...socket.rooms.values()][1];
+		if (roomId) {
+			const room = rooms[roomId];
+			if (room) socket.emit("playersUpdate", room.players);
+		}
 		socket
-			.once("mounted", () => {
-				socket.emit("roomsUpdate", getPublicRooms(rooms));
-				const roomId = [...socket.rooms.values()][1];
-				if (!roomId) return;
-				const room = rooms[roomId];
-				if (!room) return;
-				socket.emit("playersUpdate", room.players);
-			})
 			.on("createRoom", async (roomData, callback) => {
+				const jwt = await new SignJWT({ username: roomData.username } as JWTClaims)
+					.setProtectedHeader({ alg: "HS256" })
+					.setIssuedAt()
+					.sign(secret);
+				socket.data.username = roomData.username;
+
 				const roomId = generateRoomId();
-				if (rooms[roomId]) return callback();
+				if (rooms[roomId]) return callback(jwt);
 				const deck = Array.from(fullDeck);
 				const room: Room = {
 					deck,
@@ -63,19 +67,14 @@ export default function connectIo(server: HTTPServer) {
 					id: roomId,
 				};
 
-				socket.data.username = roomData.username;
 				room.players[roomData.username] = { index: 0, score: 0 };
 				rooms[roomId] = room;
 
+				socket.join(roomId);
 				io.emit("roomsUpdate", getPublicRooms(rooms));
 				io.to(roomId).emit("playersUpdate", room.players);
 
-				const jwt = await new SignJWT({ username: roomData.username } as JWTClaims)
-					.setProtectedHeader({ alg: "HS256" })
-					.setIssuedAt()
-					.sign(secret);
-
-				callback(room, jwt);
+				callback(jwt, room);
 			})
 			.on("joinRoom", async (roomId, auth, callback) => {
 				const { username } =
@@ -87,10 +86,9 @@ export default function connectIo(server: HTTPServer) {
 				const room = rooms[roomId];
 				if (!room) return callback(JoinError.UndefinedRoom);
 
-				if (room?.host !== username) {
-					if (room?.players[username]) return callback(JoinError.DuplicateUsername);
-					room.players[username] = { index: 0, score: 0 };
-				}
+				if (room?.players[username]) return callback(JoinError.DuplicateUsername);
+				room.players[username] = { index: 0, score: 0 };
+
 				if (room.started) return callback(JoinError.AlreadyStarted);
 				socket.join(roomId);
 				callback();

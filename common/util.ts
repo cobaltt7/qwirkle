@@ -10,21 +10,6 @@ import {
 } from "./constants.js";
 import type { Tile, Board, Location, PlacedTile, Rooms, PublicRooms } from "./types.js";
 
-export function getUsername() {
-	try {
-		const jwt = localStorage.getItem("auth");
-		if (!jwt) return null;
-		const encoded = jwt?.split(".")[1];
-		if (!encoded) throw new SyntaxError("Invalid JWT");
-		const { username } = JSON.parse(window.atob(encoded)) as JWTClaims;
-		if (!username || typeof username !== "string")
-			throw new TypeError("Username must be a string");
-		return username;
-	} catch (error) {
-		console.error(error);
-		return null;
-	}
-}
 export type JWTClaims = { username: string };
 
 export function verifyTile(location: Location, board: Board): PlaceError | undefined {

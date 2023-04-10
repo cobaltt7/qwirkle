@@ -1,62 +1,58 @@
 <template @board-update="boardUpdate">
 	<div @click="tilePlaced">
-		<img v-if="tile" :src="generateTileUrl(tile)" :alt="`${tile.color} ${tile.shape}`" />
+		<img
+			v-if="tile && tile.temporary !== 'ignore'"
+			:src="generateTileUrl(tile)"
+			:alt="`${tile.color} ${tile.shape}`"
+		/>
 	</div>
 </template>
 <script lang="ts">
-	import { Prop, Vue, Hook, Component } from "vue-facing-decorator";
+	import { Prop, Vue, Component } from "vue-facing-decorator";
 	import { generateTileUrl } from "../common/util.ts";
 	import type { PlacedTile } from "../common/types.ts";
 	import { verifyTile } from "../common/util.ts";
-	import type App from "./App.vue";
-	import type Game from "./Game.vue";
 	import { PlaceError } from "../common/constants.ts";
+	import useStore from "../common/store.ts";
 
 	@Component
 	export default class Tile extends Vue {
 		@Prop({ required: true }) columnIndex!: number;
 		@Prop({ required: true }) rowIndex!: number;
-
-		tile: PlacedTile | null = null;
+		@Prop({ default: 1 }) scale!: number;
 
 		get y() {
-			return this.$parent.boardSize.rows[0] + this.rowIndex - 2;
+			const state = useStore();
+			return state.boardSize.rows[0] + this.rowIndex - 2;
 		}
 		get x() {
-			return this.$parent.boardSize.columns[0] + this.columnIndex - 2;
+			const state = useStore();
+			return state.boardSize.columns[0] + this.columnIndex - 2;
 		}
-		get scale() {
-			return this.$parent.scale;
+		get tile() {
+			const state = useStore();
+			return state.board[this.y]?.[this.x] ?? null;
 		}
 
-		declare readonly $parent: Game;
-		declare readonly $root: App;
-
-		@Hook mounted() {
-			this.tile = this.$parent.board[this.y]?.[this.x] ?? null;
-		}
-		boardUpdate() {
-			this.tile = this.$parent.board[this.y]?.[this.x] ?? null;
-		}
 		tilePlaced() {
-			const tile = this.$root.hand[this.$parent.selectedTile];
-			if (!tile) return alert(PlaceError.MissingTile);
+			const state = useStore();
+			const heldTile = state.hand[state.selectedTile];
+			if (!heldTile) return alert(PlaceError.MissingTile);
 			if (
-				this.$parent.board[this.y]?.[this.x] &&
-				this.$parent.board[this.y]?.[this.x]?.temporary !== "ignore"
+				state.board[this.y]?.[this.x] &&
+				state.board[this.y]?.[this.x]?.temporary !== "ignore"
 			)
 				return alert(PlaceError.AlreadyPlaced);
 
-			const placed: PlacedTile = { ...tile, x: this.x, y: this.y, temporary: "ignore" };
-			(this.$parent.board[placed.y] ??= {})[placed.x] = placed;
+			const tile: PlacedTile = { ...heldTile, x: this.x, y: this.y, temporary: "ignore" };
+			(state.board[tile.y] ??= {})[tile.x] = tile;
 
-			const error = verifyTile(placed, this.$parent.board);
+			const error = verifyTile(tile, state.board);
 			if (error) return alert(error);
 
-			tile.placed = true;
-			this.$parent.selectedTile = -1;
-			placed.temporary = true;
-			this.$parent.onBoardUpdate();
+			heldTile.placed = true;
+			tile.temporary = true;
+			state.selectedTile = -1;
 		}
 		generateTileUrl = generateTileUrl;
 	}

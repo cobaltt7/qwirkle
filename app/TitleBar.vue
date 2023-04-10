@@ -3,12 +3,9 @@
 </template>
 <script lang="ts">
 	import { Component, Vue } from "vue-facing-decorator";
-	import type App from "./App.vue";
 
 	@Component
-	export default class TitleBar extends Vue {
-		declare readonly $root: App;
-	}
+	export default class TitleBar extends Vue {}
 </script>
 <style scoped>
 	header {

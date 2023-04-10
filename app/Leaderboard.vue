@@ -23,20 +23,16 @@
 	<PlayersList :players="orderedPlayers" />
 </template>
 <script lang="ts">
-	import { Component, Vue, Hook } from "vue-facing-decorator";
-	import type App from "./App.vue";
+	import { Component, Vue } from "vue-facing-decorator";
 	import PlayerCard from "./PlayerCard.vue";
 	import PlayersList from "./PlayersList.vue";
-	import { Player } from "../common/types.js";
+	import useStore from "../common/store.js";
 
 	@Component({ components: { PlayersList, PlayerCard } })
 	export default class Leaderboard extends Vue {
-		orderedPlayers?: [string, Player][];
-
-		declare readonly $root: App;
-
-		@Hook mounted() {
-			this.orderedPlayers = Object.entries(this.$root.room?.players || {}).sort(
+		get orderedPlayers() {
+			const state = useStore();
+			return Object.entries(state.room?.players || {}).sort(
 				([, one], [, two]) => two.score - one.score,
 			);
 		}
