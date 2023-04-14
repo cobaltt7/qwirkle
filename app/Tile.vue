@@ -13,7 +13,7 @@
 	import type { PlacedTile } from "../common/types.ts";
 	import { verifyTile } from "../common/util.ts";
 	import { PlaceError } from "../common/constants.ts";
-	import useStore from "../common/store.ts";
+	import useStore from "./common/store.ts";
 
 	@Component
 	export default class Tile extends Vue {

@@ -15,7 +15,7 @@
 	import { Component, Vue, Prop } from "vue-facing-decorator";
 	import type { Players } from "../common/types.ts";
 	import PlayerCard from "./PlayerCard.vue";
-	import useStore from "../common/store.ts";
+	import useStore from "./common/store.ts";
 
 	@Component({ components: { PlayerCard } })
 	export default class PlayersList extends Vue {

@@ -30,7 +30,7 @@
 	import { Component, Vue } from "vue-facing-decorator";
 	import PlayerCard from "./PlayerCard.vue";
 	import PlayersList from "./PlayersList.vue";
-	import useStore from "../common/store.js";
+	import useStore from "./common/store.js";
 
 	@Component({ components: { PlayersList, PlayerCard } })
 	export default class Leaderboard extends Vue {

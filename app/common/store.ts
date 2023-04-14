@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
-import { PlacedTile, PublicRoom, PublicRooms, Tile } from "./types";
-import { EndReason, GO_OUT_BONUS } from "./constants.ts";
-import { JWTClaims, calculatePoints, generateDeck } from "./util.ts";
-import { Board } from "./types";
+import { PlacedTile, PublicRoom, PublicRooms, Tile } from "../../common/types";
+import { EndReason, GO_OUT_BONUS } from "../../common/constants.ts";
+import { JWTClaims, calculatePoints, generateDeck } from "../../common/util.ts";
+import { Board } from "../../common/types";
 
 function getUsername() {
 	try {

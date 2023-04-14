@@ -1,5 +1,5 @@
 import type { Socket } from "socket.io-client";
-import type { ClientToServerEvents, ServerToClientEvents } from "../common/types";
+import type { ClientToServerEvents, ServerToClientEvents } from "../../common/types";
 import io from "socket.io-client";
 import useStore from "./store.ts";
 
@@ -41,4 +41,4 @@ socket
 		state.$patch({ endReason, status: "ended" });
 	});
 
-export default socket
+export default socket;

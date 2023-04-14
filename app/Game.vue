@@ -47,9 +47,9 @@
 	import Tile from "./Tile.vue";
 	import { generateTileUrl } from "../common/util.ts";
 	import { dragscroll } from "vue-dragscroll";
-	import useStore from "../common/store.ts";
+	import useStore from "./common/store.ts";
 	import { DUPLICATE_TILES, TILE_COLORS, TILE_SHAPES } from "../common/constants.ts";
-import socket from "../common/socket.ts";
+	import socket from "./common/socket.ts";
 
 	@Component({ directives: { dragscroll }, components: { PlayersList, Tile } })
 	export default class Game extends Vue {

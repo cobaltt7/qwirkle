@@ -5,8 +5,8 @@
 <script lang="ts">
 	import { Vue, Component } from "vue-facing-decorator";
 	import PlayersList from "./PlayersList.vue";
-	import useStore from "../common/store.js";
-import socket from "../common/socket.js";
+	import useStore from "./common/store.js";
+	import socket from "./common/socket.js";
 
 	@Component({ components: { PlayersList } })
 	export default class Lobby extends Vue {

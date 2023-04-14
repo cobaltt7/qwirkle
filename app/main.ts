@@ -11,4 +11,3 @@ app.use(pinia);
 
 const vue = app.mount(document.body, true);
 if (true) (window as any).vue = vue;
-

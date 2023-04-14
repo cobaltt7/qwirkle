@@ -47,8 +47,8 @@
 </template>
 <script lang="ts">
 	import { Component, Hook, Ref, Vue } from "vue-facing-decorator";
-	import useStore from "../common/store.ts";
-	import socket from "../common/socket.ts";
+	import useStore from "./common/store.ts";
+	import socket from "./common/socket.ts";
 
 	@Component
 	export default class CreateRoom extends Vue {

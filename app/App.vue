@@ -16,8 +16,8 @@
 	import TitleBar from "./TitleBar.vue";
 	import Lobby from "./Lobby.vue";
 	import Leaderboard from "./Leaderboard.vue";
-	import useStore from "../common/store.js";
-	import socket from "../common/socket.js";
+	import useStore from "./common/store.js";
+	import socket from "./common/socket.js";
 
 	@Component({ components: { TitleBar, Game, RoomsList, Lobby, Leaderboard } })
 	export default class App extends Vue {

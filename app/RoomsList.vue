@@ -41,8 +41,8 @@
 	import { Vue, Component, Ref, Hook } from "vue-facing-decorator";
 	import { ROOM_PARAMETER } from "../common/constants.ts";
 	import CreateRoom from "./CreateRoom.vue";
-	import useStore from "../common/store.ts";
-	import socket from "../common/socket.ts";
+	import useStore from "./common/store.ts";
+	import socket from "./common/socket.ts";
 
 	@Component({ components: { CreateRoom } })
 	export default class RoomsList extends Vue {
