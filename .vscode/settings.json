@@ -15,5 +15,6 @@
 	"explorer.fileNesting.enabled": true,
 	"explorer.fileNesting.patterns": {
 		"index.html": "main.ts, style.css"
-	}
+	},
+	"vitest.enable": true
 }

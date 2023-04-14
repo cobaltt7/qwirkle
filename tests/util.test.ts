@@ -9,6 +9,7 @@ import {
 	sortHand,
 	getRandomTile,
 	generateDeck,
+getCurrentTurn,
 } from "../common/util.ts";
 import { PlaceError, TileColor, TileShape } from "../common/constants.ts";
 import { Board, PlacedTile, Tile } from "../common/types";
@@ -411,4 +412,15 @@ describe("generateDeck", () => {
 		expect(
 			generateDeck().reduce((acc, tile) => acc.add(tile.color), new Set<TileColor>()).size,
 		).toEqual(6));
+});
+
+describe("getCurrentTurn", () => {
+	it("should return the username of the player with the smallest index", () =>
+		expect(
+			getCurrentTurn({
+				player1: { index: 2, score: 10 },
+				player2: { index: 1, score: 15 },
+				player3: { index: 3, score: 5 },
+			}),
+		).toEqual("player2"));
 });

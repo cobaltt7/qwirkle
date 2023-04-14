@@ -8,7 +8,7 @@ import {
 	TileColor,
 	TileShape,
 } from "./constants.js";
-import type { Tile, Board, Location, PlacedTile, Rooms, PublicRooms } from "./types.js";
+import type { Tile, Board, Location, PlacedTile, Rooms, PublicRooms, Players } from "./types.js";
 
 export type JWTClaims = { username: string };
 
@@ -184,4 +184,10 @@ export function generateDeck() {
 			return Array<Tile>(DUPLICATE_TILES).fill({ color, shape });
 		});
 	}).flat(2);
+}
+
+export function getCurrentTurn(players: Players) {
+	return Object.entries(players).reduce((acc, [username, player]) =>
+		player.index < acc[1].index ? [username, player] : acc,
+	)[0];
 }

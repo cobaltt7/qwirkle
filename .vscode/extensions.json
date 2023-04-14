@@ -3,6 +3,7 @@
 		"esbenp.prettier-vscode",
 		"vue.volar",
 		"vue.vscode-typescript-vue-plugin",
-		"antfu.file-nesting"
+		"antfu.file-nesting",
+		"ZixuanChen.vitest-explorer"
 	]
 }

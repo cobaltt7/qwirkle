@@ -9,7 +9,7 @@
 </template>
 <script lang="ts">
 	import { Prop, Vue, Component } from "vue-facing-decorator";
-	import { generateTileUrl } from "../common/util.ts";
+	import { generateTileUrl, getCurrentTurn } from "../common/util.ts";
 	import type { PlacedTile } from "../common/types.ts";
 	import { verifyTile } from "../common/util.ts";
 	import { PlaceError } from "../common/constants.ts";
@@ -43,6 +43,11 @@
 				state.board[this.y]?.[this.x]?.temporary !== "ignore"
 			)
 				return alert(PlaceError.AlreadyPlaced);
+
+			if (!state.room) return alert(PlaceError.NotInRoom);
+
+			const currentTurn = getCurrentTurn(state.room?.players);
+			if (state.username !== currentTurn) return alert(PlaceError.NotYourTurn);
 
 			const tile: PlacedTile = { ...heldTile, x: this.x, y: this.y, temporary: "ignore" };
 			(state.board[tile.y] ??= {})[tile.x] = tile;

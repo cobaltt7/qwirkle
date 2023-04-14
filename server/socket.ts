@@ -8,6 +8,7 @@ import {
 	countTiles,
 	generateDeck,
 	getPublicRooms,
+	getCurrentTurn,
 } from "../common/util.js";
 import type {
 	ClientToServerEvents,
@@ -137,6 +138,9 @@ export default function connectIo(server: HTTPServer) {
 				const room = rooms[roomId];
 				if (!room) return callback(PlaceError.UndefinedRoom);
 
+				const currentTurn = getCurrentTurn(room.players)
+				if (socket.data.username !== currentTurn) return callback(PlaceError.NotYourTurn);
+
 				const hand = [...(hands[socket.data.username] ?? [])];
 
 				const board = structuredClone(room.board);
@@ -163,7 +167,7 @@ export default function connectIo(server: HTTPServer) {
 				room.board = board;
 				const player = room.players[socket.data.username];
 				room.players[socket.data.username] = {
-					index: player?.index ?? 0,
+					index: (player?.index ?? 0) + Object.keys(room.players).length,
 					score:
 						(player?.score ?? 0) +
 						calculatePoints(tiles, board) +
