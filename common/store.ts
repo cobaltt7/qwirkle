@@ -68,7 +68,6 @@ const useStore = defineStore("state", {
 			return calculatePoints(this.placedTiles, this.board) + GO_OUT_BONUS * +this.endingGame;
 		},
 	},
-	actions: {},
 });
 
 export default useStore;

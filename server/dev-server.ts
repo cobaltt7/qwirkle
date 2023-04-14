@@ -17,6 +17,7 @@ const vite = await createViteServer({
 	server: { cors: false, middlewareMode: true },
 	logLevel: "error",
 	appType: "custom",
+	mode: "development"
 });
 export default http.createServer(async (request, response) => {
 	try {

@@ -32,8 +32,8 @@
 		color: white;
 		padding: 5px;
 		border-radius: 10px;
-		min-width: 200px;
-		height: 100%;
+		width: 200px;
+		height: 140px;
 	}
 
 	.active {
