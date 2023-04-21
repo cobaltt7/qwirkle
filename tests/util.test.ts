@@ -9,7 +9,8 @@ import {
 	sortHand,
 	getRandomTile,
 	generateDeck,
-getCurrentTurn,
+	getCurrentTurn,
+	tilesInLine,
 } from "../common/util.ts";
 import { PlaceError, TileColor, TileShape } from "../common/constants.ts";
 import { Board, PlacedTile, Tile } from "../common/types";
@@ -95,6 +96,117 @@ describe("verifyTile", () => {
 				[{ x: 0, y: 1, color: "blue", shape: "clover" }],
 			]),
 		).toBeUndefined());
+});
+
+describe("tilesInLine", () => {
+	it("should return false for two columns", () => {
+		const board: Board = {};
+		const tiles: PlacedTile[] = [
+			{ color: "red", shape: "circle", x: 0, y: 0 },
+			{ color: "orange", shape: "clover", x: 1, y: 0 },
+			{ color: "yellow", shape: "diamond", x: 2, y: 0 },
+			{ color: "green", shape: "square", x: 3, y: 1 },
+		];
+		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
+		expect(tilesInLine(tiles, board)).toBe(false);
+	});
+
+	it("should return false for two rows", () => {
+		const board: Board = {};
+		const tiles: PlacedTile[] = [
+			{ color: "blue", shape: "star", y: 0, x: 0 },
+			{ color: "purple", shape: "triangle", y: 1, x: 0 },
+			{ color: "red", shape: "circle", y: 2, x: 0 },
+			{ color: "orange", shape: "clover", y: 3, x: 1 },
+		];
+		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
+		expect(tilesInLine(tiles, board)).toBe(false);
+	});
+
+	it("should return false for rows with gaps", () => {
+		const board: Board = {};
+		const tiles: PlacedTile[] = [
+			{ color: "yellow", shape: "diamond", x: 0, y: 0 },
+			{ color: "green", shape: "square", x: 2, y: 0 },
+			{ color: "blue", shape: "star", x: 3, y: 0 },
+		];
+		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
+		expect(tilesInLine(tiles, board)).toBe(false);
+	});
+
+	it("should return false for columns with gaps", () => {
+		const board: Board = {};
+		const tiles: PlacedTile[] = [
+			{ color: "purple", shape: "triangle", y: 0, x: 0 },
+			{ color: "red", shape: "circle", y: 2, x: 0 },
+			{ color: "orange", shape: "clover", y: 3, x: 0 },
+		];
+		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
+		expect(tilesInLine(tiles, board)).toBe(false);
+	});
+
+	it("should return false for a row and a column", () => {
+		const board: Board = {};
+		const tiles: PlacedTile[] = [
+			{ color: "yellow", shape: "diamond", x: 3, y: 0 },
+			{ color: "green", shape: "square", x: 2, y: 0 },
+			{ color: "blue", shape: "star", x: 1, y: 0 },
+			{ color: "purple", shape: "triangle", x: 0, y: 0 },
+			{ color: "red", shape: "circle", x: 0, y: 1 },
+			{ color: "orange", shape: "clover", x: 0, y: 2 },
+			{ color: "yellow", shape: "diamond", x: 0, y: 3 },
+		];
+		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
+		expect(tilesInLine(tiles, board)).toBe(false);
+	});
+
+	it("should return true for no tiles", () => {
+		expect(tilesInLine([], {})).toBe(true);
+	});
+
+	it("should return true for a row", () => {
+		const board: Board = {};
+		const tiles: PlacedTile[] = [
+			{ color: "green", shape: "square", x: 1, y: 0 },
+			{ color: "blue", shape: "star", x: 2, y: 0 },
+			{ color: "purple", shape: "triangle", x: 3, y: 0 },
+		];
+		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
+		expect(tilesInLine(tiles, board)).toBe(true);
+	});
+
+	it("should return true for a column", () => {
+		const board: Board = {};
+		const tiles: PlacedTile[] = [
+			{ color: "red", shape: "circle", x: 0, y: 0 },
+			{ color: "orange", shape: "clover", x: 0, y: 1 },
+			{ color: "yellow", shape: "diamond", x: 0, y: 2 },
+		];
+		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
+		expect(tilesInLine(tiles, board)).toBe(true);
+	});
+
+	it("should return true for a row with filled in gaps", () => {
+		const board: Board = { [0]: { [0]: { color: "red", shape: "square", x: 0, y: 0 } } };
+		const tiles: PlacedTile[] = [
+			{ color: "green", shape: "clover", x: -1, y: 0 },
+			{ color: "blue", shape: "star", x: 1, y: 0 },
+			{ color: "purple", shape: "triangle", x: 2, y: 0 },
+		];
+		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
+		expect(tilesInLine(tiles, board)).toBe(true);
+	});
+
+	it("should return true for a column with filled in gaps", () => {
+		const board: Board = { [0]: { [0]: { color: "red", shape: "square", x: 0, y: 0 } } };
+		const tiles: PlacedTile[] = [
+			{ color: "purple", shape: "circle", x: 0, y: -1 },
+			{ color: "orange", shape: "clover", x: 0, y: 1 },
+			{ color: "yellow", shape: "diamond", x: 0, y: 2 },
+		];
+		tiles.forEach((tile) => ((board[tile.y] ??= {})[tile.x] = tile));
+		expect(tilesInLine(tiles, board)).toBe(true);
+	});
 });
 
 describe("calculatePoints", () => {

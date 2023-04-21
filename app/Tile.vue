@@ -1,19 +1,16 @@
 <template @board-update="boardUpdate">
 	<div @click="tilePlaced">
-		<img
-			v-if="tile && tile.temporary !== 'ignore'"
-			:src="generateTileUrl(tile)"
-			:alt="`${tile.color} ${tile.shape}`"
-		/>
+		<img v-if="tile" :src="generateTileUrl(tile)" :alt="`${tile.color} ${tile.shape}`" />
 	</div>
 </template>
 <script lang="ts">
 	import { Prop, Vue, Component } from "vue-facing-decorator";
-	import { generateTileUrl, getCurrentTurn } from "../common/util.ts";
+	import { generateTileUrl, getCurrentTurn, tilesInLine } from "../common/util.ts";
 	import type { PlacedTile } from "../common/types.ts";
 	import { verifyTile } from "../common/util.ts";
 	import { PlaceError } from "../common/constants.ts";
 	import useStore from "./common/store.ts";
+	import { toRaw } from "vue";
 
 	@Component
 	export default class Tile extends Vue {
@@ -38,25 +35,33 @@
 			const state = useStore();
 			const heldTile = state.hand[state.selectedTile];
 			if (!heldTile) return alert(PlaceError.MissingTile);
-			if (
-				state.board[this.y]?.[this.x] &&
-				state.board[this.y]?.[this.x]?.temporary !== "ignore"
-			)
-				return alert(PlaceError.AlreadyPlaced);
+			const board = Object.fromEntries(
+				Object.entries(toRaw(state.board)).map(([y, value]) => [
+					y,
+					Object.fromEntries(
+						Object.entries(toRaw(value)).map(([x, value]) => [x, toRaw(value)]),
+					),
+				]),
+			);
+
+			if (board[this.y]?.[this.x]) return alert(PlaceError.AlreadyPlaced);
 
 			if (!state.room) return alert(PlaceError.NotInRoom);
 
 			const currentTurn = getCurrentTurn(state.room?.players);
 			if (state.username !== currentTurn) return alert(PlaceError.NotYourTurn);
 
-			const tile: PlacedTile = { ...heldTile, x: this.x, y: this.y, temporary: "ignore" };
-			(state.board[tile.y] ??= {})[tile.x] = tile;
+			const tile: PlacedTile = { ...heldTile, x: this.x, y: this.y, temporary: true };
+			(board[tile.y] ??= {})[tile.x] = tile;
 
-			const error = verifyTile(tile, state.board);
+			const error = verifyTile(tile, board);
 			if (error) return alert(error);
 
+			if (!tilesInLine([...state.placedTiles, tile], board))
+				return alert(PlaceError.NotInLine);
+
 			heldTile.placed = true;
-			tile.temporary = true;
+			state.board = board;
 			state.selectedTile = -1;
 		}
 		generateTileUrl = generateTileUrl;

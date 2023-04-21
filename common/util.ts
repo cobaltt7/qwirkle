@@ -40,13 +40,27 @@ function verifyLine(line: PlacedTile[]) {
 	);
 }
 
-export function calculatePoints(tiles: PlacedTile[], board: Board) {
+export function tilesInLine(tiles: Location[], board: Board) {
+	if (!tiles[0]) return true;
+	const neighborhood = getNeighborhood(tiles[0], board);
+
+	return (
+		tiles.every((tile) =>
+			neighborhood.row.find((found) => found.x === tile.x && found.y === tile.y),
+		) ||
+		tiles.every((tile) =>
+			neighborhood.column.find((found) => found.x === tile.x && found.y === tile.y),
+		)
+	);
+}
+
+export function calculatePoints(tiles: Location[], board: Board) {
 	return getNeighborhoods(tiles, board).reduce(
 		(acc, { length }) => acc + length * (Number(length === QWIRKLE_LENGTH) + 1),
 		0,
 	);
 }
-function getNeighborhoods(tiles: PlacedTile[], board: Board) {
+function getNeighborhoods(tiles: Location[], board: Board) {
 	return tiles
 		.map((tile) => {
 			const { column, row } = getNeighborhood(tile, board);
@@ -61,41 +75,32 @@ function getNeighborhoods(tiles: PlacedTile[], board: Board) {
 				) === index,
 		);
 }
-function getNeighborhood(tile: PlacedTile, board: Board) {
-	let top = board[tile.y - 1]?.[tile.x],
-		bottom = board[tile.y + 1]?.[tile.x],
-		right = board[tile.y]?.[tile.x + 1],
-		left = board[tile.y]?.[tile.x - 1];
+function getNeighborhood(location: Location, board: Board) {
+	let left = board[location.y]?.[location.x - 1],
+		right = board[location.y]?.[location.x + 1],
+		top = board[location.y - 1]?.[location.x],
+		bottom = board[location.y + 1]?.[location.x];
+	const tile = board[location.y]?.[location.x];
+
+	if (!tile) throw new ReferenceError("No tile at specified location");
 
 	const neighborhood: { row: PlacedTile[]; column: PlacedTile[] } = { row: [], column: [] };
 
-	if (left) {
-		do {
-			if (left.temporary === "ignore") break;
-			neighborhood.row.unshift(left);
-		} while ((left = board[tile.y]?.[left.x - 1]));
-	}
+	if (left)
+		do neighborhood.row.unshift(left);
+		while ((left = board[location.y]?.[left.x - 1]));
 	neighborhood.row.push(tile);
-	if (right) {
-		do {
-			if (right.temporary === "ignore") break;
-			neighborhood.row.push(right);
-		} while ((right = board[tile.y]?.[right.x + 1]));
-	}
+	if (right)
+		do neighborhood.row.push(right);
+		while ((right = board[location.y]?.[right.x + 1]));
 
-	if (top) {
-		do {
-			if (top.temporary === "ignore") break;
-			neighborhood.column.unshift(top);
-		} while ((top = board[top.y - 1]?.[tile.x]));
-	}
+	if (top)
+		do neighborhood.column.unshift(top);
+		while ((top = board[top.y - 1]?.[location.x]));
 	neighborhood.column.push(tile);
-	if (bottom) {
-		do {
-			if (bottom.temporary === "ignore") break;
-			neighborhood.column.push(bottom);
-		} while ((bottom = board[bottom.y + 1]?.[tile.x]));
-	}
+	if (bottom)
+		do neighborhood.column.push(bottom);
+		while ((bottom = board[bottom.y + 1]?.[location.x]));
 
 	return neighborhood;
 }

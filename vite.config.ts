@@ -5,6 +5,7 @@ import preload from "./server/preload.ts";
 
 process.env.NODE_ENV = "production";
 
+// Config for build and test only
 export default {
 	publicDir: "app/public",
 	build: {

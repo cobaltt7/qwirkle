@@ -34,32 +34,29 @@ const useStore = defineStore("state", {
 		centerTile: null as PlacedTile | null,
 	}),
 	getters: {
-		boardSize(state) {
-			const tiles = Object.values(state.board)
+		boardSize(): { rows: [number, number]; columns: [number, number] } {
+			return Object.values(this.board)
 				.map((row) => Object.values(row))
 				.flat()
-				.filter((tile) => tile.temporary !== "ignore");
-
-			return tiles.reduce<{ rows: [number, number]; columns: [number, number] }>(
-				({ rows: [smallestY, largestY], columns: [smallestX, largestX] }, tile) => ({
-					rows: [
-						tile.y < smallestY ? tile.y : smallestY,
-						tile.y > largestY ? tile.y : largestY,
-					],
-					columns: [
-						tile.x < smallestX ? tile.x : smallestX,
-						tile.x > largestX ? tile.x : largestX,
-					],
-				}),
-				{ rows: [0, 0], columns: [0, 0] },
-			);
+				.reduce<{ rows: [number, number]; columns: [number, number] }>(
+					({ rows: [smallestY, largestY], columns: [smallestX, largestX] }, tile) => ({
+						rows: [
+							tile.y < smallestY ? tile.y : smallestY,
+							tile.y > largestY ? tile.y : largestY,
+						],
+						columns: [
+							tile.x < smallestX ? tile.x : smallestX,
+							tile.x > largestX ? tile.x : largestX,
+						],
+					}),
+					{ rows: [0, 0], columns: [0, 0] },
+				);
 		},
-		placedTiles(state) {
-			const tiles = Object.values(state.board)
+		placedTiles(): PlacedTile[] {
+			return Object.values(this.board)
 				.map((row) => Object.values(row))
 				.flat()
-				.filter((tile) => tile.temporary !== "ignore");
-			return tiles.filter((tile) => tile.temporary);
+				.filter((tile) => tile.temporary);
 		},
 		endingGame(): boolean {
 			return this.placedTiles.length === this.hand.length && this.deckLength === 0;

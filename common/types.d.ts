@@ -43,7 +43,7 @@ export interface Tile {
 	shape: TileShape;
 }
 export interface PlacedTile extends Tile, Location {
-	temporary?: boolean | "ignore";
+	temporary?: boolean;
 }
 
 export type Room = {

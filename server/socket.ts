@@ -2,13 +2,18 @@ import { Server as SocketServer } from "socket.io";
 import type { Server as HTTPServer } from "node:http";
 import { JoinError, PlaceError, StartError, EndReason, GO_OUT_BONUS } from "../common/constants.js";
 import {
-	verifyTile,
 	calculatePoints,
-	JWTClaims,
 	countTiles,
 	generateDeck,
-	getPublicRooms,
+	generateHand,
+	generateRoomId,
 	getCurrentTurn,
+	getPublicRooms,
+	getRandomTile,
+	sortHand,
+	tilesInLine,
+	verifyTile,
+	type JWTClaims,
 } from "../common/util.js";
 import type {
 	ClientToServerEvents,
@@ -20,10 +25,6 @@ import type {
 	Room,
 } from "../common/types.js";
 import { SignJWT, jwtVerify } from "jose-node-esm-runtime";
-import { generateRoomId } from "../common/util.js";
-import { getRandomTile } from "../common/util.js";
-import { generateHand } from "../common/util.js";
-import { sortHand } from "../common/util.js";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
@@ -164,6 +165,8 @@ export default function connectIo(server: HTTPServer) {
 					if (error) return callback(error);
 				}
 
+				if (!tilesInLine(tiles, board)) return callback(PlaceError.NotInLine);
+				
 				room.board = board;
 				const player = room.players[socket.data.username];
 				room.players[socket.data.username] = {

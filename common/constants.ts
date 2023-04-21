@@ -19,7 +19,8 @@ export enum PlaceError {
 	InconsistentColumnItems,
 	DuplicateColumnItems,
 	UnknownTile,
-	NotYourTurn
+	NotYourTurn,
+	NotInLine,
 }
 export enum JoinError {
 	UndefinedRoom,
