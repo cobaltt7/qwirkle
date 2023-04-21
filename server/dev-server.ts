@@ -7,6 +7,7 @@ import preload from "./preload.js";
 
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const vite = await createViteServer({
+	// Dev config
 	publicDir: "app/public",
 	build: {
 		target: "esnext",
@@ -14,7 +15,7 @@ const vite = await createViteServer({
 		rollupOptions: { output: { validate: true }, preserveEntrySignatures: "strict" },
 	},
 	esbuild: { logLimit: 0 },
-	server: { cors: false, middlewareMode: true },
+	server: { cors: false, middlewareMode: true, hmr: false },
 	logLevel: "error",
 	appType: "custom",
 	mode: "development",

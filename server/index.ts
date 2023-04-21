@@ -12,6 +12,4 @@ server.listen(process.env.PORT ?? 3000, () => {
 	console.log("Server up!");
 });
 
-process.on("uncaughtException", (error) => {
-	console.error(error);
-});
+process.on("warning", console.warn).on("uncaughtException", console.error);
