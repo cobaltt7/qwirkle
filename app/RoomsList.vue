@@ -2,7 +2,7 @@
 	<section id="rooms">
 		<section id="rooms">
 			<button
-				@click="joinRoom(id)"
+				@click="getUsername(() => joinRoom(id))"
 				type="button"
 				class="room"
 				v-for="(room, id) of publicRooms"
@@ -13,19 +13,17 @@
 			</button>
 		</section>
 		<section id="manage">
-			<button type="button" @click="createRoomDialog.$el.showModal()">
+			<button type="button" @click="getUsername(()=>createRoomDialog.$el.showModal())">
 				<h2>Create New Room</h2>
 			</button>
-			<button type="button" @click="joinRoomDialog.showModal()">
+			<button type="button" @click="getUsername(()=>joinRoomDialog.showModal())">
 				<h2>Join Private Room</h2>
 			</button>
 		</section>
 	</section>
-	<CreateRoom ref="createRoomDialog" />
-	<dialog ref="joinRoomDialog">
-		<form method="dialog" @submit="joinRoom(joinRoomInput.value)">
-			<h3>Join private room</h3>
-			<input placeholder="Room ID" ref="joinRoomInput" required />
+	<dialog ref="usernameDialog">
+		<form method="dialog">
+			<h3>Pick a username</h3>
 			<input
 				type="text"
 				placeholder="Username"
@@ -33,6 +31,14 @@
 				ref="usernameInput"
 				:value="defaultUsername"
 			/>
+			<button type="submit">Next</button>
+		</form>
+	</dialog>
+	<CreateRoom ref="createRoomDialog" />
+	<dialog ref="joinRoomDialog">
+		<form method="dialog" @submit="joinRoom(joinRoomInput.value)">
+			<h3>Join private room</h3>
+			<input placeholder="Room ID" ref="joinRoomInput" required />
 			<button type="submit">Join</button>
 		</form>
 	</dialog>
@@ -57,6 +63,7 @@
 		@Ref readonly joinRoomDialog!: HTMLDialogElement;
 		@Ref readonly joinRoomInput!: HTMLInputElement;
 		@Ref readonly usernameInput!: HTMLInputElement;
+		@Ref readonly usernameDialog!: HTMLDialogElement;
 
 		@Hook mounted() {
 			const state = useStore();
@@ -65,15 +72,27 @@
 			if (roomId) this.joinRoom(roomId);
 		}
 
-		joinRoom(roomId: string, username = this.usernameInput.value) {
+		getUsername(callback: () => void) {
+			this.usernameDialog.firstChild?.addEventListener("submit", () => {
+				const state = useStore();
+				state.username = this.usernameInput.value;
+				callback();
+			});
+
+			this.usernameDialog.showModal();
+		}
+
+		joinRoom(roomId: string) {
 			const state = useStore();
-			state.username = username;
+			if (!state.username) return;
 
 			const jwt = localStorage.getItem("auth");
 			socket.emit(
 				"joinRoom",
 				roomId,
-				username === this.defaultUsername && jwt ? { jwt } : { username },
+				state.username === this.defaultUsername && jwt
+					? { jwt }
+					: { username: state.username },
 				(response) => {
 					if (typeof response === "number") alert(response);
 					else {

@@ -2,13 +2,6 @@
 	<dialog>
 		<form method="dialog" @submit="createRoom">
 			<h3>Create New Room</h3>
-			<input
-				type="text"
-				placeholder="Username"
-				required
-				ref="usernameInput"
-				:value="defaultUsername"
-			/>
 			<p>
 				<label>
 					Require login to join
@@ -46,29 +39,21 @@
 	</dialog>
 </template>
 <script lang="ts">
-	import { Component, Hook, Ref, Vue } from "vue-facing-decorator";
+	import { Component, Ref, Vue } from "vue-facing-decorator";
 	import useStore from "./common/store.ts";
 	import socket from "./common/socket.ts";
 
 	@Component
 	export default class CreateRoom extends Vue {
 		authOn = false;
-		defaultUsername: string | null = null;
 
-		@Ref readonly usernameInput!: HTMLInputElement;
 		@Ref readonly authSwitch!: HTMLInputElement;
 		@Ref readonly discordAuth!: HTMLInputElement;
 		@Ref readonly githubAuth!: HTMLInputElement;
 		@Ref readonly privateSwitch!: HTMLInputElement;
 
-		@Hook mounted() {
-			const state = useStore();
-			this.defaultUsername = state.username;
-		}
-
 		createRoom() {
 			const state = useStore();
-			if (this.usernameInput.value) state.username = this.usernameInput.value;
 			if (!state.username) return;
 
 			socket.emit(
