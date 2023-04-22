@@ -139,7 +139,7 @@ export default function connectIo(server: HTTPServer) {
 				const room = rooms[roomId];
 				if (!room) return callback(PlaceError.UndefinedRoom);
 
-				const currentTurn = getCurrentTurn(room.players)
+				const currentTurn = getCurrentTurn(room.players);
 				if (socket.data.username !== currentTurn) return callback(PlaceError.NotYourTurn);
 
 				const hand = [...(hands[socket.data.username] ?? [])];
@@ -166,7 +166,7 @@ export default function connectIo(server: HTTPServer) {
 				}
 
 				if (!tilesInLine(tiles, board)) return callback(PlaceError.NotInLine);
-				
+
 				room.board = board;
 				const player = room.players[socket.data.username];
 				room.players[socket.data.username] = {
