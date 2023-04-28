@@ -16,33 +16,31 @@
 			<button :disabled="scale === SCALE_BOUNDS[0]" @click="zoomOut"><span>-</span></button>
 		</div>
 	</section>
-	<section id="hand">
-		<button
-			v-for="[index, tile] in hand.entries()"
-			@click="selectTile"
-			:class="{ selected: index === selectedTile || tile.placed, placed: tile.placed }"
-			:title="`${tile.color} ${tile.shape}`"
-			type="button"
-		>
-			<img :src="generateTileUrl(tile)" :title="`${tile.color} ${tile.shape}`" />
-		</button>
-		<section id="buttons" v-if="workingScore">
+	<Hand
+	class="hand"
+		:selectTile="selectTile"
+		:getClasses="(index: number, tile: HeldTile) => ({ selected: index === selectedTile || tile.placed, placed: tile.placed, })"
+	>
+		<template v-if="workingScore">
 			<p>
-				<b>{{ workingScore }}</b> points
-				<i v-if="endingGame"><br />Will end game</i>
+				<b>{{ workingScore }}</b> points <i v-if="endingGame"><br />Will end game</i>
 			</p>
 			<button @click="reset" type="button">Reset Hand</button>
 			<button @click="place" type="button">Place Tiles</button>
-		</section>
-	</section>
+		</template>
+		<template v-else>
+			<button @click="exchange.$el.showModal()" type="button">Exchange Tiles</button>
+		</template>
+	</Hand>
 	<div
 		id="deck"
 		:style="{ '--deck-size': deckLength / fullDeckSize }"
 		:title="`${deckLength} tiles left`"
 	></div>
+	<ExchangeTiles ref="exchange" />
 </template>
 <script lang="ts">
-	import { Vue, Component, Hook } from "vue-facing-decorator";
+	import { Vue, Component, Hook, Ref } from "vue-facing-decorator";
 	import PlayersList from "./PlayersList.vue";
 	import Tile from "./Tile.vue";
 	import { generateTileUrl } from "../common/util.ts";
@@ -50,8 +48,14 @@
 	import useStore from "./common/store.ts";
 	import { DUPLICATE_TILES, TILE_COLORS, TILE_SHAPES } from "../common/constants.ts";
 	import socket from "./common/socket.ts";
+	import ExchangeTiles from "./ExchangeTiles.vue";
+	import Hand from "./Hand.vue";
+	import { HeldTile } from "../common/types";
 
-	@Component({ directives: { dragscroll }, components: { PlayersList, Tile } })
+	@Component({
+		directives: { dragscroll },
+		components: { PlayersList, Tile, ExchangeTiles, Hand },
+	})
 	export default class Game extends Vue {
 		scale = 1;
 		SCALE_BOUNDS = [0.35, 1.5] as const;
@@ -87,19 +91,16 @@
 			return state.deckLength;
 		}
 
+		@Ref readonly exchange!: ExchangeTiles;
+
 		@Hook mounted() {
 			const state = useStore();
 			if (state.centerTile) (state.board[0] ??= {})[0] = state.centerTile;
 		}
 
 		generateTileUrl = generateTileUrl;
-		selectTile(event: Event) {
+		selectTile(index: number) {
 			const state = useStore();
-			if (!(event.target instanceof Element)) return;
-			const button = event.target.closest("button");
-			if (!button) return;
-
-			const index = Array.prototype.indexOf.call(button.parentNode?.children ?? [], button);
 			const tile = this.hand[index];
 			if (tile && !tile?.placed) state.selectedTile = index;
 		}
@@ -117,7 +118,7 @@
 				.filter((tile) => tile.temporary === true)
 				.map((tile) => ({ ...tile, temporary: undefined }));
 
-			socket.emit("placeTile", tiles, (response) => {
+			socket.emit("placeTiles", tiles, (response) => {
 				if (typeof response === "number") alert(response);
 				else state.hand = response;
 
@@ -188,39 +189,12 @@
 		line-height: 0;
 	}
 
-	#hand {
-		display: flex;
+	.hand {
 		height: 125px;
-		align-items: center;
-		margin: 10px 0;
-		flex-shrink: 0;
-	}
-
-	#hand > button {
-		height: 100%;
-		border: none;
-		margin: 5px;
-		padding: 0;
-		width: 125px;
-		background: #eee;
 	}
 
 	#buttons p {
 		margin: 0 0 0 8px;
-	}
-
-	.placed {
-		filter: contrast(0.5);
-	}
-
-	.selected {
-		cursor: not-allowed;
-	}
-
-	.selected img {
-		box-shadow: 0 0 5px 0 #000000;
-		height: 100px;
-		margin: auto;
 	}
 
 	#deck {

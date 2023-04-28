@@ -104,7 +104,7 @@
 		display: flex;
 	}
 
-	form > * {
+	form > :not(section) {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;

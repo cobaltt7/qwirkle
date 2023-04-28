@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { PlacedTile, PublicRoom, PublicRooms, Tile } from "../../common/types";
+import { HeldTile, PlacedTile, PublicRoom, PublicRooms } from "../../common/types";
 import { EndReason, GO_OUT_BONUS } from "../../common/constants.ts";
 import { JWTClaims, calculatePoints, generateDeck } from "../../common/util.ts";
 import { Board } from "../../common/types";
@@ -24,7 +24,7 @@ const useStore = defineStore("state", {
 	state: () => ({
 		username: getUsername(),
 		status: null as null | "joined" | "started" | "ended",
-		hand: [] as (Tile & { placed?: true })[],
+		hand: [] as HeldTile[],
 		room: null as PublicRoom | null,
 		publicRooms: {} as PublicRooms,
 		endReason: null as null | EndReason,

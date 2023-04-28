@@ -5,6 +5,7 @@ import type {
 	TileColor,
 	TileShape,
 	EndReason,
+ExchangeError,
 } from "./constants.js";
 import { JWTClaims } from "./util.js";
 
@@ -16,7 +17,8 @@ export interface ServerToClientEvents {
 	gameEnd: (reason: EndReason) => void;
 }
 export interface ClientToServerEvents {
-	placeTile: (tiles: PlacedTile[], callback: (hand: PlaceError | Tile[]) => void) => void;
+	exchangeTiles: (tiles: number[], callback: (hand: ExchangeError | Tile[]) => void) => void;
+	placeTiles: (tiles: PlacedTile[], callback: (hand: PlaceError | Tile[]) => void) => void;
 	joinRoom: (
 		roomId: string,
 		auth: { jwt: string } | JWTClaims,
@@ -41,6 +43,9 @@ export interface Location {
 export interface Tile {
 	color: TileColor;
 	shape: TileShape;
+}
+export interface HeldTile extends Tile {
+	placed?: boolean;
 }
 export interface PlacedTile extends Tile, Location {
 	temporary?: boolean;

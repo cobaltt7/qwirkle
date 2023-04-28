@@ -1,6 +1,13 @@
 import { Server as SocketServer } from "socket.io";
 import type { Server as HTTPServer } from "node:http";
-import { JoinError, PlaceError, StartError, EndReason, GO_OUT_BONUS } from "../common/constants.js";
+import {
+	JoinError,
+	ExchangeError,
+	PlaceError,
+	StartError,
+	EndReason,
+	GO_OUT_BONUS,
+} from "../common/constants.js";
 import {
 	calculatePoints,
 	countTiles,
@@ -133,7 +140,7 @@ export default function connectIo(server: HTTPServer) {
 				io.to(roomId).emit("playersUpdate", room.players);
 				io.emit("roomsUpdate", getPublicRooms(rooms));
 			})
-			.on("placeTile", async (tiles, callback) => {
+			.on("placeTiles", async (tiles, callback) => {
 				const roomId = [...socket.rooms.values()][1];
 				if (!roomId || !socket.data.username) return callback(PlaceError.NotInRoom);
 				const room = rooms[roomId];
@@ -145,6 +152,7 @@ export default function connectIo(server: HTTPServer) {
 				const hand = [...(hands[socket.data.username] ?? [])];
 
 				const board = structuredClone(room.board);
+				const deck = structuredClone(room.deck);
 				for (const tile of tiles) {
 					if (board[tile.y]?.[tile.x]) return callback(PlaceError.AlreadyPlaced);
 					(board[tile.y] ??= {})[tile.x] = tile;
@@ -155,7 +163,7 @@ export default function connectIo(server: HTTPServer) {
 					);
 					if (index === -1) return callback(PlaceError.MissingTile);
 
-					const newTile = getRandomTile(room.deck);
+					const newTile = getRandomTile(deck);
 					if (newTile) hand[index] = newTile;
 					else hand.splice(index, 1);
 				}
@@ -168,6 +176,7 @@ export default function connectIo(server: HTTPServer) {
 				if (!tilesInLine(tiles, board)) return callback(PlaceError.NotInLine);
 
 				room.board = board;
+				room.deck = deck;
 				const player = room.players[socket.data.username];
 				room.players[socket.data.username] = {
 					index: (player?.index ?? 0) + Object.keys(room.players).length,
@@ -180,6 +189,41 @@ export default function connectIo(server: HTTPServer) {
 				io.to(roomId).emit("playersUpdate", room.players);
 				callback((hands[socket.data.username] = sortHand(hand)));
 				if (!hand.length) io.to(roomId).emit("gameEnd", EndReason.NoTiles);
+			})
+			.on("exchangeTiles", async (indexes, callback) => {
+				const roomId = [...socket.rooms.values()][1];
+				if (!roomId || !socket.data.username) return callback(ExchangeError.NotInRoom);
+				const room = rooms[roomId];
+				if (!room) return callback(ExchangeError.UndefinedRoom);
+
+				const currentTurn = getCurrentTurn(room.players);
+				if (socket.data.username !== currentTurn)
+					return callback(ExchangeError.NotYourTurn);
+
+				const hand = [...(hands[socket.data.username] ?? [])];
+				const deck = structuredClone(room.deck);
+
+				for (const index of indexes) {
+					const newTile = getRandomTile(deck);
+					if (!newTile) return callback(ExchangeError.DeckEmpty);
+
+					hand[index] = newTile;
+				}
+
+				const tiles = indexes
+					.map((index) => hand[index])
+					.filter((tile): tile is Tile => !!tile);
+				if (tiles.length !== indexes.length) return callback(ExchangeError.MissingTile);
+				deck.push(...tiles);
+
+				room.deck = deck;
+				const player = room.players[socket.data.username];
+				room.players[socket.data.username] = {
+					index: (player?.index ?? 0) + Object.keys(room.players).length,
+					score: player?.score ?? 0,
+				};
+				io.to(roomId).emit("playersUpdate", room.players);
+				callback((hands[socket.data.username] = sortHand(hand)));
 			});
 	});
 }

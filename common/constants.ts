@@ -33,6 +33,13 @@ export enum StartError {
 	AlreadyStarted,
 	NoPermissions,
 }
+export enum ExchangeError {
+	UndefinedRoom,
+	NotInRoom,
+	MissingTile,
+	NotYourTurn,
+	DeckEmpty,
+}
 export enum EndReason {
 	NoTiles,
 }
