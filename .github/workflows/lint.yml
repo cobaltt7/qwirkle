@@ -8,28 +8,8 @@ on:
 permissions: write-all
 
 jobs:
-    bump:
-        name: Bump dependencies
-        runs-on: ubuntu-20.04
-
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v3.5.2
-              with:
-                  ref: ${{ github.head_ref }}
-
-            - name: Bump dependencies
-              uses: cobaltt7/sync-types@v1.1.1
-
-            - name: Commit
-              uses: stefanzweifel/git-auto-commit-action@v4.16.0
-              with:
-                  commit_message: Bump dependencies
-                  branch: ${{ github.head_ref }}
-
     format:
         name: Format
-        needs: [bump]
         if: ${{ always() }}
         runs-on: ubuntu-20.04
 
@@ -59,7 +39,6 @@ jobs:
 
     build:
         name: Build
-        needs: [bump]
         if: ${{ always() }}
         runs-on: ubuntu-20.04
 
