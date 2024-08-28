@@ -3,7 +3,6 @@ import {
 	verifyTile,
 	calculatePoints,
 	countTiles,
-	generateTileUrl,
 	generateRoomId,
 	getPublicRooms,
 	sortHand,
@@ -383,12 +382,6 @@ describe("countTiles", () => {
 		).toEqual(12));
 });
 
-describe("generateTileUrl", () => {
-	it("should generate a tile url", () =>
-		expect(generateTileUrl({ color: "blue", shape: "circle" })).toEqual(
-			"./tiles/blue-circle.png",
-		));
-});
 
 describe("getPublicRooms", () => {
 	const baseRoom = { auth: false, board: {}, deck: [], host: "foobar", id: "a", players: {} };

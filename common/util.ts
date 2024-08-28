@@ -129,10 +129,6 @@ function count(tiles: Tile[], key: "color" | "shape") {
 	return largestFound * (Number(largestFound === QWIRKLE_LENGTH) + 1);
 }
 
-export function generateTileUrl({ color, shape }: Tile) {
-	return `./tiles/${color}-${shape}.png`;
-}
-
 export function getPublicRooms(rooms: Rooms): PublicRooms {
 	return Object.fromEntries(
 		Object.entries(rooms)

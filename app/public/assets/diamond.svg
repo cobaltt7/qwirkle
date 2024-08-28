@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144">
+	<rect x="0" width="144" height="144" style="fill: #231f20" />
+	<rect
+		x="30.63"
+		y="30.63"
+		width="82.73"
+		height="82.73"
+		transform="translate(-29.82 72) rotate(-45)"
+		style="fill: currentColor"
+	/>
+</svg>

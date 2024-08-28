@@ -1,18 +1,17 @@
-<template @board-update="boardUpdate">
-	<div @click="tilePlaced">
-		<img v-if="tile" :src="generateTileUrl(tile)" :alt="`${tile.color} ${tile.shape}`" />
-	</div>
+<template>
+	<div @click="tilePlaced"><TileImage v-if="tile" :color="tile.color" :shape="tile.shape" /></div>
 </template>
 <script lang="ts">
 	import { Prop, Vue, Component } from "vue-facing-decorator";
-	import { generateTileUrl, getCurrentTurn, tilesInLine } from "../common/util.ts";
+	import { getCurrentTurn, tilesInLine } from "../common/util.ts";
 	import type { PlacedTile } from "../common/types.ts";
 	import { verifyTile } from "../common/util.ts";
 	import { PlaceError } from "../common/constants.ts";
 	import useStore from "./common/store.ts";
 	import { toRaw } from "vue";
+	import TileImage from "./TileImage.vue.ts";
 
-	@Component
+	@Component({ components: { TileImage } })
 	export default class Tile extends Vue {
 		@Prop({ required: true }) columnIndex!: number;
 		@Prop({ required: true }) rowIndex!: number;
@@ -64,7 +63,6 @@
 			state.board = board;
 			state.selectedTile = -1;
 		}
-		generateTileUrl = generateTileUrl;
 	}
 </script>
 <style scoped>

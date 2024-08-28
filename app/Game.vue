@@ -43,7 +43,6 @@
 	import { Vue, Component, Hook, Ref } from "vue-facing-decorator";
 	import PlayersList from "./PlayersList.vue";
 	import Tile from "./Tile.vue";
-	import { generateTileUrl } from "../common/util.ts";
 	import { dragscroll } from "vue-dragscroll";
 	import useStore from "./common/store.ts";
 	import { DUPLICATE_TILES, TILE_COLORS, TILE_SHAPES } from "../common/constants.ts";
@@ -98,7 +97,6 @@
 			if (state.centerTile) (state.board[0] ??= {})[0] = state.centerTile;
 		}
 
-		generateTileUrl = generateTileUrl;
 		selectTile(index: number) {
 			const state = useStore();
 			const tile = this.hand[index];

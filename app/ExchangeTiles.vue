@@ -12,7 +12,6 @@
 </template>
 <script lang="ts">
 	import { Component, Vue } from "vue-facing-decorator";
-	import { generateTileUrl } from "../common/util.ts";
 	import socket from "./common/socket.ts";
 	import useStore from "./common/store.ts";
 	import Hand from "./Hand.vue";
@@ -42,7 +41,6 @@
 			this.$el.close();
 			this.selectedTiles.clear();
 		}
-		generateTileUrl = generateTileUrl;
 	}
 </script>
 <style scoped></style>
