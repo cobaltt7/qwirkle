@@ -20,7 +20,7 @@
 	"dependencies": {
 		"@vue/server-renderer": "3.2.47",
 		"dotenv": "16.0.3",
-		"jose-node-esm-runtime": "4.13.1",
+		"jose-node-esm-runtime": "5.9.4",
 		"modern-normalize": "1.1.0",
 		"pinia": "2.0.34",
 		"serve-handler": "6.1.5",
