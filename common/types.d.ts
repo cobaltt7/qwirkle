@@ -5,7 +5,7 @@ import type {
 	TileColor,
 	TileShape,
 	EndReason,
-ExchangeError,
+	ExchangeError,
 } from "./constants.js";
 import { JWTClaims } from "./util.js";
 

@@ -382,7 +382,6 @@ describe("countTiles", () => {
 		).toEqual(12));
 });
 
-
 describe("getPublicRooms", () => {
 	const baseRoom = { auth: false, board: {}, deck: [], host: "foobar", id: "a", players: {} };
 

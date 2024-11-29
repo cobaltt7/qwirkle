@@ -13,10 +13,10 @@
 			</button>
 		</section>
 		<section id="manage">
-			<button type="button" @click="getUsername(()=>createRoomDialog.$el.showModal())">
+			<button type="button" @click="getUsername(() => createRoomDialog.$el.showModal())">
 				<h2>Create New Room</h2>
 			</button>
-			<button type="button" @click="getUsername(()=>joinRoomDialog.showModal())">
+			<button type="button" @click="getUsername(() => joinRoomDialog.showModal())">
 				<h2>Join Private Room</h2>
 			</button>
 		</section>
