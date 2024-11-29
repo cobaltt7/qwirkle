@@ -17,7 +17,7 @@
 		</div>
 	</section>
 	<Hand
-	class="hand"
+		class="hand"
 		:selectTile="selectTile"
 		:getClasses="(index: number, tile: HeldTile) => ({ selected: index === selectedTile || tile.placed, placed: tile.placed, })"
 	>
