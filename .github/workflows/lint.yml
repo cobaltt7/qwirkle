@@ -11,7 +11,7 @@ jobs:
     format:
         name: Format
         if: ${{ always() }}
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-24.04
 
         steps:
             - name: Checkout
@@ -40,7 +40,7 @@ jobs:
     build:
         name: Build
         if: ${{ always() }}
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-24.04
 
         steps:
             - name: Checkout
