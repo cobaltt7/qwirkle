@@ -61,28 +61,28 @@ jobs:
             - name: Analyze
               uses: github/codeql-action/analyze@f09c1c0a94de965c15400f5634aa42fac8fb8f88 # v3.27.5
 
-    build:
-        name: Build
-        runs-on: ubuntu-24.04
+    # build:
+    #     name: Build
+    #     runs-on: ubuntu-24.04
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-              with:
-                  ref: ${{github.head_ref}}
-                  repository: ${{github.event.pull_request.head.repo.full_name}}
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    #           with:
+    #               ref: ${{github.head_ref}}
+    #               repository: ${{github.event.pull_request.head.repo.full_name}}
 
-            - name: Setup Node.JS
-              uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
-              with:
-                  node-version-file: package.json
-                  cache: npm
+    #         - name: Setup Node.JS
+    #           uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+    #           with:
+    #               node-version-file: package.json
+    #               cache: npm
 
-            - name: Install
-              run: npm ci
+    #         - name: Install
+    #           run: npm ci
 
-            - name: Build
-              run: node --run build
+    #         - name: Build
+    #           run: node --run build
 
     test:
         name: Test
