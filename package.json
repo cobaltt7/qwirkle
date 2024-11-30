@@ -39,7 +39,7 @@
 		"@vitest/coverage-c8": "0.29.7",
 		"autoprefixer": "10.4.14",
 		"nodemon": "3.1.7",
-		"postcss": "8.4.31",
+		"postcss": "8.4.49",
 		"prettier": "2.8.0",
 		"terser": "5.16.8",
 		"typescript": "5.0.2",
