@@ -24,7 +24,7 @@
 		"modern-normalize": "1.1.0",
 		"pinia": "2.0.34",
 		"serve-handler": "6.1.6",
-		"socket.io": "4.5.4",
+		"socket.io": "4.6.2",
 		"socket.io-client": "4.5.4",
 		"twemoji": "14.0.2",
 		"vue": "3.2.47",
