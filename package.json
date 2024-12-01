@@ -21,7 +21,7 @@
 		"@vue/server-renderer": "3.2.47",
 		"dotenv": "16.0.3",
 		"jose-node-esm-runtime": "4.15.5",
-		"modern-normalize": "1.1.0",
+		"modern-normalize": "3.0.1",
 		"pinia": "2.0.34",
 		"serve-handler": "6.1.6",
 		"socket.io": "4.8.1",
