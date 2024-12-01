@@ -41,7 +41,7 @@
 		"nodemon": "3.1.7",
 		"postcss": "8.4.49",
 		"prettier": "2.8.0",
-		"terser": "5.16.8",
+		"terser": "5.36.0",
 		"typescript": "5.0.2",
 		"vite": "4.5.5",
 		"vitest": "0.29.7",
