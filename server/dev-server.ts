@@ -1,8 +1,10 @@
-import http from "node:http";
-import url from "node:url";
-import path from "node:path";
 import fileSystem from "node:fs/promises";
+import http from "node:http";
+import path from "node:path";
+import url from "node:url";
+
 import { createServer as createViteServer } from "vite";
+
 import preload from "./preload.js";
 
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));

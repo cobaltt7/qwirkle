@@ -1,7 +1,7 @@
-import { TILE_SHAPES } from "../common/constants.js";
-import { renderList, Fragment, openBlock, createElementBlock } from "vue";
+import { createElementBlock, Fragment, openBlock, renderList } from "vue";
 import { renderToString } from "vue/server-renderer";
-import { TileShape } from "../common/constants.js";
+
+import { TILE_SHAPES, TileShape } from "../common/constants.js";
 
 export default async function preload(input: string) {
 	openBlock();
