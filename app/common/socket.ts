@@ -1,11 +1,11 @@
 import type { Socket } from "socket.io-client";
 import type { ClientToServerEvents, ServerToClientEvents } from "../../common/types";
+
 import io from "socket.io-client";
+
 import useStore from "./store.ts";
 
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
-	autoConnect: false,
-});
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({ autoConnect: false });
 
 if (true) {
 	socket.on("connect", () =>
