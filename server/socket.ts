@@ -1,12 +1,25 @@
-import { Server as SocketServer } from "socket.io";
 import type { Server as HTTPServer } from "node:http";
+import type {
+	ClientToServerEvents,
+	InterServerEvents,
+	Room,
+	Rooms,
+	ServerToClientEvents,
+	SocketData,
+	Tile,
+} from "../common/types.js";
+import type { JWTClaims } from "../common/util.js";
+
+import { jwtVerify, SignJWT } from "jose-node-esm-runtime";
+import { Server as SocketServer } from "socket.io";
+
 import {
-	JoinError,
+	EndReason,
 	ExchangeError,
+	GO_OUT_BONUS,
+	JoinError,
 	PlaceError,
 	StartError,
-	EndReason,
-	GO_OUT_BONUS,
 } from "../common/constants.js";
 import {
 	calculatePoints,
@@ -20,18 +33,7 @@ import {
 	sortHand,
 	tilesInLine,
 	verifyTile,
-	type JWTClaims,
 } from "../common/util.js";
-import type {
-	ClientToServerEvents,
-	InterServerEvents,
-	Rooms,
-	ServerToClientEvents,
-	SocketData,
-	Tile,
-	Room,
-} from "../common/types.js";
-import { SignJWT, jwtVerify } from "jose-node-esm-runtime";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
@@ -87,9 +89,9 @@ export default function connectIo(server: HTTPServer) {
 			})
 			.on("joinRoom", async (roomId, auth, callback) => {
 				const { username } =
-					"jwt" in auth
-						? ((await jwtVerify(auth.jwt, secret)).payload as JWTClaims)
-						: auth;
+					"jwt" in auth ?
+						((await jwtVerify(auth.jwt, secret)).payload as JWTClaims)
+					:	auth;
 				socket.data.username = username;
 
 				const room = rooms[roomId];
@@ -181,9 +183,9 @@ export default function connectIo(server: HTTPServer) {
 				room.players[socket.data.username] = {
 					index: (player?.index ?? 0) + Object.keys(room.players).length,
 					score:
-						(player?.score ?? 0) +
-						calculatePoints(tiles, board) +
-						GO_OUT_BONUS * +!hand.length,
+						(player?.score ?? 0)
+						+ calculatePoints(tiles, board)
+						+ GO_OUT_BONUS * +!hand.length,
 				};
 				io.to(roomId).emit("tilesPlaced", tiles, room.deck.length);
 				io.to(roomId).emit("playersUpdate", room.players);

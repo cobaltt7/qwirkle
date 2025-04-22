@@ -44,108 +44,106 @@
 	</dialog>
 </template>
 <script lang="ts">
-	import { Vue, Component, Ref, Hook } from "vue-facing-decorator";
-	import { ROOM_PARAMETER } from "../common/constants.ts";
-	import CreateRoom from "./CreateRoom.vue";
-	import useStore from "./common/store.ts";
-	import socket from "./common/socket.ts";
+import { Vue, Component, Ref, Hook } from "vue-facing-decorator";
+import { ROOM_PARAMETER } from "../common/constants.ts";
+import CreateRoom from "./CreateRoom.vue";
+import useStore from "./common/store.ts";
+import socket from "./common/socket.ts";
 
-	@Component({ components: { CreateRoom } })
-	export default class RoomsList extends Vue {
-		defaultUsername: string | null = null;
+@Component({ components: { CreateRoom } })
+export default class RoomsList extends Vue {
+	defaultUsername: string | null = null;
 
-		get publicRooms() {
-			const state = useStore();
-			return state.publicRooms;
-		}
-
-		@Ref readonly createRoomDialog!: CreateRoom;
-		@Ref readonly joinRoomDialog!: HTMLDialogElement;
-		@Ref readonly joinRoomInput!: HTMLInputElement;
-		@Ref readonly usernameInput!: HTMLInputElement;
-		@Ref readonly usernameDialog!: HTMLDialogElement;
-
-		@Hook mounted() {
-			const state = useStore();
-			this.defaultUsername = state.username;
-			const roomId = new URL(location.href).searchParams.get(ROOM_PARAMETER);
-			if (roomId) this.joinRoom(roomId);
-		}
-
-		getUsername(callback: () => void) {
-			this.usernameDialog.firstChild?.addEventListener("submit", () => {
-				const state = useStore();
-				state.username = this.usernameInput.value;
-				callback();
-			});
-
-			this.usernameDialog.showModal();
-		}
-
-		joinRoom(roomId: string) {
-			const state = useStore();
-			if (!state.username) return;
-
-			const jwt = localStorage.getItem("auth");
-			socket.emit(
-				"joinRoom",
-				roomId,
-				state.username === this.defaultUsername && jwt
-					? { jwt }
-					: { username: state.username },
-				(response) => {
-					if (typeof response === "number") alert(response);
-					else {
-						state.room = this.publicRooms[roomId] ?? null;
-						const url = new URL(location.toString());
-						url.searchParams.set("roomId", roomId);
-						window.history.replaceState(undefined, "", url.toString());
-						state.status = "joined";
-					}
-				},
-			);
-		}
+	get publicRooms() {
+		const state = useStore();
+		return state.publicRooms;
 	}
+
+	@Ref readonly createRoomDialog!: CreateRoom;
+	@Ref readonly joinRoomDialog!: HTMLDialogElement;
+	@Ref readonly joinRoomInput!: HTMLInputElement;
+	@Ref readonly usernameInput!: HTMLInputElement;
+	@Ref readonly usernameDialog!: HTMLDialogElement;
+
+	@Hook mounted() {
+		const state = useStore();
+		this.defaultUsername = state.username;
+		const roomId = new URL(location.href).searchParams.get(ROOM_PARAMETER);
+		if (roomId) this.joinRoom(roomId);
+	}
+
+	getUsername(callback: () => void) {
+		this.usernameDialog.firstChild?.addEventListener("submit", () => {
+			const state = useStore();
+			state.username = this.usernameInput.value;
+			callback();
+		});
+
+		this.usernameDialog.showModal();
+	}
+
+	joinRoom(roomId: string) {
+		const state = useStore();
+		if (!state.username) return;
+
+		const jwt = localStorage.getItem("auth");
+		socket.emit(
+			"joinRoom",
+			roomId,
+			state.username === this.defaultUsername && jwt ? { jwt } : { username: state.username },
+			(response) => {
+				if (typeof response === "number") alert(response);
+				else {
+					state.room = this.publicRooms[roomId] ?? null;
+					const url = new URL(location.toString());
+					url.searchParams.set("roomId", roomId);
+					window.history.replaceState(undefined, "", url.toString());
+					state.status = "joined";
+				}
+			},
+		);
+	}
+}
 </script>
 <style scoped>
-	#rooms {
-		width: 70%;
-		margin: auto;
-	}
+#rooms {
+	margin: auto;
+	width: 70%;
+}
 
-	.room {
-		width: 100%;
-		height: 70px;
-		padding: 10px;
-		align-content: space-between;
-		justify-content: space-between;
-	}
+.room {
+	align-content: space-between;
+	justify-content: space-between;
+	padding: 10px;
+	width: 100%;
+	height: 70px;
+}
 
-	.room * {
-		margin: 0;
-	}
+.room * {
+	margin: 0;
+}
 
-	.room > :last-child {
-		line-height: 100%;
-		font-size: 46px;
-	}
+.room > :last-child {
+	font-size: 46px;
+	line-height: 100%;
+}
 
-	#manage {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-evenly;
-	}
+#manage {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+}
 
-	#manage button {
-		height: 60px;
-		width: 40%;
-		align-content: space-between;
-		justify-content: space-between;
-		padding: 10px;
-	}
+#manage button {
+	align-content: space-between;
+	justify-content: space-between;
+	padding: 10px;
+	width: 40%;
+	height: 60px;
+}
 
-	#manage h2 {
-		margin: auto;
-		width: 100%;
-	}
+#manage h2 {
+	margin: auto;
+	width: 100%;
+}
 </style>

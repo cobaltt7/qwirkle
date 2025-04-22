@@ -1,12 +1,13 @@
 import type {
-	PlaceError,
+	EndReason,
+	ExchangeError,
 	JoinError,
+	PlaceError,
 	StartError,
 	TileColor,
 	TileShape,
-	EndReason,
-	ExchangeError,
 } from "./constants.js";
+
 import { JWTClaims } from "./util.js";
 
 export interface ServerToClientEvents {
