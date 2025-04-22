@@ -1,3 +1,5 @@
+import type { Board, Location, PlacedTile, Players, PublicRooms, Rooms, Tile } from "./types.js";
+
 import {
 	DUPLICATE_TILES,
 	HAND_SIZE,
@@ -8,7 +10,6 @@ import {
 	TileColor,
 	TileShape,
 } from "./constants.js";
-import type { Tile, Board, Location, PlacedTile, Rooms, PublicRooms, Players } from "./types.js";
 
 export type JWTClaims = { username: string };
 
@@ -47,8 +48,8 @@ export function tilesInLine(tiles: Location[], board: Board) {
 	return (
 		tiles.every((tile) =>
 			neighborhood.row.find((found) => found.x === tile.x && found.y === tile.y),
-		) ||
-		tiles.every((tile) =>
+		)
+		|| tiles.every((tile) =>
 			neighborhood.column.find((found) => found.x === tile.x && found.y === tile.y),
 		)
 	);
@@ -69,8 +70,8 @@ function getNeighborhoods(tiles: Location[], board: Board) {
 		.flat()
 		.filter(
 			(line, index, lines) =>
-				line.length > 1 &&
-				lines.findIndex(
+				line.length > 1
+				&& lines.findIndex(
 					(foundLine) => foundLine[0] === line[0] && foundLine.at(-1) === line.at(-1),
 				) === index,
 		);
@@ -151,16 +152,16 @@ export function generateRoomId() {
 	const power = 10 ** factor;
 	const dateSalt = Date.now() % power;
 	return (
-		Math.floor(Math.random() * power + dateSalt).toString(36) +
 		Math.floor(Math.random() * power + dateSalt).toString(36)
+		+ Math.floor(Math.random() * power + dateSalt).toString(36)
 	).substring(0, 8);
 }
 
 export function sortHand(hand: Tile[]) {
 	return hand.sort(
 		(one, two) =>
-			TILE_COLORS.indexOf(one.color) - TILE_COLORS.indexOf(two.color) ||
-			TILE_SHAPES.indexOf(one.shape) - TILE_SHAPES.indexOf(two.shape),
+			TILE_COLORS.indexOf(one.color) - TILE_COLORS.indexOf(two.color)
+			|| TILE_SHAPES.indexOf(one.shape) - TILE_SHAPES.indexOf(two.shape),
 	);
 }
 

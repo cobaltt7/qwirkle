@@ -10,52 +10,52 @@
 	</div>
 </template>
 <script lang="ts">
-	import { Vue, Prop, Component } from "vue-facing-decorator";
-	import type { Player } from "../common/types";
+import { Vue, Prop, Component } from "vue-facing-decorator";
+import type { Player } from "../common/types";
 
-	@Component
-	export default class PlayerCard extends Vue {
-		@Prop() scores?: boolean;
-		@Prop({ default: false }) active!: boolean;
-		@Prop({ required: true }) player!: Player & { username: string };
-	}
+@Component
+export default class PlayerCard extends Vue {
+	@Prop() scores?: boolean;
+	@Prop({ default: false }) active!: boolean;
+	@Prop({ required: true }) player!: Player & { username: string };
+}
 </script>
 <style scoped>
-	div {
-		display: flex;
-		flex-wrap: nowrap;
-		flex-direction: column;
-		justify-content: space-around;
-		margin: 0 5px;
-		background: #555;
-		align-items: center;
-		color: white;
-		padding: 5px;
-		border-radius: 10px;
-		width: 200px;
-		height: 140px;
-	}
+div {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: space-around;
+	align-items: center;
+	margin: 0 5px;
+	border-radius: 10px;
+	background: #555;
+	padding: 5px;
+	width: 200px;
+	height: 140px;
+	color: white;
+}
 
-	.active {
-		background-color: rgb(43, 43, 43);
-	}
+.active {
+	background-color: rgb(43, 43, 43);
+}
 
-	img {
-		height: 90px;
-		width: 90px;
-	}
+img {
+	width: 90px;
+	height: 90px;
+}
 
-	p {
-		margin: 0;
-	}
+p {
+	margin: 0;
+}
 
-	span {
-		align-items: center;
-		background-color: orange;
-		border-radius: 25px;
-		color: #000;
-		display: inline-flex;
-		justify-content: center;
-		padding: 0 5px;
-	}
+span {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 25px;
+	background-color: orange;
+	padding: 0 5px;
+	color: #000;
+}
 </style>

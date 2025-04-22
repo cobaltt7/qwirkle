@@ -1,6 +1,8 @@
+import type { UserConfigExport } from "vite";
+
 import vue from "@vitejs/plugin-vue";
 import autoprefixer from "autoprefixer";
-import type { UserConfigExport } from "vite";
+
 import preload from "./server/preload.ts";
 
 process.env.NODE_ENV = "production";

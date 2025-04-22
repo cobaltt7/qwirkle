@@ -1,19 +1,20 @@
 import { describe, expect, it } from "vitest";
-import {
-	verifyTile,
-	calculatePoints,
-	countTiles,
-	generateRoomId,
-	getPublicRooms,
-	sortHand,
-	getRandomTile,
-	generateDeck,
-	getCurrentTurn,
-	tilesInLine,
-} from "../common/util.ts";
+
 import { PlaceError, TileColor, TileShape } from "../common/constants.ts";
 import { Board, PlacedTile, Tile } from "../common/types";
-import { generateHand } from "../common/util.ts";
+import {
+	calculatePoints,
+	countTiles,
+	generateDeck,
+	generateHand,
+	generateRoomId,
+	getCurrentTurn,
+	getPublicRooms,
+	getRandomTile,
+	sortHand,
+	tilesInLine,
+	verifyTile,
+} from "../common/util.ts";
 
 describe("verifyTile", () => {
 	it("should fail without neighbors", () =>
