@@ -37,7 +37,7 @@
 		"@types/serve-handler": "<=6.1",
 		"@vitejs/plugin-vue": "4.1.0",
 		"@vitest/coverage-c8": "0.29.7",
-		"autoprefixer": "10.4.20",
+		"autoprefixer": "10.4.21",
 		"nodemon": "3.1.9",
 		"postcss": "8.5.1",
 		"prettier": "3.5.3",
