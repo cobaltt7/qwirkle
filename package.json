@@ -32,7 +32,7 @@
 		"vue-facing-decorator": "2.1.20"
 	},
 	"devDependencies": {
-		"@babel/types": "7.27.0",
+		"@babel/types": "7.27.1",
 		"@redguy12/prettier-config": "3.3.0",
 		"@types/serve-handler": "<=6.1",
 		"@vitejs/plugin-vue": "4.1.0",
