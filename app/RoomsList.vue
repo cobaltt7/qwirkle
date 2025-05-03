@@ -2,10 +2,10 @@
 	<section id="rooms">
 		<section id="rooms">
 			<button
-				@click="getUsername(() => joinRoom(id))"
-				type="button"
 				class="room"
 				v-for="(room, id) of publicRooms"
+				@click="getUsername(() => joinRoom(id))"
+				type="button"
 			>
 				<h2>Room {{ id }}</h2>
 				<p>Host: {{ room.host }}</p>
