@@ -1,13 +1,13 @@
 <template>
 	<section>
 		<PlayerCard
+			v-for="(player, index) in Object.entries(players).sort(
+				([, one], [, two]) => one.index - two.index,
+			)"
 			:scores="scores"
 			:player="{ ...player[1], username: player[0] }"
 			:active="player[0] === username"
 			:data-index="typeof countFrom === 'number' ? '#' + (countFrom + index) : undefined"
-			v-for="(player, index) in Object.entries(players).sort(
-				([, one], [, two]) => one.index - two.index,
-			)"
 		/>
 	</section>
 </template>

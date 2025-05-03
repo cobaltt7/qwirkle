@@ -1,19 +1,19 @@
 <template>
-	<div v-if="orderedPlayers?.[0]" class="winner">
+	<div class="winner" v-if="orderedPlayers?.[0]">
 		<PlayerCard
 			:scores="true"
 			:player="{ ...orderedPlayers[0][1], username: orderedPlayers[0][0] }"
 		/>
 		<img draggable="false" alt="🥇" src="https://twemoji.maxcdn.com/v/14.0.2/svg/1f947.svg" />
 	</div>
-	<div v-if="orderedPlayers?.[1]" class="winner">
+	<div class="winner" v-if="orderedPlayers?.[1]">
 		<PlayerCard
 			:scores="true"
 			:player="{ ...orderedPlayers[1][1], username: orderedPlayers[1][0] }"
 		/>
 		<img draggable="false" alt="🥈" src="https://twemoji.maxcdn.com/v/14.0.2/svg/1f948.svg" />
 	</div>
-	<div v-if="orderedPlayers?.[2]" class="winner">
+	<div class="winner" v-if="orderedPlayers?.[2]">
 		<PlayerCard
 			:scores="true"
 			:player="{ ...orderedPlayers[2][1], username: orderedPlayers[2][0] }"

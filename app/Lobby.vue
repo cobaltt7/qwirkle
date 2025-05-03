@@ -1,6 +1,6 @@
 <template>
 	<PlayersList :players="players" />
-	<button @click="startGame" v-if="host === username">Start Game</button>
+	<button v-if="host === username" @click="startGame">Start Game</button>
 </template>
 <script lang="ts">
 import { Vue, Component } from "vue-facing-decorator";
