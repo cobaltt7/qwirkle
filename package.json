@@ -33,7 +33,7 @@
 	},
 	"devDependencies": {
 		"@babel/types": "7.28.2",
-		"@redguy12/prettier-config": "3.4.3",
+		"@redguy12/prettier-config": "3.4.4",
 		"@types/serve-handler": "<=6.1",
 		"@vitejs/plugin-vue": "4.6.2",
 		"@vitest/coverage-c8": "0.29.7",
