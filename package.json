@@ -18,7 +18,7 @@
 	"browserslist": "defaults and supports es6-module and supports es6-module-dynamic-import",
 	"prettier": "@redguy12/prettier-config",
 	"dependencies": {
-		"@vue/server-renderer": "3.2.47",
+		"@vue/server-renderer": "3.5.20",
 		"dotenv": "16.6.1",
 		"jose-node-esm-runtime": "4.15.5",
 		"modern-normalize": "3.0.1",
@@ -27,7 +27,7 @@
 		"socket.io": "4.8.1",
 		"socket.io-client": "4.8.1",
 		"twemoji": "14.0.2",
-		"vue": "3.2.47",
+		"vue": "3.5.20",
 		"vue-dragscroll": "4.0.6",
 		"vue-facing-decorator": "2.1.20"
 	},
