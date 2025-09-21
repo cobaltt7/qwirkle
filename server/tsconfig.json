@@ -8,6 +8,5 @@
 		"lib": ["ES2022", "DOM"],
 		"noEmit": false,
 		"outDir": "../dist/"
-	},
-	"typeAcquisition": { "enable": true }
+	}
 }
