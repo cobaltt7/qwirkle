@@ -11,6 +11,5 @@
 		"jsx": "preserve",
 		"lib": ["ES2020", "DOM"]
 	},
-	"exclude": ["server/**/*", "dist", "vite.config.ts.*"],
-	"typeAcquisition": { "enable": true }
+	"exclude": ["server/**/*", "dist", "vite.config.ts.*"]
 }
