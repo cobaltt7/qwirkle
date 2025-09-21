@@ -22,6 +22,5 @@
 		"useDefineForClassFields": true,
 		"useUnknownInCatchVariables": false,
 		"noEmit": true
-	},
-	"typeAcquisition": { "enable": true }
+	}
 }
