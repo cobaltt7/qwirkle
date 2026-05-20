@@ -5,20 +5,20 @@
 ### Start production server
 
 ```bash
-npm run build
-npm run start
+node --run build
+node --run start
 ```
 
 ### Start development server
 
 ```bash
-npm run types -- --watch & npm run serve & npm run dev
+node --run types -- --watch & node --run serve & node --run dev
 ```
 
 ### Run CI
 
 ```bash
-npm run format
-npm run types
-npm run test
+node --run format
+node --run types
+node --run test
 ```
