@@ -4,7 +4,7 @@
 		"types": ["node"],
 		"target": "ES2022",
 		"module": "ES2022",
-		"moduleResolution": "node",
+		"moduleResolution": "nodenext",
 		"lib": ["ES2022", "DOM"],
 		"noEmit": false,
 		"outDir": "../dist/"
