@@ -2,10 +2,10 @@
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
 		"types": ["node"],
-		"target": "ES2022",
+		"target": "ES2024",
 		"module": "ES2022",
 		"moduleResolution": "nodenext",
-		"lib": ["ES2022", "DOM"],
+		"lib": ["ES2022"],
 		"noEmit": false,
 		"outDir": "../dist/"
 	}
