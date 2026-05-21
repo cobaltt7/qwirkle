@@ -2,14 +2,12 @@
 	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
 		"allowImportingTsExtensions": true,
-		"baseUrl": ".",
 		"types": ["vite/client"],
-		"target": "ES2020",
+		"target": "ESNext",
 		"module": "ES2020",
 		"moduleResolution": "bundler",
 		"importHelpers": false,
-		"jsx": "preserve",
-		"lib": ["ES2020", "DOM"]
+		"jsx": "preserve"
 	},
 	"exclude": ["server/**/*", "dist", "vite.config.ts.*"]
 }
