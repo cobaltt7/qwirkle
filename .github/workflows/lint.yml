@@ -58,13 +58,13 @@ jobs:
                   persist-credentials: false
 
             - name: Setup CodeQL
-              uses: github/codeql-action/init@51f77329afa6477de8c49fc9c7046c15b9a4e79d # v3.29.7
+              uses: github/codeql-action/init@9f759ee644a3e7c15c1390abf49868036c00067b # v3.38.3
               with:
                   languages: javascript
                   queries: security-and-quality
 
             - name: Analyze
-              uses: github/codeql-action/analyze@51f77329afa6477de8c49fc9c7046c15b9a4e79d # v3.29.7
+              uses: github/codeql-action/analyze@9f759ee644a3e7c15c1390abf49868036c00067b # v3.38.3
 
     # build:
     #     name: Build
