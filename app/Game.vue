@@ -50,7 +50,7 @@ import PlayersList from "./PlayersList.vue";
 import Tile from "./Tile.vue";
 import { dragscroll } from "vue-dragscroll";
 import useStore from "./common/store.js";
-import { DUPLICATE_TILES, TILE_COLORS, TILE_SHAPES } from "../common/constants.js";
+import { DUPLICATE_TILES, TILE_COLORS, TILE_SHAPES, PlaceError } from "../common/constants.js";
 import socket from "./common/socket.js";
 import ExchangeTiles from "./ExchangeTiles.vue";
 import Hand from "./Hand.vue";
@@ -119,7 +119,7 @@ export default class Game extends Vue {
 			.map((tile) => ({ ...tile, temporary: undefined }));
 
 		socket.emit("placeTiles", tiles, (response) => {
-			if (typeof response === "number") alert(response);
+			if (typeof response === "number") alert(PlaceError[response]);
 			else state.hand = response;
 
 			this.reset();

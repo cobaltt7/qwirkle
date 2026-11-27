@@ -33,7 +33,7 @@ export default class Tile extends Vue {
 	tilePlaced() {
 		const state = useStore();
 		const heldTile = state.hand[state.selectedTile];
-		if (!heldTile) return alert(PlaceError.MissingTile);
+		if (!heldTile) return alert(PlaceError[PlaceError.MissingTile]);
 		const board = Object.fromEntries(
 			Object.entries(toRaw(state.board)).map(([y, value]) => [
 				y,
@@ -43,20 +43,21 @@ export default class Tile extends Vue {
 			]),
 		);
 
-		if (board[this.y]?.[this.x]) return alert(PlaceError.AlreadyPlaced);
+		if (board[this.y]?.[this.x]) return alert(PlaceError[PlaceError.AlreadyPlaced]);
 
-		if (!state.room) return alert(PlaceError.NotInRoom);
+		if (!state.room) return alert(PlaceError[PlaceError.NotInRoom]);
 
 		const currentTurn = getCurrentTurn(state.room?.players);
-		if (state.username !== currentTurn) return alert(PlaceError.NotYourTurn);
+		if (state.username !== currentTurn) return alert(PlaceError[PlaceError.NotYourTurn]);
 
 		const tile: PlacedTile = { ...heldTile, x: this.x, y: this.y, temporary: true };
 		(board[tile.y] ??= {})[tile.x] = tile;
 
 		const error = verifyTile(tile, board);
-		if (error) return alert(error);
+		if (error) return alert(PlaceError[error]);
 
-		if (!tilesInLine([...state.placedTiles, tile], board)) return alert(PlaceError.NotInLine);
+		if (!tilesInLine([...state.placedTiles, tile], board))
+			return alert(PlaceError[PlaceError.NotInLine]);
 
 		heldTile.placed = true;
 		state.board = board;

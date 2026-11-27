@@ -45,7 +45,7 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Ref, Hook } from "vue-facing-decorator";
-import { ROOM_PARAMETER } from "../common/constants.js";
+import { ROOM_PARAMETER, JoinError } from "../common/constants.js";
 import CreateRoom from "./CreateRoom.vue";
 import useStore from "./common/store.js";
 import socket from "./common/socket.js";
@@ -92,7 +92,7 @@ export default class RoomsList extends Vue {
 			roomId,
 			state.username === this.defaultUsername && jwt ? { jwt } : { username: state.username },
 			(response) => {
-				if (typeof response === "number") alert(response);
+				if (typeof response === "number") alert(JoinError[response]);
 				else {
 					state.room = this.publicRooms[roomId] ?? null;
 					const url = new URL(location.toString());

@@ -5,6 +5,7 @@
 <script lang="ts">
 import { Vue, Component } from "vue-facing-decorator";
 import PlayersList from "./PlayersList.vue";
+import { StartError } from "../common/constants.js";
 import useStore from "./common/store.js";
 import socket from "./common/socket.js";
 
@@ -24,7 +25,7 @@ export default class Lobby extends Vue {
 	}
 
 	startGame() {
-		socket.emit("startGame", alert);
+		socket.emit("startGame", (error) => alert(StartError[error]));
 	}
 }
 </script>
