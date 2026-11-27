@@ -190,7 +190,10 @@ export default class Game extends Vue {
 }
 
 .hand {
+	width: 100%;
 	height: 125px;
+	overflow-x: auto;
+	scrollbar-width: none;
 }
 
 #buttons p {

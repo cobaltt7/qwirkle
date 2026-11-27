@@ -2,6 +2,7 @@
 	<dialog>
 		<form method="dialog">
 			<Hand
+				class="hand"
 				:selectTile="selectTile"
 				:getClasses="(index: number) => ({ selected: selectedTiles.has(index) })"
 			/>
@@ -21,11 +22,6 @@ import { ExchangeError } from "../common/constants.js";
 export default class ExchangeTiles extends Vue {
 	selectedTiles = new Set<number>();
 
-	get hand() {
-		const state = useStore();
-		return state.hand;
-	}
-
 	selectTile(index: number) {
 		this.selectedTiles[this.selectedTiles.has(index) ? "delete" : "add"](index);
 	}
@@ -44,4 +40,32 @@ export default class ExchangeTiles extends Vue {
 	}
 }
 </script>
-<style scoped></style>
+<style scoped>
+dialog {
+	justify-content: center;
+	align-items: center;
+	min-width: 500px;
+}
+
+dialog[open] {
+	display: flex;
+}
+
+form {
+	width: 100%;
+	height: 100%;
+}
+
+form > :not(section) {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: center;
+	justify-content: center;
+	width: 100%;
+	height: 40px;
+}
+
+.hand {
+	height: 80px;
+}
+</style>

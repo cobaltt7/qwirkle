@@ -146,4 +146,41 @@ export default class RoomsList extends Vue {
 	margin: auto;
 	width: 100%;
 }
+
+dialog {
+	justify-content: center;
+	align-items: center;
+	padding: 1.5em 2.5em;
+	width: 500px;
+}
+
+dialog[open] {
+	display: flex;
+}
+
+form > :not(section) {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: center;
+	justify-content: center;
+	width: 100%;
+	height: 40px;
+}
+form label {
+	display: flex;
+	align-items: center;
+}
+
+form input[type="checkbox"] {
+	margin: 0.25em;
+}
+
+form p > :first-child {
+	justify-content: center;
+	width: 100%;
+}
+
+form p > * {
+	margin: 0 20px;
+}
 </style>

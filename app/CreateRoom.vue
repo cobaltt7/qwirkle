@@ -90,7 +90,7 @@ export default class CreateRoom extends Vue {
 	}
 }
 </script>
-<style>
+<style scoped>
 dialog {
 	justify-content: center;
 	align-items: center;
