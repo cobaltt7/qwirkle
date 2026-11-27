@@ -9,7 +9,8 @@
 		"module": "esnext",
 		"moduleResolution": "node",
 		"target": "esnext",
-		"types": ["vite/client"]
+		"types": ["vite/client"],
+		"noEmit": true
 	},
 	"exclude": ["server/**/*", "dist", "vite.config.ts.*"]
 }

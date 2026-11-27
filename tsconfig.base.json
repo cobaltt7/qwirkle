@@ -9,7 +9,6 @@
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
 		"maxNodeModuleJsDepth": 0,
-		"noEmit": true,
 		"noErrorTruncation": true,
 		"noImplicitAny": true,
 		"noImplicitOverride": true,
@@ -18,9 +17,11 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"resolveJsonModule": true,
-		"skipLibCheck": false,
 		"strict": true,
 		"useDefineForClassFields": true,
-		"useUnknownInCatchVariables": false
+		"useUnknownInCatchVariables": false,
+		"ignoreDeprecations": "6.0",
+		"skipLibCheck": true,
+		"noUncheckedSideEffectImports": false
 	}
 }
