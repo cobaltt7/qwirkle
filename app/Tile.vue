@@ -68,12 +68,8 @@ export default class Tile extends Vue {
 div {
 	display: inline-block;
 	cursor: pointer;
+	aspect-ratio: 1;
 	width: calc(100px * var(--scale));
 	height: calc(100px * var(--scale));
-}
-
-img {
-	cursor: var(--cursor);
-	width: 100%; /* TODO: higher quality images */
 }
 </style>

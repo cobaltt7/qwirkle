@@ -56,9 +56,10 @@ export default class Hand extends Vue {
 	cursor: not-allowed;
 }
 
-.selected img {
+.selected .background {
 	margin: auto;
 	box-shadow: 0 0 5px 0 #000000;
+	width: 80%;
 	height: 80%;
 }
 </style>
