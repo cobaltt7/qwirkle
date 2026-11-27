@@ -17,9 +17,17 @@ import {
 } from "../common/util.js";
 
 describe("verifyTile", () => {
-	it("should fail without neighbors", () =>
+	it("should work alone", () =>
 		expect(
 			verifyTile({ x: 0, y: 0 }, [[{ x: 0, y: 0, color: "blue", shape: "circle" }]]),
+		).toBeUndefined());
+
+	it("should fail without neighbors", () =>
+		expect(
+			verifyTile({ x: 0, y: 0 }, [
+				[{ x: 0, y: 0, color: "blue", shape: "circle" }],
+				{ 1: { x: 1, y: 1, color: "blue", shape: "circle" } },
+			]),
 		).toEqual(PlaceError.NoNeighbors));
 
 	it("should fail on inconsistent row items", () =>
