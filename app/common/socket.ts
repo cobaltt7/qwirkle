@@ -20,9 +20,9 @@ socket
 		const state = useStore();
 		state.publicRooms = rooms;
 	})
-	.on("gameStart", (hand, centerTile) => {
+	.on("gameStart", (hand) => {
 		const state = useStore();
-		state.$patch({ hand, status: "started", centerTile });
+		state.$patch({ hand, status: "started" });
 	})
 	.on("playersUpdate", (players) => {
 		const state = useStore();

@@ -45,7 +45,7 @@
 	<ExchangeTiles ref="exchange" />
 </template>
 <script lang="ts">
-import { Vue, Component, Hook, Ref } from "vue-facing-decorator";
+import { Vue, Component, Ref } from "vue-facing-decorator";
 import PlayersList from "./PlayersList.vue";
 import Tile from "./Tile.vue";
 import { dragscroll } from "vue-dragscroll";
@@ -93,11 +93,6 @@ export default class Game extends Vue {
 	}
 
 	@Ref readonly exchange!: ExchangeTiles;
-
-	@Hook mounted() {
-		const state = useStore();
-		if (state.centerTile) (state.board[0] ??= {})[0] = state.centerTile;
-	}
 
 	selectTile(index: number) {
 		const state = useStore();

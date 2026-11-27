@@ -14,7 +14,7 @@ export interface ServerToClientEvents {
 	tilesPlaced: (tiles: PlacedTile[], deckLength: number) => void;
 	roomsUpdate: (rooms: PublicRooms) => void;
 	playersUpdate: (players: Players) => void;
-	gameStart: (hand: Tile[], start: PlacedTile) => void;
+	gameStart: (hand: Tile[]) => void;
 	gameEnd: (reason: EndReason) => void;
 }
 export interface ClientToServerEvents {

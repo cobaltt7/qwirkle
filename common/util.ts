@@ -18,7 +18,11 @@ export function verifyTile(location: Location, board: Board): PlaceError | undef
 	if (!tile) return PlaceError.UnknownTile;
 
 	const neighborhood = getNeighborhood(tile, board);
-	if (neighborhood.row.length < 2 && neighborhood.column.length < 2)
+	if (
+		neighborhood.row.length < 2
+		&& neighborhood.column.length < 2
+		&& Object.values(board).map(Object.values).flat().length != 1
+	)
 		return PlaceError.NoNeighbors;
 
 	const rowResult = verifyLine(neighborhood.row);
@@ -56,10 +60,11 @@ export function tilesInLine(tiles: Location[], board: Board) {
 }
 
 export function calculatePoints(tiles: Location[], board: Board) {
-	return getNeighborhoods(tiles, board).reduce(
+	const score = getNeighborhoods(tiles, board).reduce(
 		(acc, { length }) => acc + length * (Number(length === QWIRKLE_LENGTH) + 1),
 		0,
 	);
+	return Math.max(score, tiles.length);
 }
 function getNeighborhoods(tiles: Location[], board: Board) {
 	return tiles

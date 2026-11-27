@@ -115,17 +115,13 @@ export default function connectIo(server: HTTPServer) {
 				if (room.host !== socket.data.username) return callback(StartError.NoPermissions);
 
 				room.started = true;
-
 				room.board[0] = {};
-				room.board[0][0] = { ...getRandomTile(room.deck, true), x: 0, y: 0 };
-				io.to(roomId).emit("tilesPlaced", [room.board[0][0]], room.deck.length);
 
 				const allPlayers = await io.in(roomId).fetchSockets();
 				for (const player of allPlayers) {
 					player.emit(
 						"gameStart",
 						(hands[player.data.username] = generateHand(room.deck)),
-						room.board[0][0],
 					);
 				}
 

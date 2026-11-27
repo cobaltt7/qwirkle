@@ -31,7 +31,6 @@ const useStore = defineStore("state", {
 		board: {} as Board,
 		selectedTile: -1,
 		deckLength: generateDeck().length,
-		centerTile: null as PlacedTile | null,
 	}),
 	getters: {
 		boardSize(): { rows: [number, number]; columns: [number, number] } {
