@@ -23,7 +23,7 @@
 		"modern-normalize": "3.0.1",
 		"pinia": "2.0.34",
 		"serve-handler": "6.1.8",
-		"socket.io": "4.5.4",
+		"socket.io": "4.6.2",
 		"socket.io-client": "4.5.4",
 		"vue": "3.2.47",
 		"vue-dragscroll": "4.0.2",
