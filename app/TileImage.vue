@@ -3,7 +3,7 @@
 </template>
 <script lang="ts">
 import { Prop, Vue, Component } from "vue-facing-decorator";
-import { TileColor, TileShape } from "../common/constants.ts";
+import { TileColor, TileShape } from "../common/constants.js";
 
 @Component
 export default class TileImage extends Vue {

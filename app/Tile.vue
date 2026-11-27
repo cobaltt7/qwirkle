@@ -3,13 +3,13 @@
 </template>
 <script lang="ts">
 import { Prop, Vue, Component } from "vue-facing-decorator";
-import { getCurrentTurn, tilesInLine } from "../common/util.ts";
-import type { PlacedTile } from "../common/types.ts";
-import { verifyTile } from "../common/util.ts";
-import { PlaceError } from "../common/constants.ts";
-import useStore from "./common/store.ts";
+import { getCurrentTurn, tilesInLine } from "../common/util.js";
+import type { PlacedTile } from "../common/types.js";
+import { verifyTile } from "../common/util.js";
+import { PlaceError } from "../common/constants.js";
+import useStore from "./common/store.js";
 import { toRaw } from "vue";
-import TileImage from "./TileImage.vue.ts";
+import TileImage from "./TileImage.vue";
 
 @Component({ components: { TileImage } })
 export default class Tile extends Vue {

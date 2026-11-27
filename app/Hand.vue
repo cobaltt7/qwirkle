@@ -16,12 +16,11 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-facing-decorator";
-import { dragscroll } from "vue-dragscroll";
-import useStore from "./common/store.ts";
+import useStore from "./common/store.js";
 import { HeldTile } from "../common/types";
 import TileImage from "./TileImage.vue";
 
-@Component({ directives: { dragscroll }, components: { TileImage } })
+@Component({ components: { TileImage } })
 export default class Hand extends Vue {
 	@Prop selectTile!: (index: number) => void;
 	@Prop getClasses!: (index: number, tile: HeldTile) => { selected?: boolean; placed?: boolean };

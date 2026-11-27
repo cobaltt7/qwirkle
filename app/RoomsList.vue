@@ -45,10 +45,10 @@
 </template>
 <script lang="ts">
 import { Vue, Component, Ref, Hook } from "vue-facing-decorator";
-import { ROOM_PARAMETER } from "../common/constants.ts";
+import { ROOM_PARAMETER } from "../common/constants.js";
 import CreateRoom from "./CreateRoom.vue";
-import useStore from "./common/store.ts";
-import socket from "./common/socket.ts";
+import useStore from "./common/store.js";
+import socket from "./common/socket.js";
 
 @Component({ components: { CreateRoom } })
 export default class RoomsList extends Vue {

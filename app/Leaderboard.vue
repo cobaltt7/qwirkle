@@ -4,21 +4,33 @@
 			:scores="true"
 			:player="{ ...orderedPlayers[0][1], username: orderedPlayers[0][0] }"
 		/>
-		<img draggable="false" alt="🥇" src="https://twemoji.maxcdn.com/v/14.0.2/svg/1f947.svg" />
+		<img
+			draggable="false"
+			alt="🥇"
+			src="https://cdn.jsdelivr.net/npm/@discordapp/twemoji@14.0.2/dist/svg/1f947.svg"
+		/>
 	</div>
 	<div class="winner" v-if="orderedPlayers?.[1]">
 		<PlayerCard
 			:scores="true"
 			:player="{ ...orderedPlayers[1][1], username: orderedPlayers[1][0] }"
 		/>
-		<img draggable="false" alt="🥈" src="https://twemoji.maxcdn.com/v/14.0.2/svg/1f948.svg" />
+		<img
+			draggable="false"
+			alt="🥈"
+			src="https://cdn.jsdelivr.net/npm/@discordapp/twemoji@14.0.2/dist/svg/1f948.svg"
+		/>
 	</div>
 	<div class="winner" v-if="orderedPlayers?.[2]">
 		<PlayerCard
 			:scores="true"
 			:player="{ ...orderedPlayers[2][1], username: orderedPlayers[2][0] }"
 		/>
-		<img draggable="false" alt="🥉" src="https://twemoji.maxcdn.com/v/14.0.2/svg/1f949.svg" />
+		<img
+			draggable="false"
+			alt="🥉"
+			src="https://cdn.jsdelivr.net/npm/@discordapp/twemoji@14.0.2/dist/svg/1f949.svg"
+		/>
 	</div>
 	<PlayersList
 		:players="Object.fromEntries(orderedPlayers.slice(3))"

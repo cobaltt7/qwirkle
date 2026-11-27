@@ -12,8 +12,8 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-facing-decorator";
-import socket from "./common/socket.ts";
-import useStore from "./common/store.ts";
+import socket from "./common/socket.js";
+import useStore from "./common/store.js";
 import Hand from "./Hand.vue";
 
 @Component({ components: { Hand } })

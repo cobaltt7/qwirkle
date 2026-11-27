@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { PlaceError, TileColor, TileShape } from "../common/constants.ts";
+import { PlaceError, TileColor, TileShape } from "../common/constants.js";
 import { Board, PlacedTile, Tile } from "../common/types";
 import {
 	calculatePoints,
@@ -14,7 +14,7 @@ import {
 	sortHand,
 	tilesInLine,
 	verifyTile,
-} from "../common/util.ts";
+} from "../common/util.js";
 
 describe("verifyTile", () => {
 	it("should fail without neighbors", () =>

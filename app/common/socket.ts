@@ -3,7 +3,7 @@ import type { ClientToServerEvents, ServerToClientEvents } from "../../common/ty
 
 import io from "socket.io-client";
 
-import useStore from "./store.ts";
+import useStore from "./store.js";
 
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({ autoConnect: false });
 

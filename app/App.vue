@@ -9,7 +9,6 @@
 </template>
 <script lang="ts">
 import { Component, Hook, Vue } from "vue-facing-decorator";
-import twemoji from "twemoji";
 
 import Game from "./Game.vue";
 import RoomsList from "./RoomsList.vue";
@@ -28,10 +27,6 @@ export default class App extends Vue {
 
 	@Hook mounted() {
 		socket.connect();
-	}
-
-	@Hook updated() {
-		twemoji.parse(document.body);
 	}
 }
 </script>
