@@ -1,4 +1,4 @@
-import type { UserConfigExport } from "vite";
+import type { UserConfigExport } from "vitest/config";
 
 import vue from "@vitejs/plugin-vue";
 import autoprefixer from "autoprefixer";

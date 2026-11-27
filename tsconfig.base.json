@@ -1,14 +1,15 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
 		"allowJs": true,
 		"alwaysStrict": true,
+		"baseUrl": ".",
 		"checkJs": true,
 		"esModuleInterop": true,
 		"exactOptionalPropertyTypes": false,
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
 		"maxNodeModuleJsDepth": 0,
+		"noEmit": true,
 		"noErrorTruncation": true,
 		"noImplicitAny": true,
 		"noImplicitOverride": true,
@@ -20,7 +21,6 @@
 		"skipLibCheck": false,
 		"strict": true,
 		"useDefineForClassFields": true,
-		"useUnknownInCatchVariables": false,
-		"noEmit": true
+		"useUnknownInCatchVariables": false
 	}
 }
