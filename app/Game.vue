@@ -1,7 +1,7 @@
 <template>
 	<PlayersList :scores="true" :players="players" />
-	<section id="board" v-dragscroll :style="{ '--scale': scale }">
-		<div id="rows">
+	<section id="board" :style="{ '--scale': scale }">
+		<div id="rows" v-dragscroll>
 			<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
 				<Tile
 					v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
@@ -139,16 +139,13 @@ export default class Game extends Vue {
 </script>
 <style scoped>
 #board {
-	border: 1px solid #000;
-	height: 100%;
-	overflow: auto;
-	scrollbar-width: none;
-	--cursor: grab;
 	display: flex;
 	position: relative;
 	justify-content: flex-start;
 	align-items: flex-start;
-	cursor: var(--cursor);
+	border: 1px solid #000;
+	height: 100%;
+	min-height: 0;
 }
 
 #board::-webkit-scrollbar {
@@ -157,6 +154,11 @@ export default class Game extends Vue {
 
 #rows {
 	margin: auto;
+	max-height: 100%;
+	overflow: auto;
+	scrollbar-width: none;
+	--cursor: grab;
+	cursor: var(--cursor);
 }
 
 .row {
@@ -167,6 +169,7 @@ export default class Game extends Vue {
 	position: absolute;
 	right: 0;
 	bottom: 0;
+	user-select: none;
 }
 
 #zoom button {
