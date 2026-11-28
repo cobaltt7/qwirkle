@@ -39,13 +39,13 @@
 	/>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-facing-decorator";
+import { Component, Vue, toNative } from "vue-facing-decorator";
 import PlayerCard from "./PlayerCard.vue";
 import PlayersList from "./PlayersList.vue";
 import useStore from "./common/store.js";
 
 @Component({ components: { PlayersList, PlayerCard } })
-export default class Leaderboard extends Vue {
+class Leaderboard extends Vue {
 	get orderedPlayers() {
 		const state = useStore();
 		return Object.entries(state.room?.players || {}).sort(
@@ -53,6 +53,7 @@ export default class Leaderboard extends Vue {
 		);
 	}
 }
+export default toNative(Leaderboard);
 </script>
 <style scoped>
 .winner {

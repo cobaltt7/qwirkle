@@ -8,14 +8,15 @@
 	</span>
 </template>
 <script lang="ts">
-import { Prop, Vue, Component } from "vue-facing-decorator";
+import { Prop, Vue, Component, toNative } from "vue-facing-decorator";
 import { TileColor, TileShape } from "../common/constants.js";
 
 @Component
-export default class TileImage extends Vue {
+class TileImage extends Vue {
 	@Prop({ required: true }) color!: TileColor;
 	@Prop({ required: true }) shape!: TileShape;
 }
+export default toNative(TileImage);
 </script>
 <style scoped>
 .background {

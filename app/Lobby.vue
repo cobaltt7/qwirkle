@@ -3,14 +3,14 @@
 	<button v-if="host === username" @click="startGame">Start Game</button>
 </template>
 <script lang="ts">
-import { Vue, Component } from "vue-facing-decorator";
+import { Vue, Component, toNative } from "vue-facing-decorator";
 import PlayersList from "./PlayersList.vue";
 import { StartError } from "../common/constants.js";
 import useStore from "./common/store.js";
 import socket from "./common/socket.js";
 
 @Component({ components: { PlayersList } })
-export default class Lobby extends Vue {
+class Lobby extends Vue {
 	get username() {
 		const state = useStore();
 		return state.username;
@@ -28,5 +28,6 @@ export default class Lobby extends Vue {
 		socket.emit("startGame", (error) => alert(StartError[error]));
 	}
 }
+export default toNative(Lobby);
 </script>
 <style scoped></style>

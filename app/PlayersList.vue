@@ -12,13 +12,13 @@
 	</section>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-facing-decorator";
+import { Component, Vue, Prop, toNative } from "vue-facing-decorator";
 import type { Players } from "../common/types.js";
 import PlayerCard from "./PlayerCard.vue";
 import useStore from "./common/store.js";
 
 @Component({ components: { PlayerCard } })
-export default class PlayersList extends Vue {
+class PlayersList extends Vue {
 	@Prop scores?: boolean;
 	@Prop({ required: true }) players!: Players;
 	@Prop countFrom?: number;
@@ -28,6 +28,7 @@ export default class PlayersList extends Vue {
 		return state.username;
 	}
 }
+export default toNative(PlayersList);
 </script>
 <style scoped>
 section {

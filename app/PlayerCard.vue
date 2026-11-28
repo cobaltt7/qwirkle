@@ -10,15 +10,16 @@
 	</div>
 </template>
 <script lang="ts">
-import { Vue, Prop, Component } from "vue-facing-decorator";
+import { Vue, Prop, Component, toNative } from "vue-facing-decorator";
 import type { Player } from "../common/types";
 
 @Component
-export default class PlayerCard extends Vue {
+class PlayerCard extends Vue {
 	@Prop() scores?: boolean;
 	@Prop({ default: false }) active!: boolean;
 	@Prop({ required: true }) player!: Player & { username: string };
 }
+export default toNative(PlayerCard);
 </script>
 <style scoped>
 div {

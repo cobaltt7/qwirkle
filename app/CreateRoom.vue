@@ -39,12 +39,12 @@
 	</dialog>
 </template>
 <script lang="ts">
-import { Component, Ref, Vue } from "vue-facing-decorator";
+import { Component, Ref, Vue, toNative } from "vue-facing-decorator";
 import useStore from "./common/store.js";
 import socket from "./common/socket.js";
 
 @Component
-export default class CreateRoom extends Vue {
+class CreateRoom extends Vue {
 	authOn = false;
 
 	@Ref readonly authSwitch!: HTMLInputElement;
@@ -89,6 +89,7 @@ export default class CreateRoom extends Vue {
 		}
 	}
 }
+export default toNative(CreateRoom);
 </script>
 <style scoped>
 dialog {

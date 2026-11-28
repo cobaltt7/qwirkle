@@ -12,14 +12,14 @@
 	</dialog>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-facing-decorator";
+import { Component, Vue, toNative } from "vue-facing-decorator";
 import socket from "./common/socket.js";
 import useStore from "./common/store.js";
 import Hand from "./Hand.vue";
 import { ExchangeError } from "../common/constants.js";
 
 @Component({ components: { Hand } })
-export default class ExchangeTiles extends Vue {
+class ExchangeTiles extends Vue {
 	selectedTiles = new Set<number>();
 
 	selectTile(index: number) {
@@ -39,6 +39,7 @@ export default class ExchangeTiles extends Vue {
 		this.selectedTiles.clear();
 	}
 }
+export default toNative(ExchangeTiles);
 </script>
 <style scoped>
 dialog {

@@ -44,14 +44,14 @@
 	</dialog>
 </template>
 <script lang="ts">
-import { Vue, Component, Ref, Hook } from "vue-facing-decorator";
+import { Vue, Component, Ref, Hook, toNative } from "vue-facing-decorator";
 import { ROOM_PARAMETER, JoinError } from "../common/constants.js";
 import CreateRoom from "./CreateRoom.vue";
 import useStore from "./common/store.js";
 import socket from "./common/socket.js";
 
 @Component({ components: { CreateRoom } })
-export default class RoomsList extends Vue {
+class RoomsList extends Vue {
 	defaultUsername: string | null = null;
 
 	get publicRooms() {
@@ -59,7 +59,7 @@ export default class RoomsList extends Vue {
 		return state.publicRooms;
 	}
 
-	@Ref readonly createRoomDialog!: CreateRoom;
+	@Ref readonly createRoomDialog!: InstanceType<typeof CreateRoom>;
 	@Ref readonly joinRoomDialog!: HTMLDialogElement;
 	@Ref readonly joinRoomInput!: HTMLInputElement;
 	@Ref readonly usernameInput!: HTMLInputElement;
@@ -104,6 +104,7 @@ export default class RoomsList extends Vue {
 		);
 	}
 }
+export default toNative(RoomsList);
 </script>
 <style scoped>
 #rooms {

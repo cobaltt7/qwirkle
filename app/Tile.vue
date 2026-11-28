@@ -2,7 +2,7 @@
 	<div @click="tilePlaced"><TileImage v-if="tile" :color="tile.color" :shape="tile.shape" /></div>
 </template>
 <script lang="ts">
-import { Prop, Vue, Component } from "vue-facing-decorator";
+import { Prop, Vue, Component, toNative } from "vue-facing-decorator";
 import { getCurrentTurn, tilesInLine } from "../common/util.js";
 import type { PlacedTile } from "../common/types.js";
 import { verifyTile } from "../common/util.js";
@@ -12,7 +12,7 @@ import { toRaw } from "vue";
 import TileImage from "./TileImage.vue";
 
 @Component({ components: { TileImage } })
-export default class Tile extends Vue {
+class Tile extends Vue {
 	@Prop({ required: true }) columnIndex!: number;
 	@Prop({ required: true }) rowIndex!: number;
 	@Prop({ default: 1 }) scale!: number;
@@ -64,6 +64,7 @@ export default class Tile extends Vue {
 		state.selectedTile = -1;
 	}
 }
+export default toNative(Tile);
 </script>
 <style scoped>
 div {

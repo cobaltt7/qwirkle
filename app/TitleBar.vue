@@ -2,10 +2,11 @@
 	<header><h1>Qwirkle</h1></header>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-facing-decorator";
+import { Component, toNative, Vue } from "vue-facing-decorator";
 
 @Component
-export default class TitleBar extends Vue {}
+class TitleBar extends Vue {}
+export default toNative(TitleBar);
 </script>
 <style scoped>
 header {

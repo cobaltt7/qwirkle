@@ -8,7 +8,7 @@
 	</main>
 </template>
 <script lang="ts">
-import { Component, Hook, Vue } from "vue-facing-decorator";
+import { Component, Hook, Vue, toNative } from "vue-facing-decorator";
 
 import Game from "./Game.vue";
 import RoomsList from "./RoomsList.vue";
@@ -19,7 +19,7 @@ import useStore from "./common/store.js";
 import socket from "./common/socket.js";
 
 @Component({ components: { TitleBar, Game, RoomsList, Lobby, Leaderboard } })
-export default class App extends Vue {
+class App extends Vue {
 	get status() {
 		const store = useStore();
 		return store.status;
@@ -29,6 +29,7 @@ export default class App extends Vue {
 		socket.connect();
 	}
 }
+export default toNative(App);
 </script>
 <style scoped>
 main {

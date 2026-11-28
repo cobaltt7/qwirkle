@@ -45,7 +45,7 @@
 	<ExchangeTiles ref="exchange" />
 </template>
 <script lang="ts">
-import { Vue, Component, Ref } from "vue-facing-decorator";
+import { Vue, Component, Ref, toNative } from "vue-facing-decorator";
 import PlayersList from "./PlayersList.vue";
 import Tile from "./Tile.vue";
 import { dragscroll } from "vue-dragscroll";
@@ -57,7 +57,7 @@ import Hand from "./Hand.vue";
 import { HeldTile } from "../common/types";
 
 @Component({ directives: { dragscroll }, components: { PlayersList, Tile, ExchangeTiles, Hand } })
-export default class Game extends Vue {
+class Game extends Vue {
 	scale = 1;
 	SCALE_BOUNDS = [0.35, 1.5] as const;
 	SCALE_INCREMENT = 0.05 as const;
@@ -92,7 +92,7 @@ export default class Game extends Vue {
 		return state.deckLength;
 	}
 
-	@Ref readonly exchange!: ExchangeTiles;
+	@Ref readonly exchange!: InstanceType<typeof ExchangeTiles>;
 
 	selectTile(index: number) {
 		const state = useStore();
@@ -136,6 +136,7 @@ export default class Game extends Vue {
 		state.hand = this.hand.map((tile) => ({ ...tile, placed: undefined }));
 	}
 }
+export default toNative(Game);
 </script>
 <style scoped>
 #board {

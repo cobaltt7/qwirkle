@@ -15,13 +15,13 @@
 	</section>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from "vue-facing-decorator";
+import { Vue, Component, Prop, toNative } from "vue-facing-decorator";
 import useStore from "./common/store.js";
 import { HeldTile } from "../common/types";
 import TileImage from "./TileImage.vue";
 
 @Component({ components: { TileImage } })
-export default class Hand extends Vue {
+class Hand extends Vue {
 	@Prop selectTile!: (index: number) => void;
 	@Prop getClasses!: (index: number, tile: HeldTile) => { selected?: boolean; placed?: boolean };
 
@@ -30,6 +30,7 @@ export default class Hand extends Vue {
 		return state.hand;
 	}
 }
+export default toNative(Hand);
 </script>
 <style scoped>
 #hand {
