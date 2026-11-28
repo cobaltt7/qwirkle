@@ -1,13 +1,13 @@
 <template>
-	<PlayersList :scores="true" :players="players" />
+	<PlayersList :scores="true" :players />
 	<section id="board" :style="{ '--scale': scale }">
 		<div id="rows" v-dragscroll>
 			<div class="row" v-for="rowIndex in boardSize.rows[1] - boardSize.rows[0] + 3">
 				<Tile
 					v-for="columnIndex in boardSize.columns[1] - boardSize.columns[0] + 3"
-					:rowIndex="rowIndex"
-					:columnIndex="columnIndex"
-					:scale="scale"
+					:rowIndex
+					:columnIndex
+					:scale
 				/>
 			</div>
 		</div>
@@ -18,7 +18,7 @@
 	</section>
 	<Hand
 		class="hand"
-		:selectTile="selectTile"
+		:selectTile
 		:getClasses="
 			(index: number, tile: HeldTile) => ({
 				selected: index === selectedTile || tile.placed,

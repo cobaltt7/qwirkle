@@ -1,5 +1,5 @@
 <template>
-	<PlayersList :players="players" />
+	<PlayersList :players />
 	<button v-if="host === username" @click="startGame">Start Game</button>
 </template>
 <script lang="ts">

@@ -3,7 +3,7 @@
 		<form method="dialog">
 			<Hand
 				class="hand"
-				:selectTile="selectTile"
+				:selectTile
 				:getClasses="(index: number) => ({ selected: selectedTiles.has(index) })"
 			/>
 			<button @click="reset()">Cancel</button>
